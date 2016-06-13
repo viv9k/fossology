@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class AdminContentDelete extends DefaultPlugin
 {
-  const NAME = 'content_delete';
+  const NAME = 'content_unlink';
   
   /** @var FolderDao */
   private $folderDao;
