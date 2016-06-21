@@ -24,6 +24,7 @@ use Fossology\Lib\Dao\LicenseDao;
 use Fossology\Lib\Db\DbManager;
 use Fossology\Lib\Plugin\DefaultPlugin;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class AdminLicenseCandidate extends DefaultPlugin
@@ -61,6 +62,14 @@ class AdminLicenseCandidate extends DefaultPlugin
    */
   protected function handle(Request $request)
   {
+    $action = $request->get('action');
+    $deleteRfPk = intval($request->get('deleteRfPk'));
+    
+    if($action=="deletecandidate" && isset($deleteRfPk))
+    {
+      return $this->doDeleteCandidate($deleteRfPk);
+    }
+
     $rf = intval($request->get('rf'));
     if ($rf<1)
     {
@@ -152,14 +161,21 @@ class AdminLicenseCandidate extends DefaultPlugin
     $dbManager->prepare($stmt = __METHOD__, $sql);
     $res = $dbManager->execute($stmt);
     $aaData = array();
+    $delete = "";
     while ($row = $dbManager->fetchArray($res))
     {
       $link = Traceback_uri() . '?mod=' . self::NAME . '&rf=' . $row['rf_pk'];
       $edit = '<a href="' . $link . '"><img border="0" src="images/button_edit.png"></a>';
+      $eventCount = $dbManager->getSingleRow('SELECT COUNT(*) FROM clearing_event WHERE rf_fk=$1 AND removed=FALSE;', array($row['rf_pk']), __METHOD__.".$row[rf_pk]");
+      if(empty($eventCount['count'])){
+        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',1)" src="images/icons/close_16.png">';
+      }else{
+        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',0)" src="images/icons/close_16.png">';
+      }
       $aaData[] = array($edit, htmlentities($row['rf_shortname']),
           htmlentities($row['rf_fullname']),
           '<div style="overflow-y:scroll;max-height:150px;margin:0;">' . nl2br(htmlentities($row['rf_text'])) . '</div>',
-          htmlentities($row['group_name'])
+          htmlentities($row['group_name']),$delete
           );
     }
     $dbManager->freeResult($res);
@@ -260,6 +276,13 @@ class AdminLicenseCandidate extends DefaultPlugin
     $dbManager->prepare($stmt=__METHOD__.'.delete','DELETE FROM license_candidate WHERE rf_pk=$1');
     $dbManager->freeResult( $dbManager->execute($stmt,array($candidate)) );
     return true;
+  }
+
+  protected function doDeleteCandidate($rfPk)
+  {
+    $dbManager = $this->getObject('db.manager');
+    $dbManager->getSingleRow('DELETE FROM license_candidate WHERE rf_pk=$1', array($rfPk), __METHOD__.".delete");
+    return new Response('Successfully deleted', Response::HTTP_OK, array('Content-type'=>'text/plain'));
   }
 
 }
