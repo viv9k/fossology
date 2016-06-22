@@ -89,9 +89,8 @@ class folder_create extends FO_Plugin
       }
       else if ($rc == 4)
       {
-        $text = _("Folder");
-        $text1 = _("Exists");
-        $this->vars['message'] = "$text " . htmlentities($NewFolder) . " $text1";
+        $text = _("Folder Exists. Try different Name, Folder-Name checking is case-insensitive and Duplicate not allowed");
+        $this->vars['message'] = "$text";
       }
     }
 

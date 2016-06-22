@@ -340,12 +340,12 @@ class UserDao extends Object
       throw new \Exception(_("Error: Group name must be specified."));
     }
 
-    $groupAlreadyExists = $this->dbManager->getSingleRow("SELECT group_pk FROM groups WHERE group_name=$1",
+    $groupAlreadyExists = $this->dbManager->getSingleRow("SELECT group_pk, group_name FROM groups WHERE LOWER(group_name)=LOWER($1)",
             array($groupName),
             __METHOD__.'.gExists');
     if ($groupAlreadyExists)
     {
-      throw new \Exception(_("Group already exists.  Not added."));
+      throw new \Exception(_("Group exists. Try different Name, Group-Name checking is case-insensitive and Duplicate not allowed"));
     }
 
     $this->dbManager->insertTableRow('groups', array('group_name'=>$groupName));
