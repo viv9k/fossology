@@ -60,7 +60,9 @@ class XpClearedGetter extends ClearedGetterCommon
     }
     $this->extrawhere .= ' agent_fk='.$latestXpAgentId;
 
-    return $this->copyrightDao->getAllEntries($this->tableName, $uploadId, $uploadTreeTableName, $this->type, $this->getOnlyCleared, DecisionTypes::IDENTIFIED, $this->extrawhere);
+    $result = $this->copyrightDao->getAllEntries($this->tableName, $uploadId, $uploadTreeTableName, $this->type, $this->getOnlyCleared, DecisionTypes::IDENTIFIED, $this->extrawhere);
+    $this->extrawhere = null;
+    return $result;
   }
 }
 
