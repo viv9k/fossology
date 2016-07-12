@@ -47,13 +47,14 @@ class admin_folder_delete extends FO_Plugin {
    */
   function Delete($folderpk, $userId) 
   {
+    $splitFolder = explode(" ",$folderpk);
     /* Can't remove top folder */
-    if ($folderpk == FolderGetTop()) {
+    if ($splitFolder[1] == FolderGetTop()) {
       $text = _("Can Not Delete Root Folder");
       return ($text);
     }
     /* Get the folder's name */
-    $FolderName = FolderGetName($folderpk);
+    $FolderName = FolderGetName($splitFolder[1]);
     /* Prepare the job: job "Delete" */
     $groupId = Auth::getGroupId();
     $jobpk = JobAddJob($userId, $groupId, "Delete Folder: $FolderName");
@@ -81,11 +82,12 @@ class admin_folder_delete extends FO_Plugin {
    */
   public function Output() {
     /* If this is a POST, then process the request. */
-    $folder = GetParm('folder', PARM_INTEGER);
+    $folder = GetParm('folder', PARM_RAW);
+    $splitFolder = explode(" ",$folder);
     if (!empty($folder)) {
       $userId = Auth::getUserId();
       $sql = "SELECT folder_name FROM folder join users on (users.user_pk = folder.user_fk or users.user_perm = 10) where folder_pk = $1 and users.user_pk = $2;";
-      $Folder = $this->dbManager->getSingleRow($sql,array($folder,$userId),__METHOD__."GetRowWithFolderName");
+      $Folder = $this->dbManager->getSingleRow($sql,array($splitFolder[1],$userId),__METHOD__."GetRowWithFolderName");
       if(!empty($Folder['folder_name'])){
         $rc = $this->Delete($folder, $userId);
         if (empty($rc)) {
@@ -125,7 +127,7 @@ class admin_folder_delete extends FO_Plugin {
     $V.= "<select name='folder'>\n";
     $text = _("select folder");
     $V.= "<option value=''>[$text]</option>\n";
-    $V.= FolderListOption(-1, 0);
+    $V.= FolderListOption(-1, 0, 1, -1, true);
     $V.= "</select><P />\n";
     $text = _("Delete");
     $V.= "<input type='submit' value='$text'>\n";

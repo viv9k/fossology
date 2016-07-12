@@ -170,7 +170,7 @@ function GetFolderFromItem($upload_pk="", $uploadtree_pk="")
  *
  * \return HTML of the folder tree
  */
-function FolderListOption($ParentFolder,$Depth, $IncludeTop=1, $SelectId=-1)
+function FolderListOption($ParentFolder,$Depth, $IncludeTop=1, $SelectId=-1, $linkParent=false, $OldParent=0)
 {
   if ($ParentFolder == "-1") { $ParentFolder = FolderGetTop(); }
   if (empty($ParentFolder)) { return; }
@@ -183,6 +183,11 @@ function FolderListOption($ParentFolder,$Depth, $IncludeTop=1, $SelectId=-1)
     if ($ParentFolder == $SelectId)
     {
       $V .= "<option value='$ParentFolder' SELECTED>";
+    }
+    elseif($linkParent)
+    {
+      if(empty($OldParent)) $OldParent=0;
+      $V .= "<option value='$OldParent $ParentFolder'>";      
     }
     else
     {
@@ -224,7 +229,7 @@ function FolderListOption($ParentFolder,$Depth, $IncludeTop=1, $SelectId=-1)
     if ($Depth > 0) { $Hide = "style='display:none;'"; }
     while($row = pg_fetch_assoc($result))
     {
-      $V .= FolderListOption($row['folder_pk'],$Depth+1,$IncludeTop,$SelectId);
+      $V .= FolderListOption($row['folder_pk'],$Depth+1,$IncludeTop,$SelectId,$linkParent,$row['parent']);
     }
   }
   pg_free_result($result);
