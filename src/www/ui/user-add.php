@@ -92,10 +92,10 @@ class user_add extends FO_Plugin {
       return ($text);
     }
     /* See if the user already exists (better not!) */
-    $row = $this->dbManager->getSingleRow("SELECT * FROM users WHERE user_name = $1 LIMIT 1;",
+    $row = $this->dbManager->getSingleRow("SELECT * FROM users WHERE LOWER(user_name) = LOWER($1) LIMIT 1;",
         array($User), $stmt = __METHOD__ . ".getUserIfExisting");
     if (!empty($row['user_name'])) {
-      $text = _("User already exists.  Not added.");
+      $text = _("User Exists. Try different Name, User-Name checking is case-insensitive and Duplicate not allowed.");
       return ($text);
     }
 

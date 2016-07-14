@@ -83,7 +83,7 @@ class FolderDao extends Object
     $statementName = __METHOD__;
     $this->dbManager->prepare($statementName,
         "SELECT folder_pk FROM folder, foldercontents fc"
-       ." WHERE folder_name=$1 AND fc.parent_fk=$2 AND fc.foldercontents_mode=$3 AND folder_pk=child_id");
+       ." WHERE LOWER(folder_name)=LOWER($1) AND fc.parent_fk=$2 AND fc.foldercontents_mode=$3 AND folder_pk=child_id");
     $res = $this->dbManager->execute($statementName, array( $folderName, $parentFolderId, self::MODE_FOLDER));
     $rows= $this->dbManager->fetchAll($res);
 
