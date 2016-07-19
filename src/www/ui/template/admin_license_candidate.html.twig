@@ -14,7 +14,7 @@
 
 <table class="semibordered" id="licenseCandidateTbl" width="100%" cellpadding="0">
   <thead>
-    <tr><th width="5%"></th><th width="10%"></th><th width="15%"></th><th width="60%"></th><th width="10%"></th></th></tr>
+    <tr><th width="5%"></th><th width="10%"></th><th width="15%"></th><th width="50%"></th><th width="10%"></th><th width="10%"></th></th></tr>
   </thead>
 </table>
   <br/><br/>
@@ -32,7 +32,8 @@
     {"sTitle": "{{ "Shortname"|trans }}", "sClass": "center", "bSearchable": true},
     {"sTitle": "{{ "Fullname"|trans }}", "sClass": "center", "bSearchable": false},
     {"sTitle": "{{ "Text"|trans }}", "sClass": "left", "bSearchable": false},
-    {"sTitle": "{{ "Group"|trans }}", "sClass": "center", "bSearchable": true}
+    {"sTitle": "{{ "Group"|trans }}", "sClass": "center", "bSearchable": true},
+    {"sTitle": "{{ "Delete"|trans }}", "sClass": "center", "bSearchable": false}
   ];
 
   tableSorting = [ [1, "asc"] ];
@@ -50,7 +51,25 @@
     return otable;
   }
     
-    
+    function deleteCandidate(rfPk,removeFlag) {
+      if(removeFlag) {
+        if (confirm("Remove this license from candidate license list ?")) {
+          $.ajax({
+            type: 'POST',
+            dataType: 'text',
+            url: '?mod=admin_license_candidate&action=deletecandidate',
+            data: { deleteRfPk : rfPk },
+            success: function(data) {
+              $("#deletecandidate" + rfPk).closest("tr").hide();
+            },
+            error: function() { alert('error'); }
+          });
+        }
+      }else{
+        alert("Cant remove, Candidate license in use !!");
+      }
+    }
+
     $(document).ready(function () {
       createBrowseTable();
     });
