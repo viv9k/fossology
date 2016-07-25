@@ -30,6 +30,7 @@ DIRS = \
 	scheduler \
 	spdx2 \
 	clixml \
+	unifiedreport \
 	ununpack \
 	wget_agent \
 	www
