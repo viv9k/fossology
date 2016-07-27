@@ -60,11 +60,12 @@ class UsersCsvExport {
   public function createCsv($rf=0)
   {
     $sql = "SELECT user_name username, user_desc description, user_email email, email_notify, 
-            user_perm userlevel, folder_name root_folder, user_pass as password, group_name as group, group_perm group_permission
+            user_perm userlevel, folder_name as root_folder, user_pass as password, group_name as group, group_perm as group_permission 
             FROM users 
-            JOIN groups ON users.group_fk=groups.group_pk 
-            JOIN group_user_member ON  users.group_fk=group_user_member.group_fk 
-            JOIN folder ON users.root_folder_fk=folder.folder_pk";
+            LEFT JOIN group_user_member ON users.user_pk = group_user_member.user_fk 
+            JOIN groups ON groups.group_pk = group_user_member.group_fk 
+            JOIN folder ON users.root_folder_fk=folder.folder_pk 
+            ORDER BY users.user_name, group_perm desc;";
  
     $stmt = __METHOD__;
     $this->dbManager->prepare($stmt, $sql);
@@ -77,12 +78,8 @@ class UsersCsvExport {
     $head = array('username', 'description', 'email', 'email_notify', 'userlevel', 'root_folder', 'password', 'group', 'group_permission');
     fputcsv($out, $head, $this->delimiter, $this->enclosure);
     foreach($vars as $row){
-      if(!empty($row['userlevel'])){
-        $row['userlevel'] = array_search($row['userlevel'], $this->userPermissions); 
-      }
-      if(!empty($row['group_permission'])){
-        $row['group_permission'] = array_search($row['group_permission'], $this->groupPermissions); 
-      }
+      $row['userlevel'] = array_search($row['userlevel'], $this->userPermissions); 
+      $row['group_permission'] = array_search($row['group_permission'], $this->groupPermissions); 
       fputcsv($out, $row, $this->delimiter, $this->enclosure);
     }
     $content = ob_get_contents();
