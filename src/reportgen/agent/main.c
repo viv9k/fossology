@@ -38,6 +38,7 @@
 #include <libfossology.h>
 #include <libfossdbmanager.h>
 #include <libpq-fe.h>
+#include <libfossrepo.h>
 
 
 #ifdef COMMIT_HASH_S
@@ -50,12 +51,16 @@ char BuildVersion[] = "reportgen build version: NULL.\n";
 
 const char* dirs[] = {"docProps/", "_rels/", "word/", "word/_rels/"};
 
-//TODO do not hardcode use localhost: we could be running on a cluster, what is the correct way?
-#define DESTFLDR FOSSREPO_CONF "/localhost/files/report/"
 #define CLEARINGREPMID "_clearing_report_"
 
 PGconn* pgConn; // the connection to Database
 fo_dbManager* dbManager; // the Database Manager
+
+char* destFolder()
+{
+  char *destPath="/localhost/files/report";
+  return g_strdup_printf("%s%s", fo_RepGetRepPath(), destPath);
+}
 
 char* createzipname(char* pckgname) {
   char* zipname = NULL;
@@ -78,7 +83,7 @@ char* createdocxname(char* pckgname) {
 }
 
 char* gettargetdir(char* pckgname) {
-  return g_strdup_printf(DESTFLDR "%s", pckgname);
+  return g_strdup_printf("%s/%s", destFolder(), pckgname);
 }
 
 int zipdir(char* name) {
@@ -186,9 +191,9 @@ int createdirinner(char* path) {
 }
 
 int checkdest() {
-  char* CMD = "mkdir -p -m 777'" DESTFLDR "' >/dev/null 2>&1";
+  char* CMD = g_strdup_printf("mkdir -p -m 777 %s >/dev/null 2>&1", destFolder());
   DIR* dir = NULL;
-  dir = opendir(DESTFLDR);
+  dir = opendir(destFolder());
   if (dir) {
     closedir(dir);
   }
@@ -201,7 +206,7 @@ int checkdest() {
 }
 
 int createdocxstructure(char* pckgname) {
-  gchar* dest = g_strdup_printf(DESTFLDR "%s/%s/", pckgname, pckgname);
+  gchar* dest = g_strdup_printf("%s/%s/%s/", destFolder(), pckgname, pckgname);
 
   int result = 0;
   if (dest) {
@@ -593,7 +598,7 @@ int main(int argc, char** argv) {
       fo_scheduler_disconnect(1);
       exit(1);
     }
-
+    
     createdocxstructure(outputPkgName);
     //------------Below: Code to create XML files---------//
     char* fullpathWithoutSlash = gettargetdir(outputPkgName);
