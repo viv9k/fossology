@@ -62,10 +62,7 @@ abstract class HistogramBase extends FO_Plugin {
     //TODO template this! For now I just template the js
     $output = "<div><table border=1 width='100%' id='copyright".$type."'></table></div><br/><br/>
                <div>
-                 <span style='float: left;'>
-                   <input type='checkbox' name='selectDelete".$type."' id='selectDelete".$type."'> Select All 
-                 </span> 
-                 <a style='cursor: pointer; margin-left:10px;'id='deleteSelected".$type."' class='buttonLink'>Delete</a>
+                <a style='cursor: pointer; margin-left:10px;'id='deleteSelected".$type."' class='buttonLink'>Mark selected rows for deletion</a>
                </div>  
               <br/>";
 
