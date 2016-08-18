@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
  * Copyright (C) 2008-2013 Hewlett-Packard Development Company, L.P.
- * Copyright (C) 2015 Siemens AG
+ * Copyright (C) 2015-2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ use Fossology\Lib\Dao\UserDao;
 use Fossology\Lib\Db\DbManager;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Omines\OAuth2\Client\Provider\Gitlab;
 
 define("TITLE_core_auth", _("Login"));
 
@@ -34,8 +35,6 @@ class core_auth extends FO_Plugin
   private $userDao;
   /** @var Session */
   private $session;
-  /** @var entitlementLogout */
-  private $entitlementLogout = "https://rs.entitlement.siemens.com/GetAccess/Logout";
 
   function __construct()
   {
@@ -210,15 +209,34 @@ class core_auth extends FO_Plugin
     $password = GetParm("password", PARM_TEXT);
     $referrer = GetParm("HTTP_REFERER", PARM_TEXT);
     $entitlement = GetParm("entitlement", PARM_TEXT);
-    $SCMAIL = GetParm("HTTP_SCMAIL", PARM_TEXT);
+    $getEmail = GetParm("HTTP_SCMAIL", PARM_TEXT);
+    $providerCheck = GetParm("providerCheck", PARM_TEXT);
+
+    if(!empty($providerCheck) && empty($getEmail)){
+      global $SysConf;
+      $domainOauth = "https://gitlab.com";
+      if(!empty($SysConf['SYSCONFIG']['GitlabDomainURL'])){
+        $domainOauth = $SysConf['SYSCONFIG']['GitlabDomainURL'];
+      }
+      $provider = new Gitlab([
+        "clientId"                => $SysConf['SYSCONFIG']['GitlabAppIdOauth'],
+        "clientSecret"            => $SysConf['SYSCONFIG']['GitlabSecretOauth'],
+        "redirectUri"             => $SysConf['SYSCONFIG']['RedirectOauthURL'],
+        "domain"                  => $domainOauth
+      ]);
+      $authorizationUrl = $provider->getAuthorizationUrl();
+      $_SESSION['oauth2state'] = $provider->getState();
+      header('Location: ' . $authorizationUrl);
+      exit;
+    }
 
     if (empty($referrer))
     {
       $referrer = GetArrayVal('HTTP_REFERER', $_SERVER);
     }
-    if (empty($SCMAIL))
+    if (empty($getEmail))
     {
-      $SCMAIL = GetArrayVal('HTTP_SCMAIL', $_SERVER);
+      $getEmail = GetArrayVal('HTTP_SCMAIL', $_SERVER);
     }
     $referrerQuery = parse_url($referrer,PHP_URL_QUERY);
     if($referrerQuery) {
@@ -228,9 +246,9 @@ class core_auth extends FO_Plugin
         $referrer = Traceback_uri();
       }
     }
-    if(!empty($SCMAIL) && empty($userName)){
+    if(!empty($getEmail) && empty($userName)){
       $entitlement = true; // To test in the server
-      $validLogin = $this->checkUsernameAndPassword($SCMAIL, "", $entitlement);
+      $validLogin = $this->checkUsernameAndPassword($getEmail, "", $entitlement);
     }else{
       $validLogin = $this->checkUsernameAndPassword($userName, $password);
     }
@@ -267,6 +285,12 @@ class core_auth extends FO_Plugin
     if (!empty($userName) && $userName!='Default User') {
       $this->vars['userName'] = $userName;
     }
+    global $SysConf;
+    if(!empty($SysConf['SYSCONFIG']['GitlabAppIdOauth'])){
+      $this->vars['providerExist'] = "Gitlab";
+    }else{
+      $this->vars['providerExist'] = 0;
+    }
     return $this->render('login.html.twig',$this->vars);
   }
 
@@ -276,12 +300,9 @@ class core_auth extends FO_Plugin
   function OutputOpen()
   {
     if (array_key_exists('User', $_SESSION) && $_SESSION['User'] != "Default User"){
-      if($_SESSION['entitlementCheck']){
-        $Uri = $this->entitlementLogout;
-      }else{
-        $Uri = Traceback_uri();
-      }
+      $Uri = Traceback_uri();
       $this->updateSession("");
+      $_SESSION['oauth2state'] = "";
       header("Location: $Uri");
       exit;
     }
@@ -357,7 +378,6 @@ class core_auth extends FO_Plugin
     }
     return true;
   }
-
 }
 
 $NewPlugin = new core_auth;
