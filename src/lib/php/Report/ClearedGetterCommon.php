@@ -1,7 +1,7 @@
 <?php
 /*
- Copyright (C) 2014-2015, Siemens AG
- Author: Daniele Fognini
+ Copyright (C) 2014-2016, Siemens AG
+ Author: Daniele Fognini, Shaheem Azmal M MD
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -221,8 +221,11 @@ abstract class ClearedGetterCommon
 
   public function cJson($uploadId, $groupId=null)
   {
-    $json = json_encode($this->getCleared($uploadId, $groupId, false));
-    return str_replace('\u001b','',str_replace('\\f','',$json));
+    $escapeChars = array('\\f',"\\", "/", "\"");
+    $withThisValue = array("","\\\\", "\\/", "\\\"");
+    $clearedString = str_replace($escapeChars, $withThisValue, $this->getCleared($uploadId, $groupId, false));
+    $json = json_encode($clearedString);
+    return str_replace('\u001b','',$json);
   }
 
   public function cJsonHist($uploadId, $groupId=null)
