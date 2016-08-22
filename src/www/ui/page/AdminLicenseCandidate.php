@@ -21,6 +21,7 @@ namespace Fossology\UI\Page;
 use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\BusinessRules\LicenseMap;
 use Fossology\Lib\Dao\LicenseDao;
+use Fossology\Lib\Dao\TreeDao;
 use Fossology\Lib\Db\DbManager;
 use Fossology\Lib\Plugin\DefaultPlugin;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,10 @@ class AdminLicenseCandidate extends DefaultPlugin
   private $highlightRenderer;
   /** @var TextRenderer */
   private $textRenderer;
+  /** @var LicenseDao */
   private $licenseDao;
+  /** @var TreeDao */
+  private $treeDao;
 
 
   function __construct()
@@ -53,6 +57,7 @@ class AdminLicenseCandidate extends DefaultPlugin
     $this->highlightRenderer = $this->getObject('view.highlight_renderer');
     $this->textRenderer = $this->getObject('view.text_renderer');
     $this->licenseDao = $this->getObject('dao.license');
+    $this->treeDao = $this->getObject('dao.tree');
   }
 
   /**
@@ -166,13 +171,27 @@ class AdminLicenseCandidate extends DefaultPlugin
     {
       $link = Traceback_uri() . '?mod=' . self::NAME . '&rf=' . $row['rf_pk'];
       $edit = '<a href="' . $link . '"><img border="0" src="images/button_edit.png"></a>';
-      $eventCount = $dbManager->getSingleRow('SELECT COUNT(*) FROM clearing_event WHERE rf_fk=$1 AND removed=FALSE;', array($row['rf_pk']), __METHOD__.".$row[rf_pk]");
-      if(empty($eventCount['count'])){
-        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',1)" src="images/icons/close_16.png">';
-      }else{
+      $licName = htmlentities($row['rf_shortname']);
+      $stmt = __METHOD__.".$row[rf_pk]";
+      $dbManager->prepare($stmt, "SELECT DISTINCT(uploadtree_fk) FROM clearing_event "
+                                ."WHERE rf_fk=$1 AND removed=false AND uploadtree_fk NOT IN "
+                                ."(SELECT DISTINCT(uploadtree_fk) FROM clearing_event WHERE "
+                                ."rf_fk=$1 AND removed=TRUE);");
+      $result = $dbManager->execute($stmt, array($row['rf_pk']));
+      $dataFetch = $dbManager->fetchAll($result);
+      $dbManager->freeResult($result);
+      if(empty($dataFetch)){
         $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',0)" src="images/icons/close_16.png">';
+      }else{
+        $treeDao = $this->getObject('dao.tree');
+        $Path  = "Cannot remove license $licName, because it is in use at".'\n\n';
+        foreach($dataFetch as $cnt => $uploadTreeFk){
+          $Path .= $cnt+1;
+          $Path .= ") ".$treeDao->getFullPath($uploadTreeFk['uploadtree_fk'], 'uploadtree').'\n';
+        }
+        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',\''.$Path.'\')" src="images/icons/close_16.png">';
       }
-      $aaData[] = array($edit, htmlentities($row['rf_shortname']),
+      $aaData[] = array($edit, $licName,
           htmlentities($row['rf_fullname']),
           '<div style="overflow-y:scroll;max-height:150px;margin:0;">' . nl2br(htmlentities($row['rf_text'])) . '</div>',
           htmlentities($row['group_name']),$delete

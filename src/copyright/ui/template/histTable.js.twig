@@ -23,7 +23,7 @@ function createTable{{ table.type }}() {
       { "sTitle": "{{ 'Count'| trans }}", "sClass": "right read_only", "sWidth": "5%" },
       { "sTitle": "{{ table.description }}", "sClass": "left"},
       { "sTitle": "", "sClass": "center read_only", "sWidth": "10%", "bSortable": false },
-      { "sTitle": "", "sClass": "center read_only", "sWidth": "3%", "bSortable": false }
+      { "sTitle": "<input type='checkbox' name='selectDelete{{ table.type }}' id='selectDelete{{ table.type }}' style='margin-left:11px'>", "sClass": "center read_only", "sWidth": "5%", "bSortable": false }
     ],
     "aaSorting": {{ table.sorting }},
     "iDisplayLength": 50,

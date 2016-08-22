@@ -51,9 +51,9 @@
     return otable;
   }
     
-    function deleteCandidate(rfPk,removeFlag) {
-      if(removeFlag) {
-        if (confirm("Remove this license from candidate license list ?")) {
+    function deleteCandidate(rfPk,removeData) {
+      if(removeData == '0') {
+        if (confirm("Remove this license from candidate license list?")) {
           $.ajax({
             type: 'POST',
             dataType: 'text',
@@ -66,7 +66,7 @@
           });
         }
       }else{
-        alert("Cant remove, Candidate license in use !!");
+        alert(removeData);
       }
     }
 

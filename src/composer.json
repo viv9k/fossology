@@ -16,6 +16,7 @@
         "symfony/dependency-injection": "2.6.*",
         "twig/twig": "1.*",
         "twig/extensions": "1.*",
+        "omines/oauth2-gitlab": "~1.0",
         "phpoffice/phpword": "0.12.0"
     },
 
@@ -40,7 +41,7 @@
     },
     "config": {
         "platform": {
-            "php": "5.3.3"
+            "php": "5.5.0"
         },
         "process-timeout" : 2000
     }
