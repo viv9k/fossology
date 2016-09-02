@@ -278,7 +278,7 @@ class UnifiedReport extends Agent
 
     $paragraphStyle = array("spaceAfter" => 0,
                             "spaceBefore" => 0,
-			    "spacing" => 0
+                            "spacing" => 0
                            );
     
     $phpWord->addNumberingStyle('hNum',
@@ -342,7 +342,7 @@ class UnifiedReport extends Agent
    * @param array mainLicenses
    * @param int $timestamp
    */        
-  private function summaryTable(Section $section, $uploadId, $userName, $mainLicenses, $timestamp)
+  private function summaryTable(Section $section, $uploadId, $userName, $mainLicenses, $licenses, $timestamp)
   {         
     $cellRowContinue = array("vMerge" => "continue");
     $firstRowStyle = array("size" => 14, "bold" => true);
@@ -366,6 +366,12 @@ class UnifiedReport extends Agent
       $allMainLicenses = rtrim($allMainLicenses, ", ");
     }
     
+    if(!empty($licenses)){
+      foreach($licenses as $otherLicenses){
+        $allOtherLicenses .= $otherLicenses["content"].", ";
+      }
+    }
+
     $cComponent = new Sw360Component();
     $newSw360Component= $cComponent->processGetComponent($uploadId);
     
@@ -446,7 +452,7 @@ class UnifiedReport extends Agent
     $table->addCell($cellFirstLen, $cellRowContinue);
     $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Main license(s)"), $firstRowStyle1, "pStyle");
     if(!empty($allMainLicenses)){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allMainLicenses."), $firstRowStyle2, "pStyle");
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allMainLicenses."), null, "pStyle");
     }
     else{
       $table->addCell($cellThirdLen)->addText(htmlspecialchars("Main License(s) Not selected."), null, "pStyle");
@@ -455,7 +461,13 @@ class UnifiedReport extends Agent
     $table->addRow($rowWidth2);
     $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
     $table->addCell($cellSecondLen)->addText(htmlspecialchars("Other license(s)"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" "), null, "pStyle");
+    if(!empty($allOtherLicenses)){
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allOtherLicenses"), null, "pStyle");
+    }
+    else{
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("License(s) Not Identified."), null, "pStyle");
+    }
+
 
     $table->addRow($rowWidth2);
     $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
@@ -790,7 +802,7 @@ class UnifiedReport extends Agent
     $contents = $this->identifiedGlobalLicenses($contents);
     
     /* Summery table */
-    $this->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $timestamp);
+    $this->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'], $timestamp);
 
     
     /* Assessment summery table */
