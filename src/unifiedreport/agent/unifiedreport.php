@@ -394,80 +394,54 @@ class UnifiedReport extends Agent
     $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Report release date"), $firstRowStyle1, "pStyle");
     $table->addCell($cellThirdLen)->addText(htmlspecialchars(" <date>"), $firstRowStyle2, "pStyle");
 
-    if(!empty($newSw360Component)){
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" Component Information"), $firstRowStyle, "pStyle");
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Community"), $firstRowStyle1, "pStyle");
-      if(!empty($newSw360Component["Community"])){
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Community"]), null, "pStyle");
-      }
-      else{
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), $firstRowStyle2, "pStyle");
-      }
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component"), $firstRowStyle1, "pStyle");
-
-      if(!empty($newSw360Component["Component"])){
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Component"]), null, "pStyle");
-      }
-      else{
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      }
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Version"), $firstRowStyle1, "pStyle");
-    
-      if(!empty($newSw360Component["Version"])){
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Version"]), null, "pStyle");
-      }
-      else{
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      }
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash"), $firstRowStyle1, "pStyle");
-   
-      if(!empty($newSw360Component["Component hash"])){
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Component hash"]), null, "pStyle");
-      }
-      else{
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      }
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Release date"), $firstRowStyle1, "pStyle");
-    
-      if(!empty($newSw360Component["Release date"])){
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Release date"]), null, "pStyle");
-      }
-      else{
-        $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      }
+    $table->addRow($rowWidth);
+    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" Component Information"), $firstRowStyle, "pStyle");
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Community"), $firstRowStyle1, "pStyle");
+    if(!empty($newSw360Component["Community"])){
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Community"]), null, "pStyle");
     }
     else{
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" Component Information"), $firstRowStyle, "pStyle");
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Community"), $firstRowStyle1, "pStyle");
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component"), $firstRowStyle1, "pStyle");
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Version"), $firstRowStyle1, "pStyle");
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash"), $firstRowStyle1, "pStyle");
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-      $table->addRow($rowWidth);
-      $table->addCell($cellFirstLen, $cellRowContinue);
-      $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Release date"), $firstRowStyle1, "pStyle");
       $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
     }
+    $table->addRow($rowWidth);
+    $table->addCell($cellFirstLen, $cellRowContinue);
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component"), $firstRowStyle1, "pStyle");
 
+    if(!empty($newSw360Component["Component"])){
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Component"]), null, "pStyle");
+    }
+    else{
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
+    }
+    $table->addRow($rowWidth);
+    $table->addCell($cellFirstLen, $cellRowContinue);
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Version"), $firstRowStyle1, "pStyle");
+    
+    if(!empty($newSw360Component["Version"])){
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Version"]), null, "pStyle");
+    }
+    else{
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
+    }
+    $table->addRow($rowWidth);
+    $table->addCell($cellFirstLen, $cellRowContinue);
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash"), $firstRowStyle1, "pStyle");
+      
+    $componentHash = $this->uploadDao->getUploadHashes($uploadId);
+
+    $table->addCell($cellThirdLen)->addText(htmlspecialchars($componentHash["sha1"]), null, "pStyle");
+     
+    $table->addRow($rowWidth);
+    $table->addCell($cellFirstLen, $cellRowContinue);
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Release date"), $firstRowStyle1, "pStyle");
+    
+    if(!empty($newSw360Component["Release date"])){
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Release date"]), null, "pStyle");
+    }
+    else{
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
+    }
+    
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen, $cellRowContinue);
     $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Main license(s)"), $firstRowStyle1, "pStyle");

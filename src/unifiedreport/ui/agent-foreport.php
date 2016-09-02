@@ -58,7 +58,7 @@ class FoUnifiedReportGenerator extends DefaultPlugin
 
     $vars = array('jqPk' => $jobQueueId,
                   'downloadLink' => Traceback_uri(). "?mod=download&report=".$jobId,
-                  'reportType' => "report");
+                  'reportType' => "Unified");
     $text = sprintf(_("Generating new report for '%s'"), $upload->getFilename());
     $vars['content'] = "<h2>".$text."</h2>";
     $content = $this->renderer->loadTemplate("report.html.twig")->render($vars);
