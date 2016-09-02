@@ -84,18 +84,18 @@ class UnifiedReport extends Agent
                                   );
 
   /** @var licenseColumn */
-  private $licenseColumn = array("size" => "10", 
+  private $licenseColumn = array("size" => "9", 
                                  "bold" => true
                                 );
 
   /** @var licenseTextColumn */
   private $licenseTextColumn = array("name" => "Courier New", 
-                                     "size" => 10, 
+                                     "size" => 9, 
                                      "bold" => false
                                     );
 
   /** @var filePathColumn */
-  private $filePathColumn = array("size" => "10", 
+  private $filePathColumn = array("size" => "9", 
                                   "bold" => false
                                  );
   private $groupBy;
@@ -278,7 +278,7 @@ class UnifiedReport extends Agent
 
     $paragraphStyle = array("spaceAfter" => 0,
                             "spaceBefore" => 0,
-                            "spacing" => 0
+			    "spacing" => 0
                            );
     
     $phpWord->addNumberingStyle('hNum',
@@ -425,7 +425,7 @@ class UnifiedReport extends Agent
     }
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash"), $firstRowStyle1, "pStyle");
+    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash (SHA-1)"), $firstRowStyle1, "pStyle");
       
     $componentHash = $this->uploadDao->getUploadHashes($uploadId);
 
