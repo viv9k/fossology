@@ -19,6 +19,7 @@
 define("TITLE_maintagent", _("FOSSology Maintenance"));
 
 use Fossology\Lib\Auth\Auth;
+use Fossology\Lib\Db\DbManager;
 
 /**
  * \class maintagent extend from FO_Plugin
@@ -26,12 +27,19 @@ use Fossology\Lib\Auth\Auth;
  */
 class maintagent extends FO_Plugin {
 
+  /** @var dbManager */
+  private $dbManager;
+
   public function __construct()
   {
     $this->Name = "maintagent";
     $this->Title = TITLE_maintagent;
     $this->MenuList = "Admin::Maintenance";
     $this->DBaccess = PLUGIN_DB_ADMIN;
+
+    global $container;
+    $this->dbManager = $container->get('db.manager');
+
     parent::__construct();
   }
   
@@ -96,7 +104,14 @@ class maintagent extends FO_Plugin {
                      "v"=>_("verbose (turns on debugging output)")
                     );
     $V = "";
-
+    $statementName = __METHOD__."maintenanceInfo";
+    $row = $this->dbManager->getSingleRow("SELECT jq_endtime FROM jobqueue WHERE jq_type = $1 AND jq_end_bits=$2 ORDER BY jq_endtime DESC LIMIT $2",
+           array("maintagent",1), $statementName);
+    if(!empty($row['jq_endtime'])){
+      $dateLastExecuted = date('Y/m/d H:i:s T',strtotime($row['jq_endtime']));
+      $text = _("Last maintenance job was executed on '$dateLastExecuted'");
+      $V.= DisplayMessage($text);
+    }
     $V.= "<form method='post'>\n"; // no url = this url
     $V.= "<ol>\n";
 
