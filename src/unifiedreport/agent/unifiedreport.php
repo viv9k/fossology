@@ -342,7 +342,7 @@ class UnifiedReport extends Agent
    * @param array mainLicenses
    * @param int $timestamp
    */        
-  private function summaryTable(Section $section, $uploadId, $userName, $mainLicenses, $licenses, $timestamp)
+  private function summaryTable(Section $section, $uploadId, $userName, $mainLicenses, $licenses, $histLicenses, $timestamp)
   {         
     $cellRowContinue = array("vMerge" => "continue");
     $firstRowStyle = array("size" => 14, "bold" => true);
@@ -360,8 +360,9 @@ class UnifiedReport extends Agent
     $cellThirdLen = 5500; 
 
     if(!empty($mainLicenses)){
+      $mainLicenses = array_unique(array_column($mainLicenses, 'content'));
       foreach($mainLicenses as $mainLicense){
-        $allMainLicenses .= $mainLicense["content"].", ";
+        $allMainLicenses .= $mainLicense.", ";
       }
       $allMainLicenses = rtrim($allMainLicenses, ", ");
     }
@@ -370,8 +371,16 @@ class UnifiedReport extends Agent
       foreach($licenses as $otherLicenses){
         $allOtherLicenses .= $otherLicenses["content"].", ";
       }
+      $allOtherLicenses = rtrim($allOtherLicenses, ", ");
     }
 
+    if(!empty($histLicenses)){
+      foreach($histLicenses as $histLicense){
+        $allHistLicenses .= $histLicense["licenseShortname"].", ";
+      }
+      $allHistLicenses = rtrim($allHistLicenses, ", ");
+    }
+    
     $cComponent = new Sw360Component();
     $newSw360Component= $cComponent->processGetComponent($uploadId);
     
@@ -462,12 +471,11 @@ class UnifiedReport extends Agent
     $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
     $table->addCell($cellSecondLen)->addText(htmlspecialchars("Other license(s)"), $firstRowStyle1, "pStyle");
     if(!empty($allOtherLicenses)){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allOtherLicenses"), null, "pStyle");
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allOtherLicenses."), null, "pStyle");
     }
     else{
       $table->addCell($cellThirdLen)->addText(htmlspecialchars("License(s) Not Identified."), null, "pStyle");
     }
-
 
     $table->addRow($rowWidth2);
     $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
@@ -477,7 +485,13 @@ class UnifiedReport extends Agent
     $table->addRow($rowWidth2);
     $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
     $table->addCell($cellSecondLen)->addText(htmlspecialchars("Result of License Scan"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars("(link to analysed package in FOSSology)"), null, "pStyle");
+    if(!empty($allHistLicenses))
+    {
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allHistLicenses."), null, "pStyle");
+    }
+    else{
+      $table->addCell($cellThirdLen)->addText(htmlspecialchars("No License found by the Scanner"), null, "pStyle");
+    }
 
     $section->addTextBreak();
     $section->addTextBreak();
@@ -802,7 +816,7 @@ class UnifiedReport extends Agent
     $contents = $this->identifiedGlobalLicenses($contents);
     
     /* Summery table */
-    $this->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'], $timestamp);
+    $this->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'],$contents['licensesHist']['statements'], $timestamp);
 
     
     /* Assessment summery table */
