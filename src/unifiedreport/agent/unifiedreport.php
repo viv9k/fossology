@@ -368,8 +368,9 @@ class UnifiedReport extends Agent
     }
     
     if(!empty($licenses)){
+      $licenses = array_unique(array_column($licenses, 'content'));
       foreach($licenses as $otherLicenses){
-        $allOtherLicenses .= $otherLicenses["content"].", ";
+        $allOtherLicenses .= $otherLicenses.", ";
       }
       $allOtherLicenses = rtrim($allOtherLicenses, ", ");
     }
