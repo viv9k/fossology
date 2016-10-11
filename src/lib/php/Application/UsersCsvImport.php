@@ -60,6 +60,7 @@ class UsersCsvImport {
       'userPerm'=>array('userlevel','User Level'),
       'rootFolder'=>array('root_folder','Root Folder', 'rootfolder'),
       'userPass'=>array('password','Password'),
+      'userSeed'=>array('userseed','Userseed'),
       'group'=>array('group','groupname'),
       'groupPermission'=>array('group_permission', 'group permission','grouppermission'),
       );
@@ -126,7 +127,7 @@ class UsersCsvImport {
     }
 
     $mRow = array();
-    foreach( array('userName','description','userEmail','emailNotify','userPerm','rootFolder','userPass','group','groupPermission') as $needle){
+    foreach( array('userName','description','userEmail','emailNotify','userPerm','rootFolder','userPass','userSeed','group','groupPermission') as $needle){
       $mRow[$needle] = $row[$this->headrow[$needle]];
     }    
     return $this->handleCsvUsers($mRow);
@@ -135,7 +136,7 @@ class UsersCsvImport {
   private function handleHeadCsv($row)
   {
     $headrow = array();
-    foreach( array('userName','description','userEmail','emailNotify','userPerm','rootFolder','userPass','group','groupPermission') as $needle){
+    foreach( array('userName','description','userEmail','emailNotify','userPerm','rootFolder','userPass','userSeed','group','groupPermission') as $needle){
       $col = ArrayOperation::multiSearch($this->alias[$needle], $row);
       if (false === $col)
       {
@@ -221,11 +222,20 @@ class UsersCsvImport {
       }
       $userData['root_folder_fk'] = $this->handleCsvFolders($row['rootFolder']);
 
-      $getUserIdIfUserExists = $this->dbManager->getSingleRow('SELECT user_pk FROM users WHERE user_name = $1 LIMIT 1;',
+      $getUserIdIfUserExists = $this->dbManager->getSingleRow('SELECT user_pk,user_seed,user_pass FROM users WHERE user_name = $1 LIMIT 1;',
         array($row['userName']),'userName.check'.rand());
+      /* 
+         Checking for userseed and password of new password is added.
+         Changing of password requires emptying of userseed.
+      */
+      if(empty($row['userSeed']) && (strcmp($row['userPass'], $getUserIdIfUserExists['user_pass']) !== 0)){
+          $userData['user_seed'] = rand() . rand();
+          $userData['user_pass'] = sha1($userData['user_seed'] . $row['userPass']);
+      }else{
+          $userData['user_seed'] = $row['userSeed'];
+          $userData['user_pass'] = $row['userPass'];
+      }
       if(empty($getUserIdIfUserExists)){
-        $userData['user_seed'] = rand() . rand();
-        $userData['user_pass'] = sha1($userData['user_seed'] . $row['userPass']);
         $addUser = add_user($row['userName'], $row['description'], $userData['user_seed'], $userData['user_pass'], $userData['user_perm'], $row['userEmail'], $row['emailNotify'], $agentList, $userData['root_folder_fk'], $default_bucketpool_fk='');
         if(empty($addUser)){
           $logMessage.= "User record ".$row['userName']." added";
