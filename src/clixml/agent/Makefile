@@ -10,11 +10,8 @@ VARS=$(TOP)/Makefile.conf
 DEPS=$(TOP)/Makefile.deps
 include $(VARS)
 
-MOD_NAME = clixml
-MOD_SUBDIR = agent
-
-
 EXE=clixml.php version.php services.php
+WRAP=clixml
 
 all: version.php clixml
 
@@ -26,25 +23,26 @@ include $(TOP)/Makefile.process
 clixml:
 	@echo "making locally runnable report (only for testing)"
 	$(MAKE) -C $(FOCLIDIR) fo_wrapper
-	ln -sf $(FOCLIDIR)/fo_wrapper.php $(MOD_NAME)
+	ln -sf $(FOCLIDIR)/fo_wrapper.php $(WRAP)
 
 install: all
-	$(INSTALL_PROGRAM) -d $(DESTDIR)$(MODDIR)/$$MOD/$(MOD_SUBDIR)/ 
+	$(INSTALL_PROGRAM) -d $(DESTDIR)$(MODDIR)/clixml/agent/
 	for file in $(EXE); do \
 		echo "installing $$file"; \
-		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(MODDIR)/$(MOD_NAME)/$(MOD_SUBDIR)/$$file; \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
 	done
-	echo "Making wrapper for $(MOD_NAME)"
-	ln -sf $(LIBEXECDIR)/fo_wrapper  $(DESTDIR)$(MODDIR)/$(MOD_NAME)/agent/$(MOD_NAME)
-	find template/ -type f -exec $(INSTALL_DATA) {} $(DESTDIR)$(MODDIR)/$(MOD_NAME)/$(MOD_SUBDIR)/{} \;
+	for file in $(WRAP); do \
+		echo "Making wrapper for $$file"; \
+		ln -sf $(LIBEXECDIR)/fo_wrapper  $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
+	done
 
 uninstall:
-	for MOD in $(MOD_NAME); do \
-		rm -rf $(DESTDIR)$(MODDIR)/$$MOD/$(MOD_SUBDIR); \
+	for file in $(WRAP); do \
+		rm -rf $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
 	done
 
 clean:
-	rm -f core version.php $(MOD_NAME)
+	rm -f *.o core version.php $(WRAP)
 
 .PHONY: all install uninstall clean
 
