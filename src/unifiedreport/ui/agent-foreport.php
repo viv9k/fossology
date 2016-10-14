@@ -26,7 +26,7 @@ class FoUnifiedReportGenerator extends DefaultPlugin
   function __construct()
   {
     parent::__construct(self::NAME, array(
-        self::TITLE => _("Report generation"),
+        self::TITLE => _("Unified Report generation"),
         self::PERMISSION => Auth::PERM_WRITE,
         self::REQUIRES_LOGIN => TRUE
     ));

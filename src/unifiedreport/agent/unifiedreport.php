@@ -308,6 +308,7 @@ class UnifiedReport extends Agent
     $properties->setSubject("Copyright (C) ".date("Y", $timestamp).", Siemens AG");
   }
 
+
   /**
    * @brief identifiedGlobalLicenses() copy identified global licenses
    * @param array $contents 
@@ -334,6 +335,25 @@ class UnifiedReport extends Agent
     return $contents;
   }
 
+
+  /**
+   * @brief accumulateLicenses() remove the duplicate licenses.
+   * @param array $licenses.
+   * @return comma seaparated license shortname.
+   */        
+  private function accumulateLicenses($licenses)
+  {
+    if(!empty($licenses)){
+      $licenses = array_unique(array_column($licenses, 'content'));
+      foreach($licenses as $otherLicenses){
+        $allOtherLicenses .= $otherLicenses.", ";
+      }
+      $allOtherLicenses = rtrim($allOtherLicenses, ", ");
+    }
+    return $allOtherLicenses;
+  }
+
+
   /**
    * @brief Design the summaryTable of the report
    * @param Section $section
@@ -359,21 +379,8 @@ class UnifiedReport extends Agent
     $cellSecondLen = 3800;
     $cellThirdLen = 5500; 
 
-    if(!empty($mainLicenses)){
-      $mainLicenses = array_unique(array_column($mainLicenses, 'content'));
-      foreach($mainLicenses as $mainLicense){
-        $allMainLicenses .= $mainLicense.", ";
-      }
-      $allMainLicenses = rtrim($allMainLicenses, ", ");
-    }
-    
-    if(!empty($licenses)){
-      $licenses = array_unique(array_column($licenses, 'content'));
-      foreach($licenses as $otherLicenses){
-        $allOtherLicenses .= $otherLicenses.", ";
-      }
-      $allOtherLicenses = rtrim($allOtherLicenses, ", ");
-    }
+    $allMainLicenses = $this->accumulateLicenses($mainLicenses);
+    $allOtherLicenses = $this->accumulateLicenses($licenses);
 
     if(!empty($histLicenses)){
       foreach($histLicenses as $histLicense){

@@ -22,7 +22,7 @@ class UnifiedReportAgentPlugin extends AgentPlugin
 {
   public function __construct() {
     $this->Name = "agent_unifiedreport";
-    $this->Title =  _("Report Generator");
+    $this->Title =  _("Unified Report Generator");
     $this->AgentName = "unifiedreport";
   
     parent::__construct();

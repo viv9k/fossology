@@ -382,7 +382,6 @@ class ReportStatic
     $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
     $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
 
-
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Export restrictions"), $firstRowTextStyle);
     $cell = $table->addCell($secondColLen, $secondColStyle);
@@ -390,7 +389,6 @@ class ReportStatic
     $cell->addText(htmlspecialchars("Assess potential export restrictions specified in the license text regarding this software component."), $secondRowTextStyle2);
     $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
     $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
-
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Restrictions for use"), $firstRowTextStyle);
