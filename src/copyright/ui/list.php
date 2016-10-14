@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
  Copyright (C) 2010-2012 Hewlett-Packard Development Company, L.P.
- Copyright (C) 2015 Siemens AG
+ Copyright (C) 2013-2016 Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@ class copyright_list extends FO_Plugin
 {
   /** @var DbManager */
   private $dbManager;
+
   /** @var UploadDao */
   private $uploadDao;
 
@@ -77,7 +78,6 @@ class copyright_list extends FO_Plugin
     menu_insert($this->Name."::Show All",0, $URL, $text);
   } // RegisterMenus()
 
-
   /**
    * \return return rows to process, and $upload_pk
    * @param $Uploadtree_pk
@@ -114,7 +114,6 @@ class copyright_list extends FO_Plugin
     return $rows;
   }
 
-
   /**
    * \brief Remove unwanted rows by hash and type and
    * exclusions and filter
@@ -123,8 +122,6 @@ class copyright_list extends FO_Plugin
    */
   function GetRequestedRows($rows, $excl, &$NumRows, $filter)
   {
-    global $PG_CONN;
-
     $NumRows = count($rows);
     $prev = 0;
     $ExclArray = explode(":", $excl);
@@ -135,19 +132,20 @@ class copyright_list extends FO_Plugin
       $NoLicStr = "No_license_found";
       $VoidLicStr = "Void";
       $rf_clause = "";
-      $sql = "select rf_pk from license_ref where rf_shortname IN  ('$NoLicStr', '$VoidLicStr')";
-      $result = pg_query($PG_CONN, $sql);
-      DBCheckResult($result, $sql, __FILE__, __LINE__);
-      if (pg_num_rows($result) > 0)
-      {
-        $rf_rows = pg_fetch_all($result);
+
+      $sql = "select rf_pk from license_ref where rf_shortname IN ($1, $2)";
+      $statement = __METHOD__."NoLicenseFoundORVoid";
+      $this->dbManager->prepare($statement, $sql);
+      $result = $this->dbManager->execute($statement,array("$NoLicStr", "$VoidLicStr"));
+      $rf_rows = $this->dbManager->fetchAll($result);
+      if(!empty($rf_rows)){
         foreach($rf_rows as $row) 
         {
           if (!empty($rf_clause)) $rf_clause .= " or ";
           $rf_clause .= " rf_fk=$row[rf_pk]";
         }
       }
-      pg_free_result($result);
+      $this->dbManager->freeResult($result);
     }
 
     for($RowIdx = 0; $RowIdx < $NumRows; $RowIdx++)
@@ -168,19 +166,17 @@ class copyright_list extends FO_Plugin
       if (($filter == "nolic") and ($rf_clause))
       {
         /* discard file unless it has no license */
-        $sql = "select rf_fk from license_file where ($rf_clause) and pfile_fk={$row['pf']}";
-        $result = pg_query($PG_CONN, $sql);
-        DBCheckResult($result, $sql, __FILE__, __LINE__);
-        $FoundRows = pg_num_rows($result);
-        pg_free_result($result);
-        if ($FoundRows == 0)
+        $sql = "select rf_fk from license_file where ($rf_clause) and pfile_fk=$1";
+        $statement = __METHOD__."CheckForNoLicenseFound";
+        $this->dbManager->prepare($statement, $sql);
+        $result = $this->dbManager->execute($statement,array("{$row['pf']}"));
+        $FoundRows = $this->dbManager->fetchAll($result);
+        if (empty($FoundRows))
         {
           unset($rows[$RowIdx]);
           continue;
-        }
+        }         
       }
-
-
     }
 
     /* reset array keys, keep order (uploadtree_pk) */
@@ -230,16 +226,9 @@ class copyright_list extends FO_Plugin
     if ($this->State != PLUGIN_STATE_READY) {
       return;
     }
-    global $PG_CONN;
-
-    // make sure there is a db connection
-    if (!$PG_CONN) {
-      echo _("NO DB connection");
-    }
 
     $OutBuf = "";
     $Time = microtime(true);
-
     $Max = 50;
 
     /*  Input parameters */
@@ -369,7 +358,6 @@ class copyright_list extends FO_Plugin
           $OutBuf .= Dir2Browse($modBack, $row['uploadtree_pk'], $LinkLast, $ShowBox, $ShowMicro, $RowNum, $Header, '', $uploadtree_tablename);
         }
       }
-
     }
     else
     {

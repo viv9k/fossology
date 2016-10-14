@@ -1,7 +1,7 @@
 <?php
 /*
- Copyright (C) 2014, Siemens AG
- Author: Daniele Fognini
+ Copyright (C) 2016, Siemens AG
+ Author: Daniele Fognini, Shaheem Azmal M MD
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -27,9 +27,9 @@ class LicenseMainGetter extends ClearedGetterCommon
 {
   /** @var ClearingDao */
   private $clearingDao;
+
   /** @var LicenseDao */
   private $licenseDao;
-  /** @var DbManager */
 
   public function __construct() {
     global $container;
@@ -56,7 +56,6 @@ class LicenseMainGetter extends ClearedGetterCommon
       );
       
     }
-
     return $allStatements;
   }
   
