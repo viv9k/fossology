@@ -60,7 +60,7 @@ class UsersCsvExport {
   public function createCsv($rf=0)
   {
     $sql = "SELECT user_name username, user_desc description, user_email email, email_notify, 
-            user_perm userlevel, folder_name as root_folder, user_pass as password, group_name as group, group_perm as group_permission 
+            user_perm userlevel, folder_name as root_folder, user_pass as password, user_seed as userseed, group_name as group, group_perm as group_permission
             FROM users 
             LEFT JOIN group_user_member ON users.user_pk = group_user_member.user_fk 
             JOIN groups ON groups.group_pk = group_user_member.group_fk 
@@ -75,7 +75,7 @@ class UsersCsvExport {
     
     $out = fopen('php://output', 'w');
     ob_start();
-    $head = array('username', 'description', 'email', 'email_notify', 'userlevel', 'root_folder', 'password', 'group', 'group_permission');
+    $head = array('username', 'description', 'email', 'email_notify', 'userlevel', 'root_folder', 'password', 'userseed', 'group', 'group_permission');
     fputcsv($out, $head, $this->delimiter, $this->enclosure);
     foreach($vars as $row){
       $row['userlevel'] = array_search($row['userlevel'], $this->userPermissions); 

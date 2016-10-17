@@ -15,7 +15,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-namespace Fossology\clixml;
+namespace Fossology\CliXml;
 
 use Fossology\Lib\Agent\Agent;
 use Fossology\Lib\Dao\UploadDao;
@@ -61,7 +61,7 @@ class CliXml extends Agent
     $this->renderer = $this->container->get('twig.environment');
     $this->renderer->setCache(false);
     
-    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike 'Copyright%' OR content ilike '(c)%')");
+    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
 

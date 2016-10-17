@@ -1,4 +1,4 @@
-# Copyright Siemens AG 2016
+# Copyright Siemens AG 2014
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,35 +10,35 @@ VARS=$(TOP)/Makefile.conf
 DEPS=$(TOP)/Makefile.deps
 include $(VARS)
 
-EXE=clixml.php version.php services.php
-WRAP=clixml
+EXE=unifiedreport.php reportStatic.php sw360Component.php sw360Licenses.php sw360IpPort.php version.php
+WRAP=unifiedreport
 
-all: version.php clixml
+all: version.php
 
 version.php: version-process_php
 
 # include the preprocessing stuff
 include $(TOP)/Makefile.process
 
-clixml:
+unifiedreport: all
 	@echo "making locally runnable report (only for testing)"
 	$(MAKE) -C $(FOCLIDIR) fo_wrapper
-	ln -sf $(FOCLIDIR)/fo_wrapper.php $(WRAP)
+	ln -sf $(FOCLIDIR)/fo_wrapper.php unifiedreport
 
 install: all
-	$(INSTALL_PROGRAM) -d $(DESTDIR)$(MODDIR)/clixml/agent/
+	$(INSTALL_PROGRAM) -d $(DESTDIR)$(MODDIR)/unifiedreport/agent/
 	for file in $(EXE); do \
 		echo "installing $$file"; \
-		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
+		$(INSTALL_PROGRAM) $$file $(DESTDIR)$(MODDIR)/unifiedreport/agent/$$file; \
 	done
 	for file in $(WRAP); do \
 		echo "Making wrapper for $$file"; \
-		ln -sf $(LIBEXECDIR)/fo_wrapper  $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
+		ln -sf $(LIBEXECDIR)/fo_wrapper  $(DESTDIR)$(MODDIR)/unifiedreport/agent/$$file; \
 	done
 
 uninstall:
 	for file in $(WRAP); do \
-		rm -rf $(DESTDIR)$(MODDIR)/clixml/agent/$$file; \
+		rm -rf $(DESTDIR)$(MODDIR)/unifiedreport/agent/$$file; \
 	done
 
 clean:

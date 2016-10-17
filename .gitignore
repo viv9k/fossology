@@ -35,6 +35,8 @@ src/cli/fo_chmod
 src/cli/fo_copyright_list
 src/cli/fo_folder
 src/cli/fo_nomos_license_list
+src/cli/fo_monk_licnese_list
+src/cli/fo_ninka_license_list
 src/cli/fo_wrapper.php
 src/cli/fossjobs
 src/cli/fossjobs.1
@@ -167,6 +169,8 @@ variable.list
 /src/report/agent/report
 /src/clixml/agent/version.php
 /src/clixml/agent/clixml
+/src/unifiedreport/agent/version.php
+/src/unifiedreport/agent/unifiedreport
 /testReport/
 /src/readmeoss/agent/version.php
 /src/reuser/agent/version.php
