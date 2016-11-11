@@ -170,7 +170,7 @@ class admin_license_file extends FO_Plugin
     if ($namestr == "All")
       $where = "";
     else
-      $where = "where rf_shortname like '". pg_escape_string($namestr) ."' ";
+      $where = "where rf_shortname like '". pg_escape_string($namestr) ."%' ";
 
     // $filter is one of these: "All", "done", "notdone"
     if ($filter != "all")
