@@ -85,7 +85,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
         else
         {
           $reportInfo = $clearingLicense->getReportInfo();
-          $text = $reportInfo ? : $this->getCachedLicenseText($licenseId, $groupId);
+          $text = $reportInfo ? : $this->getCachedLicenseText($licenseId, "any");
           $risk = $this->getCachedLicenseRisk($licenseId, $groupId);
         }
 
