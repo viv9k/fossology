@@ -12,15 +12,16 @@ include $(VARS)
 MOD_NAME = clixml
 
 DIRS = agent ui
-TESTDIRS = 
+TESTDIRS = agent_tests
 
 DIR_LOOP = @set -e; for dir in $(DIRS); do $(MAKE) -s -C $$dir $(1); done
+TESTDIR_LOOP = @set -e; for dir in $(TESTDIRS); do $(MAKE) -s -C $$dir $(1); done
 
 all: VERSIONFILE
 	$(call DIR_LOOP, )
 
 test: all
-	@echo "nothing to do"
+	$(call TESTDIR_LOOP,test)
 
 coverage: all
 	@echo "nothing to do"
