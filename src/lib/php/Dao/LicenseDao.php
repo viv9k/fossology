@@ -540,9 +540,14 @@ ORDER BY lft asc
         $param, __METHOD__ . ".$condition.only");
     if (false === $row && isset($groupId))
     {
-      $param[] = $groupId;
+      if($groupId == "any"){
+        $extraCondition = "";
+      }else{
+        $param[] = $groupId;
+        $extraCondition = "AND group_fk=$".count($param);
+      }
       $row = $this->dbManager->getSingleRow(
-        "SELECT rf_pk, rf_shortname, rf_fullname, rf_text, rf_url, rf_risk, rf_detector_type FROM license_candidate WHERE $condition AND group_fk=$".count($param),
+        "SELECT rf_pk, rf_shortname, rf_fullname, rf_text, rf_url, rf_risk, rf_detector_type FROM license_candidate WHERE $condition $extraCondition",
         $param, __METHOD__ . ".$condition.group");
     }
     if (false === $row)
