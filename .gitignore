@@ -169,6 +169,8 @@ variable.list
 /src/report/agent/report
 /src/clixml/agent/version.php
 /src/clixml/agent/clixml
+/src/unifiedreport/agent/version.php
+/src/unifiedreport/agent/unifiedreport
 /testReport/
 /src/readmeoss/agent/version.php
 /src/reuser/agent/version.php

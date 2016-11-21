@@ -71,8 +71,8 @@ We really like contributions in several forms, see [CONTRIBUTING.md](CONTRIBUTIN
 FOSSology is licensed under [GPL-2.0](https://tldrlegal.com/license/gnu-general-public-license-v2)
 
 ## Screenshots
-![Concluding a license](/examples/Concludeb.jpg)
+![Concluding a license](examples/Concludeb.jpg)
 
-![Browsing](/examples/Browseb.jpg)
+![Browsing](examples/Browseb.jpg)
 
-![LicenseBrowser](/examples/LicenseBrowserb.jpg)
+![LicenseBrowser](examples/LicenseBrowserb.jpg)

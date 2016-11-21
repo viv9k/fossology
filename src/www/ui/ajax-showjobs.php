@@ -384,6 +384,9 @@ class AjaxShowJobs extends FO_Plugin
           case 'clixml':
             $varJobQueueRow['download'] = "cli report";
             break;
+          case 'unifiedreport':
+            $varJobQueueRow['download'] = "Unified Report";
+            break;
           default:
             $varJobQueueRow['download'] = "";
         }
