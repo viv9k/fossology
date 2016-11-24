@@ -485,6 +485,39 @@
   $Schema["TABLE"]["ecc"]["copy_endbyte"]["ALTER"] = "ALTER TABLE \"ecc\" ALTER COLUMN \"copy_endbyte\" DROP NOT NULL";
 
 
+  $Schema["TABLE"]["ecc_audit"]["ct_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["ct_fk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"ct_fk\" int4";
+  $Schema["TABLE"]["ecc_audit"]["ct_fk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"ct_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ecc_audit"]["oldtext"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["oldtext"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"oldtext\" text";
+  $Schema["TABLE"]["ecc_audit"]["oldtext"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"oldtext\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ecc_audit"]["user_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["user_fk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"user_fk\" int4";
+  $Schema["TABLE"]["ecc_audit"]["user_fk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"user_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ecc_audit"]["date"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["date"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"date\" timestamptz DEFAULT now()";
+  $Schema["TABLE"]["ecc_audit"]["date"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"date\" SET NOT NULL, ALTER COLUMN \"date\" SET DEFAULT now()";
+
+  $Schema["TABLE"]["ecc_audit"]["ca_pk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["ca_pk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"ca_pk\" int4 DEFAULT nextval('ecc_audit_ca_pk_seq'::regclass)";
+  $Schema["TABLE"]["ecc_audit"]["ca_pk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"ca_pk\" SET NOT NULL, ALTER COLUMN \"ca_pk\" SET DEFAULT nextval('ecc_audit_ca_pk_seq'::regclass)";
+
+  $Schema["TABLE"]["ecc_audit"]["upload_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["upload_fk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"upload_fk\" int4";
+  $Schema["TABLE"]["ecc_audit"]["upload_fk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"upload_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ecc_audit"]["uploadtree_pk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["uploadtree_pk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"uploadtree_pk\" int4";
+  $Schema["TABLE"]["ecc_audit"]["uploadtree_pk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"uploadtree_pk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ecc_audit"]["pfile_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ecc_audit"]["pfile_fk"]["ADD"] = "ALTER TABLE \"ecc_audit\" ADD COLUMN \"pfile_fk\" int4";
+  $Schema["TABLE"]["ecc_audit"]["pfile_fk"]["ALTER"] = "ALTER TABLE \"ecc_audit\" ALTER COLUMN \"pfile_fk\" DROP NOT NULL";
+
+
   $Schema["TABLE"]["ecc_decision"]["copyright_decision_pk"]["DESC"] = "";
   $Schema["TABLE"]["ecc_decision"]["copyright_decision_pk"]["ADD"] = "ALTER TABLE \"ecc_decision\" ADD COLUMN \"copyright_decision_pk\" int8 DEFAULT nextval('ecc_decision_pk_seq'::regclass)";
   $Schema["TABLE"]["ecc_decision"]["copyright_decision_pk"]["ALTER"] = "ALTER TABLE \"ecc_decision\" ALTER COLUMN \"copyright_decision_pk\" SET NOT NULL, ALTER COLUMN \"copyright_decision_pk\" SET DEFAULT nextval('ecc_decision_pk_seq'::regclass)";
@@ -512,6 +545,39 @@
   $Schema["TABLE"]["ecc_decision"]["comment"]["DESC"] = "";
   $Schema["TABLE"]["ecc_decision"]["comment"]["ADD"] = "ALTER TABLE \"ecc_decision\" ADD COLUMN \"comment\" text";
   $Schema["TABLE"]["ecc_decision"]["comment"]["ALTER"] = "ALTER TABLE \"ecc_decision\" ALTER COLUMN \"comment\" DROP NOT NULL";
+
+
+  $Schema["TABLE"]["ip_audit"]["ct_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["ct_fk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"ct_fk\" int4";
+  $Schema["TABLE"]["ip_audit"]["ct_fk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"ct_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_audit"]["oldtext"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["oldtext"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"oldtext\" text";
+  $Schema["TABLE"]["ip_audit"]["oldtext"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"oldtext\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_audit"]["user_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["user_fk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"user_fk\" int4";
+  $Schema["TABLE"]["ip_audit"]["user_fk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"user_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_audit"]["date"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["date"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"date\" timestamptz DEFAULT now()";
+  $Schema["TABLE"]["ip_audit"]["date"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"date\" SET NOT NULL, ALTER COLUMN \"date\" SET DEFAULT now()";
+
+  $Schema["TABLE"]["ip_audit"]["ca_pk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["ca_pk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"ca_pk\" int4 DEFAULT nextval('ip_audit_ca_pk_seq'::regclass)";
+  $Schema["TABLE"]["ip_audit"]["ca_pk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"ca_pk\" SET NOT NULL, ALTER COLUMN \"ca_pk\" SET DEFAULT nextval('ip_audit_ca_pk_seq'::regclass)";
+
+  $Schema["TABLE"]["ip_audit"]["upload_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["upload_fk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"upload_fk\" int4";
+  $Schema["TABLE"]["ip_audit"]["upload_fk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"upload_fk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_audit"]["uploadtree_pk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["uploadtree_pk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"uploadtree_pk\" int4";
+  $Schema["TABLE"]["ip_audit"]["uploadtree_pk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"uploadtree_pk\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_audit"]["pfile_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_audit"]["pfile_fk"]["ADD"] = "ALTER TABLE \"ip_audit\" ADD COLUMN \"pfile_fk\" int4";
+  $Schema["TABLE"]["ip_audit"]["pfile_fk"]["ALTER"] = "ALTER TABLE \"ip_audit\" ALTER COLUMN \"pfile_fk\" DROP NOT NULL";
 
 
   $Schema["TABLE"]["file_picker"]["file_picker_pk"]["DESC"] = "";
@@ -1653,6 +1719,12 @@
 
   $Schema["SEQUENCE"]["copyright_audit_ca_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"copyright_audit_ca_pk_seq\"";
   $Schema["SEQUENCE"]["copyright_audit_ca_pk_seq"]["UPDATE"] = "SELECT setval('copyright_audit_ca_pk_seq',(SELECT greatest(1,max(ca_pk)) val FROM copyright_audit))";
+
+  $Schema["SEQUENCE"]["ecc_audit_ca_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ecc_audit_ca_pk_seq\"";
+  $Schema["SEQUENCE"]["ecc_audit_ca_pk_seq"]["UPDATE"] = "SELECT setval('ecc_audit_ca_pk_seq',(SELECT greatest(1,max(ca_pk)) val FROM ecc_audit))";
+
+  $Schema["SEQUENCE"]["ip_audit_ca_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ip_audit_ca_pk_seq\"";
+  $Schema["SEQUENCE"]["ip_audit_ca_pk_seq"]["UPDATE"] = "SELECT setval('ip_audit_ca_pk_seq',(SELECT greatest(1,max(ca_pk)) val FROM ip_audit))";
 
   $Schema["SEQUENCE"]["license_map_license_map_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"license_map_license_map_pk_seq\"";
   $Schema["SEQUENCE"]["license_map_license_map_pk_seq"]["UPDATE"] = "SELECT setval('license_map_license_map_pk_seq',(SELECT greatest(1,max(license_map_pk)) val FROM license_map))";
