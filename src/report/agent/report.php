@@ -1,7 +1,7 @@
 <?php
 /*
  Author: Daniele Fognini, Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2015, Siemens AG
+ Copyright (C) 2016, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -666,7 +666,7 @@ class ReportAgent extends Agent
       foreach($statementsCEI as $statements){
         $table->addRow($smallRowHeight);
         $cell1 = $table->addCell($firstColLen); 
-        $text = html_entity_decode($statements['content']) ;
+        $text = html_entity_decode($statements['content']);
         $cell1->addText(htmlspecialchars($text, ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
         $cell2 = $table->addCell($secondColLen);
         $cell2->addText(htmlspecialchars($statements['comments'], ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
