@@ -1,7 +1,7 @@
 <?php
 /*
  * Author: Daniele Fognini
- * Copyright (C) 2014-2015, Siemens AG
+ * Copyright (C) 2016, Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ class ReadmeOssAgent extends Agent
 
   function __construct()
   {
-    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
+    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
 
     $this->licenseClearedGetter = new LicenseClearedGetter();
 

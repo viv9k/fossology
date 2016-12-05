@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2014, Siemens AG
+ Copyright (C) 2016, Siemens AG
  Author: Daniele Fognini
 
  This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ class CopyClearedGetter extends \Fossology\Lib\Report\XpClearedGetter
 
   public function __construct()
   {
-    parent::__construct("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
+    parent::__construct("copyright", "statement");
   }
 }
 
