@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2014-2015, Siemens AG
+ Copyright (C) 2014-2016, Siemens AG
  Author: Daniele Fognini
 
  This program is free software; you can redistribute it and/or
@@ -80,7 +80,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
         if ($this->onlyComments)
         {
           $text = $comment;
-          $risk = "";
+          $risk = $clearingLicense->getAcknowledgement();
         }
         else
         {

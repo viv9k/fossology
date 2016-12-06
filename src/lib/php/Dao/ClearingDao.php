@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (C) 2014-2015, Siemens AG
+Copyright (C) 2014-2016, Siemens AG
 Author: Johannes Najjar
 
 This program is free software; you can redistribute it and/or
@@ -218,7 +218,8 @@ class ClearingDao extends Object
               ce.removed AS removed,
               ce.type_fk AS event_type_id,
               ce.reportinfo AS reportinfo,
-              ce.comment AS comment
+              ce.comment AS comment,
+              ce.acknowledgement AS acknowledgement
             FROM decision
               LEFT JOIN users ON decision.user_id = users.user_pk
             LEFT JOIN clearing_decision_event cde ON cde.clearing_decision_fk = decision.id
@@ -252,6 +253,7 @@ class ClearingDao extends Object
       $eventGroupId = $row['event_group_id'];
       $comment = $row['comment'];
       $reportInfo = $row['reportinfo'];
+      $acknowledgement = $row['acknowledgement'];
 
       if ($clearingId !== $previousClearingId && $itemId !== $previousItemId)
       {
@@ -284,7 +286,7 @@ class ClearingDao extends Object
             $this->licenseRefCache[$licenseId] = new LicenseRef($licenseId, $licenseShortName, $licenseName);
           }
           $licenseRef = $this->licenseRefCache[$licenseId];
-          $clearingEventCache[$eventId] = $this->buildClearingEvent($eventId, $eventUserId, $eventGroupId, $licenseRef, $licenseIsRemoved, $eventType, $reportInfo, $comment);
+          $clearingEventCache[$eventId] = $this->buildClearingEvent($eventId, $eventUserId, $eventGroupId, $licenseRef, $licenseIsRemoved, $eventType, $reportInfo, $comment, $acknowledgement);
         }
         $clearingEvents[] = $clearingEventCache[$eventId];
       }
@@ -396,7 +398,7 @@ INSERT INTO clearing_decision (
     }
 
     $stmt = __METHOD__;
-    $sql = 'SELECT rf_fk,rf_shortname,rf_fullname,clearing_event_pk,comment,type_fk,removed,reportinfo, EXTRACT(EPOCH FROM date_added) AS ts_added
+    $sql = 'SELECT rf_fk,rf_shortname,rf_fullname,clearing_event_pk,comment,type_fk,removed,reportinfo,acknowledgement, EXTRACT(EPOCH FROM date_added) AS ts_added
              FROM clearing_event LEFT JOIN license_ref ON rf_fk=rf_pk 
              WHERE uploadtree_fk=$1 AND group_fk=$2 AND date_added>to_timestamp($3)
              ORDER BY clearing_event_pk ASC';
@@ -413,6 +415,7 @@ INSERT INTO clearing_decision (
               ->setLicenseRef($licenseRef)
               ->setRemoved($this->dbManager->booleanFromDb($row['removed']))
               ->setReportinfo($row['reportinfo'])
+              ->setAcknowledgement($row['acknowledgement'])
               ->setUploadTreeId($itemTreeBounds->getItemId())
               ->build();
     }
@@ -443,19 +446,25 @@ INSERT INTO clearing_decision (
       $row['type_fk'] = $type;
       $row['comment'] = "";
       $row['reportinfo'] = "";
+      $row['acknowledgement'] = "";
     }
 
     if ($what == 'reportinfo')
     {
       $reportInfo = $changeTo;
       $comment = $row['comment'];
-    } else
+      $acknowledgement = $row['acknowledgement'];
+    } elseif($what == 'comment')
     {
       $reportInfo = $row['reportinfo'];
       $comment = $changeTo;
-
+      $acknowledgement = $row['acknowledgement'];
+    } else{
+      $reportInfo = $row['reportinfo'];
+      $comment = $row['comment'];
+      $acknowledgement = $changeTo;
     }
-    $this->insertClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, false, $row['type_fk'], $reportInfo, $comment);
+    $this->insertClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, false, $row['type_fk'], $reportInfo, $comment, $acknowledgement);
 
     $this->dbManager->commit();
 
@@ -483,14 +492,14 @@ INSERT INTO clearing_decision (
    * @param int $jobId
    * @return int $clearing_event_pk
    */
-  public function insertClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, $isRemoved, $type = ClearingEventTypes::USER, $reportInfo = '', $comment = '', $jobId=0)
+  public function insertClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, $isRemoved, $type = ClearingEventTypes::USER, $reportInfo = '', $comment = '', $acknowledgement = '', $jobId=0)
   {
     $insertIsRemoved = $this->dbManager->booleanToDb($isRemoved);
 
     $stmt = __METHOD__;
-    $params = array($uploadTreeId, $userId, $groupId, $type, $licenseId, $insertIsRemoved, $reportInfo, $comment);
-    $columns = "uploadtree_fk, user_fk, group_fk, type_fk, rf_fk, removed, reportinfo, comment";
-    $values = "$1,$2,$3,$4,$5,$6,$7,$8";
+    $params = array($uploadTreeId, $userId, $groupId, $type, $licenseId, $insertIsRemoved, $reportInfo, $comment, $acknowledgement);
+    $columns = "uploadtree_fk, user_fk, group_fk, type_fk, rf_fk, removed, reportinfo, comment, acknowledgement";
+    $values = "$1,$2,$3,$4,$5,$6,$7,$8,$9";
 
     if ($jobId>0)
     {
@@ -549,7 +558,7 @@ INSERT INTO clearing_decision (
    * @param $clearingLicenses
    * @return ClearingEvent
    */
-  protected function buildClearingEvent($eventId, $userId, $groupId, $licenseRef, $licenseIsRemoved, $type, $reportInfo, $comment)
+  protected function buildClearingEvent($eventId, $userId, $groupId, $licenseRef, $licenseIsRemoved, $type, $reportInfo, $comment, $acknowledgement)
   {
     $removed = $this->dbManager->booleanFromDb($licenseIsRemoved);
 
@@ -561,6 +570,7 @@ INSERT INTO clearing_decision (
       ->setLicenseRef($licenseRef)
       ->setRemoved($removed)
       ->setReportInfo($reportInfo)
+      ->setAcknowledgement($acknowledgement)
       ->setComment($comment)
       ->build();
   }

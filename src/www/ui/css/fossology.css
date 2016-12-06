@@ -255,8 +255,8 @@ img.deleted {
 }
 
 .activeEditText textarea{
-  min-width: 30em;
-  min-height: 7em;
+  min-width: 7em;
+  min-height: 5em;
 }
 
 .info-bullet {
