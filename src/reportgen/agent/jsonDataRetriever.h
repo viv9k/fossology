@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2014-2015, Siemens AG
+ Copyright (C) 2014-2016, Siemens AG
  Author: Daniele Fognini
 
  This program is free software; you can redistribute it and/or
@@ -38,4 +38,5 @@ char* getIrrelevant(int uploadId, int groupId);
 char* getMainLicense(int uploadId, int groupId);
 char* getLicenseHistogram(int uploadId, int groupId);
 char* getClearedComment(int uploadId, int groupId);
+char* getClearedAcknowledgement(int uploadId, int groupId);
 #endif

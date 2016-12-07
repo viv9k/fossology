@@ -29,7 +29,10 @@ use Fossology\Lib\Data\License;
 
 class LicenseClearedGetter extends ClearedGetterCommon
 {
+  /** @var Boolean */
   private $onlyComments = false;
+  /** @var Boolean */
+  private $onlyAcknowledgements = false;
   /** @var ClearingDao */
   private $clearingDao;
   /** @var LicenseDao */
@@ -65,8 +68,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
       }
       /** @var ClearingDecision $clearingDecision */
       foreach ($clearingDecision->getClearingLicenses() as $clearingLicense) {
-        if ($clearingLicense->isRemoved())
-        {
+        if ($clearingLicense->isRemoved()){
           continue;
         }
         
@@ -74,13 +76,20 @@ class LicenseClearedGetter extends ClearedGetterCommon
           continue;
         }
 
+        if ($this->onlyAcknowledgements && !($acknowledgement = $clearingLicense->getAcknowledgement())) {
+          continue;
+        }
+
         $originLicenseId = $clearingLicense->getLicenseId();
         $licenseId = $licenseMap->getProjectedId($originLicenseId);
-
-        if ($this->onlyComments)
+        if($this->onlyAcknowledgements){
+          $text = $acknowledgement;
+          $risk = "";
+        }
+        else if ($this->onlyComments)
         {
           $text = $comment;
-          $risk = $clearingLicense->getAcknowledgement();
+          $risk = "";
         }
         else
         {
@@ -106,7 +115,17 @@ class LicenseClearedGetter extends ClearedGetterCommon
    */
   public function setOnlyComments($displayOnlyCommentedLicenseClearings)
   {
+    $this->onlyAcknowledgements = false;
     $this->onlyComments = $displayOnlyCommentedLicenseClearings;
+  }
+
+  /**
+   * @param boolean $displayOnlyAcknowledgements
+   */
+  public function setOnlyAcknowledgements($displayOnlyAcknowledgements)
+  {
+    $this->onlyComments = false;
+    $this->onlyAcknowledgements = $displayOnlyAcknowledgements;
   }
 
   /**

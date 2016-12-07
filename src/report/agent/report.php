@@ -208,7 +208,7 @@ class ReportAgent extends Agent
   function processUploadId($uploadId)
   {
     $groupId = $this->groupId;
-    $userId = $this->userId; 
+    $userId = $this->userId;
 
     $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $licenses = $this->groupStatements($ungrupedStatements, true, "license");
@@ -220,6 +220,10 @@ class ReportAgent extends Agent
     $ungrupedStatements = $this->bulkMatchesGetter->getUnCleared($uploadId, $groupId);
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
     
+    $this->licenseClearedGetter->setOnlyAcknowledgements(true);
+    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+    $licenseAcknowledgements = $this->groupStatements($ungrupedStatements, true);
+
     $this->licenseClearedGetter->setOnlyComments(true);
     $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $licenseComments = $this->groupStatements($ungrupedStatements, true);
@@ -237,6 +241,7 @@ class ReportAgent extends Agent
 
     $contents = array("licenses" => $licenses,
                       "bulkLicenses" => $bulkLicenses,
+                      "licenseAcknowledgements" => $licenseAcknowledgements,
                       "licenseComments" => $licenseComments,
                       "copyrights" => $copyrights,
                       "ecc" => $ecc,
@@ -622,28 +627,6 @@ class ReportAgent extends Agent
     }
     $section->addTextBreak(); 
   }
-  
-  /**
-   * @param Section $section
-   */ 
-  private function acknowledgementTable(Section $section, $titleSubHeading)
-  {
-    $firstColLen = 3500;
-    $secondColLen = 8000;
-    $thirdColLen = 4000;
-    
-    $section->addTitle(htmlspecialchars("Acknowledgements"), 2);
-    $section->addText($titleSubHeading, $this->subHeadingStyle);
-
-    $table = $section->addTable($this->tablestyle);
-    $table->addRow($this->rowHeight);
-    $table->addCell($firstColLen)->addText("");
-    $table->addCell($secondColLen)->addText("");
-    $table->addCell($thirdColLen)->addText("");
-
-    $section->addTextBreak(); 
-  }
-
 
   /**
    * @brief copyright or ecc or ip table.
@@ -846,8 +829,9 @@ class ReportAgent extends Agent
     $this->licensesTable($section, $heading, $contents['licenses']['statements'], $whiteLicense, $titleSubHeadingLicense);
 
     /* Display acknowledgement */
-    $titleSubHeadingAcknowledgement = "(ID of acknowledgements, Text of acknowledgements, Reference to the license)";
-    $this->acknowledgementTable($section, $titleSubHeadingAcknowledgement);
+    $heading = "Acknowledgements";
+    $titleSubHeadingAcknowledgement = "(Reference to the license, Text of acknowledgements, File path)";
+    $this->bulkLicenseTable($section, $heading, $contents['licenseAcknowledgements']['statements'], $titleSubHeadingAcknowledgement);
 
     /* Display copyright statements and files */
     $heading = "Copyrights";

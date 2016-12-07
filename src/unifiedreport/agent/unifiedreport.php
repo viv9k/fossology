@@ -220,6 +220,10 @@ class UnifiedReport extends Agent
     $ungrupedStatements = $this->bulkMatchesGetter->getUnCleared($uploadId, $groupId);
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
     
+    $this->licenseClearedGetter->setOnlyAcknowledgements(true);
+    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+    $licenseAcknowledgements = $this->groupStatements($ungrupedStatements, true);
+
     $this->licenseClearedGetter->setOnlyComments(true);
     $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $licenseComments = $this->groupStatements($ungrupedStatements, true);
@@ -237,6 +241,7 @@ class UnifiedReport extends Agent
 
     $contents = array("licenses" => $licenses,
                       "bulkLicenses" => $bulkLicenses,
+                      "licenseAcknowledgements" => $licenseAcknowledgements,
                       "licenseComments" => $licenseComments,
                       "copyrights" => $copyrights,
                       "ecc" => $ecc,
@@ -567,8 +572,9 @@ class UnifiedReport extends Agent
     $firstColLen = 2000;
     $secondColLen = 9500;
     $thirdColLen = 4000;  
-
-    $section->addTitle(htmlspecialchars($title), 2);
+    if(!empty($title)){
+      $section->addTitle(htmlspecialchars($title), 2);
+    }
     $section->addText($titleSubHeading, $this->subHeadingStyle);
 
     $table = $section->addTable($this->tablestyle);
@@ -640,28 +646,6 @@ class UnifiedReport extends Agent
     }
     $section->addTextBreak(); 
   }
-  
-  /**
-   * @param Section $section
-   */ 
-  private function acknowledgementTable(Section $section, $titleSubHeading)
-  {
-    $firstColLen = 3500;
-    $secondColLen = 8000;
-    $thirdColLen = 4000;
-    
-    $section->addTitle(htmlspecialchars("Acknowledgements"), 2);
-    $section->addText($titleSubHeading, $this->subHeadingStyle);
-
-    $table = $section->addTable($this->tablestyle);
-    $table->addRow($this->rowHeight);
-    $table->addCell($firstColLen)->addText("");
-    $table->addCell($secondColLen)->addText("");
-    $table->addCell($thirdColLen)->addText("");
-
-    $section->addTextBreak(); 
-  }
-
 
   /**
    * @brief copyright or ecc or ip table.
@@ -832,8 +816,9 @@ class UnifiedReport extends Agent
 
 
     /* Display acknowledgement */
-    $titleSubHeadingAcknowledgement = "(ID of acknowledgements, Text of acknowledgements, Reference to the license)";
-    $this->acknowledgementTable($section, $titleSubHeadingAcknowledgement);
+    $heading = "Acknowledgements";
+    $titleSubHeadingAcknowledgement = "(Reference to the license, Text of acknowledgements, File path)";
+    $this->bulkLicenseTable($section, $heading, $contents['licenseAcknowledgements']['statements'], $titleSubHeadingAcknowledgement);
 
     /* Display Ecc statements and files */
     $heading = "Export Restrictions";
@@ -850,7 +835,10 @@ class UnifiedReport extends Agent
 
     /* Display comments entered for report */
     $heading = "Notes";
-    $sR->notes($section, $heading);
+    $subHeading = "Notes on individual files";
+    $sR->notes($section, $heading, $subHeading);
+    $titleSubHeadingNotes = "(License name, Comment Entered, File path)";
+    $this->bulkLicenseTable($section, "", $contents['licenseComments']['statements'], $titleSubHeadingNotes);
 
     /* Display scan results and edited results */
     $titleSubHeadingHistogram = "(Scanner count, Concluded license count, License name)";
