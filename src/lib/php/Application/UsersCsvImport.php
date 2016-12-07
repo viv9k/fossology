@@ -154,8 +154,8 @@ class UsersCsvImport {
   private function handleCsvGroups($userName, $groupName, $groupPermission)
   {
     $groupPerm = $this->groupPermissions[$groupPermission];
-    if(empty($groupPerm)){
-      $groupPerm = $this->groupPermissions['none'];
+    if($groupPerm == "" && !empty($groupName)){
+      $groupPerm = $this->groupPermissions['user'];
     }
     $checkGroupAlreadyExists = $this->dbManager->getSingleRow(
       'SELECT group_pk FROM groups WHERE group_name = $1 LIMIT 1;',
