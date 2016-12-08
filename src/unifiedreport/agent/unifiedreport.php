@@ -221,12 +221,10 @@ class UnifiedReport extends Agent
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
     
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
-    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
-    $licenseAcknowledgements = $this->groupStatements($ungrupedStatements, true);
+    $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
 
     $this->licenseClearedGetter->setOnlyComments(true);
-    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
-    $licenseComments = $this->groupStatements($ungrupedStatements, true);
+    $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
     
     $licensesIrre = $this->licenseIrrelevantGetter->getCleared($uploadId, $groupId);
 
