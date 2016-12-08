@@ -61,7 +61,7 @@ class CliXml extends Agent
     $this->renderer = $this->container->get('twig.environment');
     $this->renderer->setCache(false);
     
-    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
+    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
 

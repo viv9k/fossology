@@ -102,7 +102,7 @@ class UnifiedReport extends Agent
   
   function __construct()
   {
-    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
+    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
     $this->ipClearedGetter = new XpClearedGetter("ip", "skipcontent", true);
     $this->eccClearedGetter = new XpClearedGetter("ecc", "skipcontent", true);
     $this->licenseClearedGetter = new LicenseClearedGetter();
