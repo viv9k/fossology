@@ -295,7 +295,8 @@ class AjaxClearingView extends FO_Plugin
             '1' => implode("<br/>", $agents),
             '2' => "-",
             '3' => "-",
-            '4' => $actionLink);
+            '4' => "-",
+            '5' => $actionLink);
       }
     }
 
