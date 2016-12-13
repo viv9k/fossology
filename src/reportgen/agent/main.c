@@ -798,6 +798,23 @@ int main(int argc, char** argv) {
       g_free(json);
     }
 
+    addparaheading(createnumsection(body, "0", "2"), NULL, "Acknowledgements", "0", "2");
+
+    rg_table* tableacknowledgements = table_new(body, 3, "2000", "3000", "2000");
+    table_addRow(tableacknowledgements, "Reference to the license", "Text of acknowledgements", "File path");
+    {
+      char* jsonAcknowledgementLicense = getClearedAcknowledgement(uploadId, groupId);
+      json_object * jobj = json_tokener_parse(jsonAcknowledgementLicense);
+
+      if (!addRowsFromJson_ContentTextFiles(tableacknowledgements, jobj, "statements")) {
+        printf("cannot parse json string: %s\n", jsonAcknowledgementLicense);
+        fo_scheduler_disconnect(1);
+        exit(1);
+      }
+
+      json_object_put(jobj);
+      g_free(jsonAcknowledgementLicense);
+    }
     // endrow
     addparaheading(createnumsection(body, "0", "2"), NULL, "Copyrights", "0", "2");
 

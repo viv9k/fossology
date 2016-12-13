@@ -36,6 +36,7 @@
 #define GETMAINLICENSECMD   INSTALLDIR "/getMainLicense -u %d --gId=%d"
 #define GETLICENSEHISTOGRAMCMD   INSTALLDIR "/getLicenseHistogram -u %d --gId=%d"
 #define GETCLEAREDCOMMENTCMD   INSTALLDIR "/getClearedComment -u %d --gId=%d"
+#define GETCLEAREDACKNOWLEDGEMENTCMD   INSTALLDIR "/getClearedAcknowledgement -u %d --gId=%d"
 
 static char* pipeRun(const char* cmdLineFmt, ...)
 {
@@ -111,4 +112,9 @@ char* getLicenseHistogram(int uploadId, int groupId)
 char* getClearedComment(int uploadId, int groupId)
 {
   return pipeRun(GETCLEAREDCOMMENTCMD, uploadId, groupId);
+}
+
+char* getClearedAcknowledgement(int uploadId, int groupId)
+{
+  return pipeRun(GETCLEAREDACKNOWLEDGEMENTCMD, uploadId, groupId);
 }

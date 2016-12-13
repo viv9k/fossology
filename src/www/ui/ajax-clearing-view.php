@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2014-2015, Siemens AG
+ Copyright (C) 2014-2016, Siemens AG
  Author: Daniele Fognini, Johannes Najjar
 
  This program is free software; you can redistribute it and/or
@@ -189,7 +189,14 @@ class AjaxClearingView extends FO_Plugin
         if (isset($id))
         {
           list ($uploadTreeId, $licenseId) = explode(',', $id);
-          $what = GetParm("columnId", PARM_INTEGER)==3 ? 'comment' : 'reportinfo';
+          $what = GetParm("columnId", PARM_INTEGER);
+          if($what==2){
+            $what = 'reportinfo';
+          }elseif($what==3){
+            $what = 'acknowledgement';
+          }else{
+            $what = 'comment';
+          }
           $changeTo = GetParm("value", PARM_RAW);
           $this->clearingDao->updateClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, $what, $changeTo);
         }
@@ -226,6 +233,7 @@ class AjaxClearingView extends FO_Plugin
       $types = $this->getAgentInfo($clearingResult, $uberUri, $uploadTreeId);
       $reportInfo = "";
       $comment = "";
+      $acknowledgement = "";
 
       if ($clearingResult->hasClearingEvent())
       {
@@ -233,6 +241,7 @@ class AjaxClearingView extends FO_Plugin
         $types[] = $this->getEventInfo($licenseDecisionEvent, $uberUri, $uploadTreeId, $licenseEventTypes);
         $reportInfo = $licenseDecisionEvent->getReportinfo();
         $comment = $licenseDecisionEvent->getComment();
+        $acknowledgement = $licenseDecisionEvent->getAcknowledgement();
       }
 
       $licenseShortNameWithLink = $this->urlBuilder->getLicenseTextUrl($clearingResult->getLicenseRef());
@@ -255,14 +264,16 @@ class AjaxClearingView extends FO_Plugin
         $reportInfoField = nl2br(htmlspecialchars($reportInfo));
       }
       $commentField = nl2br(htmlspecialchars($comment));
+      $acknowledgementField = nl2br(htmlspecialchars($acknowledgement));
 
       $id = "$uploadTreeId,$licenseId";
       $table[$licenseShortName] = array('DT_RowId' => $id,
           '0' => $licenseShortNameWithLink,
           '1' => implode("<br/>", $types),
           '2' => $reportInfoField,
-          '3' => $commentField,
-          '4' => $actionLink);
+          '3' => $acknowledgementField,
+          '4' => $commentField,
+          '5' => $actionLink);
     }
 
     foreach ($removedLicenses as $licenseShortName => $clearingResult)
@@ -284,7 +295,8 @@ class AjaxClearingView extends FO_Plugin
             '1' => implode("<br/>", $agents),
             '2' => "-",
             '3' => "-",
-            '4' => $actionLink);
+            '4' => "-",
+            '5' => $actionLink);
       }
     }
 
