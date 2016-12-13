@@ -233,14 +233,11 @@ class CopyrightDao extends Object
     $this->dbManager->prepare($stmt, "$sql RETURNING cp.* ");
     $oldData = $this->dbManager->execute($stmt, $params);
 
-    if($cpTable == "copyright")
+    while ($row = $this->dbManager->fetchArray($oldData))
     {
-      while ($row = $this->dbManager->fetchArray($oldData))
-      {
-        $this->dbManager->insertTableRow('copyright_audit',
-                array('ct_fk'=>$row['ct_pk'],'oldtext'=>$row['content'],'user_fk'=>$userId,'upload_fk'=>$item->getUploadId(), 'uploadtree_pk'=>$item->getItemId(), 'pfile_fk'=>$row['pfile_fk']),
+      $this->dbManager->insertTableRow(''.$cpTable.'_audit',
+        array('ct_fk'=>$row['ct_pk'],'oldtext'=>$row['content'],'user_fk'=>$userId,'upload_fk'=>$item->getUploadId(), 'uploadtree_pk'=>$item->getItemId(), 'pfile_fk'=>$row['pfile_fk']),
                 __METHOD__ . "writeHist");
-      }
     }
     $this->dbManager->freeResult($oldData);
   }

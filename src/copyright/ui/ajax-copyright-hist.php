@@ -321,9 +321,6 @@ class CopyrightHistogramProcessPost extends FO_Plugin
   protected function doUndo($itemId, $hash, $type) {
     $item = $this->uploadDao->getItemTreeBounds($itemId, $this->uploadtree_tablename);
     $cpTable = $this->getTableName($type);
-    if ($cpTable != 'copyright') {
-      return new Response('There is not undo for ' . $cpTable, Response::HTTP_NOT_IMPLEMENTED, array('Content-type' => 'text/plain'));
-    }
     $this->copyrightDao->rollbackTable($item, $hash, Auth::getUserId(), $cpTable);
     return new Response('Successfully restored', Response::HTTP_OK, array('Content-type'=>'text/plain'));
   }
