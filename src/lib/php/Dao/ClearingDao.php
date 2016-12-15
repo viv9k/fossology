@@ -61,7 +61,14 @@ class ClearingDao extends Object
     $uploadTreeTable = $itemTreeBounds->getUploadTreeTableName();
 
     $params[] = DecisionTypes::WIP; $p1 = "$". count($params);
-    $params[] = $groupId; $p2 = "$". count($params);
+    $userId = (isset($_SESSION) && array_key_exists('UserId', $_SESSION)) ? $_SESSION['UserId'] : 0;
+    if(!empty($userId)){
+      $params[] = $userId; $p2 = "$". count($params);
+      $candidateByGroups = "cd.group_fk IN (SELECT group_fk FROM group_user_member WHERE user_fk=$p2)";
+    }else{
+      $params[] = $groupId; $p2 = "$". count($params);
+      $candidateByGroups = "cd.group_fk = $p2";
+    }
 
     $sql_upload = "";
     if ('uploadtree' === $uploadTreeTable || 'uploadtree_a' === $uploadTreeTable)
@@ -95,7 +102,7 @@ class ClearingDao extends Object
                 INNER JOIN $uploadTreeTable ut
                   ON ut.pfile_fk = cd.pfile_fk AND cd.scope = $globalScope   OR ut.uploadtree_pk = cd.uploadtree_fk
               WHERE $sql_upload $condition
-                cd.decision_type!=$p1 AND cd.group_fk = $p2),
+                cd.decision_type!=$p1 AND $candidateByGroups),
             decision AS (
               SELECT $filterClause *
               FROM allDecs
