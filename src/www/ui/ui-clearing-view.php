@@ -270,7 +270,7 @@ class ClearingView extends FO_Plugin
     $clearingDecisions = null;
     if ($isSingleFile || $hasWritePermission)
     {
-      $clearingDecisions = $this->clearingDao->getFileClearings($itemTreeBounds, $groupId, false);
+      $clearingDecisions = $this->clearingDao->getFileClearings($itemTreeBounds, $groupId, false, true);
     }
 
     if ($isSingleFile && $hasWritePermission)
