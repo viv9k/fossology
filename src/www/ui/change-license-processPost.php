@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2015 Siemens AG
+ * Copyright (C) 2014-2016 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -135,7 +135,7 @@ class changeLicenseProcessPost extends FO_Plugin
         }
 
         $this->clearingDao->insertClearingEvent($itemId, $userId, $groupId, $licenseId, $removed,
-            ClearingEventTypes::USER, $reportInfo = '', $comment = '', $jobId);
+            ClearingEventTypes::USER, $reportInfo = '', $comment = '', $acknowledgement = '', $jobId);
       }
     }
 
@@ -169,5 +169,3 @@ class changeLicenseProcessPost extends FO_Plugin
 
 $NewPlugin = new changeLicenseProcessPost;
 $NewPlugin->Initialize();
-
-

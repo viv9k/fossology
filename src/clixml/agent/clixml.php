@@ -61,7 +61,7 @@ class CliXml extends Agent
     $this->renderer = $this->container->get('twig.environment');
     $this->renderer->setCache(false);
     
-    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement", false, "(content ilike '%Copyright%' OR content ilike '(c)%')");
+    $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
 
@@ -164,9 +164,15 @@ class CliXml extends Agent
     $this->heartbeat(count($licensesMain["statements"]));
     $copyrights = $this->cpClearedGetter->getCleared($uploadId, $groupId);
     $this->heartbeat(count($copyrights["statements"]));
+    $this->licenseClearedGetter->setOnlyAcknowledgements(true);
+    $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
+    $countAcknowledgement = count($licenseAcknowledgements["statements"]);
+    $this->heartbeat($countAcknowledgement);
+    $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements["statements"]);
     $contents = array("licensesMain" => $licensesMain["statements"],
-                      "licenses" => $licenses["statements"],
-                      "copyrights" => $copyrights["statements"]
+                      "licenses" => $licensesWithAcknowledgement,
+                      "copyrights" => $copyrights["statements"],
+                      "countAcknowledgement" => $countAcknowledgement
                      );
     $contents = $this->reArrangeContent($contents);        
     $message = $this->renderString($this->getTemplateFile('file'),array(
@@ -178,6 +184,26 @@ class CliXml extends Agent
         'packageIds'=>$packageIds)
             );
     return $message;
+  }
+
+  protected function addAcknowledgementsToLicenses($licenses, $acknowledgements)
+  {
+    if(!empty($acknowledgements)){
+      for($i=0; $i<=count($acknowledgements); $i++){
+        for($j=0; $j<=count($licenses); $j++){
+          if(!empty($acknowledgements[$i]['content']) && strcmp($acknowledgements[$i]['content'], $licenses[$j]['content']) == 0){
+            if(!array_key_exists('acknowledgement', $licenses[$j])){
+              $licenses[$j]['acknowledgement'] = $acknowledgements[$i]['text'];
+            }else{
+              $licenses[$j]['acknowledgement'] = $licenses[$j]['acknowledgement'].", ".$acknowledgements[$i]['text'];
+            }
+          }
+        }
+      }
+      return $licenses;   
+    }else{
+      return $licenses;
+    }
   }
 
   protected function riskMapping($contents, $licenseG=false)
@@ -213,6 +239,9 @@ class CliXml extends Agent
     $lenMainLics = $lenLicsMain = count($contents["licensesMain"]);
     for($j=0; $j<$lenLicsMain; $j++){
       for($i=0; $i<$lenTotalLics; $i++){
+        if(array_key_exists('acknowledgement', $contents["licenses"][$i])){
+          $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
+        }
         if(!strcmp($contents["licenses"][$i]["content"], $contents["licensesMain"][$j]["content"])){
           if(!strcmp($contents["licenses"][$i]["text"], $contents["licensesMain"][$j]["text"])){
             $contents["licensesMain"][$j]["files"] = $contents["licenses"][$i]["files"];
@@ -230,9 +259,13 @@ class CliXml extends Agent
       $contents["licensesMain"][$i]["contentMain"] = $contents["licensesMain"][$i]["content"];
       $contents["licensesMain"][$i]["textMain"] = $contents["licensesMain"][$i]["text"];
       $contents["licensesMain"][$i]["riskMain"] = $contents["licensesMain"][$i]["risk"];
-        unset($contents["licensesMain"][$i]["content"]);
-        unset($contents["licensesMain"][$i]["text"]);
-        unset($contents["licensesMain"][$i]["risk"]);
+      if(array_key_exists('acknowledgement', $contents["licensesMain"][$i])){
+      $contents["licensesMain"][$i]["acknowledgementMain"] = $contents["licensesMain"][$i]["acknowledgement"];
+      unset($contents["licensesMain"][$i]["acknowledgement"]);
+      }
+      unset($contents["licensesMain"][$i]["content"]);
+      unset($contents["licensesMain"][$i]["text"]);
+      unset($contents["licensesMain"][$i]["risk"]);
     }
     return $contents;
   }

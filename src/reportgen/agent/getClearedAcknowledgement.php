@@ -1,7 +1,7 @@
 <?php
 /*
- Copyright (C) 2016, Siemens AG
- Author: Daniele Fognini
+ Copyright (C) 2014-2016, Siemens AG
+ Author: Shaheem Azmal M MD
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -17,21 +17,15 @@
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+
 namespace Fossology\Reportgen;
 
 require_once("$MODDIR/lib/php/common-cli.php");
 cli_Init();
 
-class CopyClearedGetter extends \Fossology\Lib\Report\XpClearedGetter
-{
-
-  public function __construct()
-  {
-    parent::__construct("copyright", "statement");
-  }
-}
-
-$clearedGetter = new CopyClearedGetter();
+$clearedGetter = new \Fossology\Lib\Report\LicenseClearedGetter();
 $clearedGetter->getCliArgs();
 $uploadId = $clearedGetter->getUploadId();
-print $clearedGetter->cJson($uploadId);
+$groupId = $clearedGetter->getGroupId();
+$clearedGetter->setOnlyAcknowledgements(true);
+print $clearedGetter->cJson($uploadId, $groupId);

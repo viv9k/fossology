@@ -1,0 +1,45 @@
+image: maven:latest
+types:  
+  - build
+#  - test
+#  - deploy
+  
+#services:
+#  - postgres:9.3
+before_script:
+  # Setup proxy
+  - export http_proxy=http://proxy-ch.siemens.ch:84
+  - export https_proxy=http://proxy-ch.siemens.ch:84
+  
+  # Install build dependencies
+  - apt-get -qq update && apt-get -qq -y install lsb-release sudo postgresql php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl postgresql-server-dev-all debhelper && utils/fo-installdeps -e -y
+  
+  # Create and patch FOSSology cache
+  - mkdir -p /var/local/cache/fossology && chown $(whoami) /var/local/cache/fossology
+  
+  # Install composer
+  - mv install/composer /usr/local/bin/composer
+  
+  # Install composer dependencies
+  - cd src
+  - composer install --dev
+  - cd vendor/ && git clone https://github.com/dmgerman/ninka.git && cd ninka/ && perl Makefile.PL && make && make install && cd ../..
+  - cd ..
+  #- install/scripts/install-spdx-tools.sh
+  
+  # Create postgres DB
+  #- psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB;" -U postgres
+  #- psql -c "create database fossology;" -U postgres
+ 
+build_foss:
+  type : build
+  script: 
+    - make
+    - dpkg-buildpackage -I
+    - pwd
+    - mkdir packages  
+    - cp ../*.deb packages/
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - packages

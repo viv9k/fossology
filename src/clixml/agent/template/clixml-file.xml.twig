@@ -4,7 +4,12 @@
    This file is offered as-is, without any warranty.
  #}
 
-<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('d.m.Y')}}" baseDoc="" toolUsed="FOSSologyNG" componentID="">
+{% if contents.countAcknowledgement is same as(0) %}
+{% set acknow = '' %}
+{% else %}
+{% set acknow = ' includesAcknowledgements="TRUE" ' %}
+{% endif %}
+<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('d.m.Y')}}" baseDoc="" toolUsed="FOSSologyNG" componentID=""{{acknow}}>
 {% for licensesMain in contents %}
 {% if licensesMain %}
 {% for ids in licensesMain %}
@@ -16,6 +21,9 @@
 {% endif %}
 {% endfor %}
 ]]></Files>
+{% if ids.acknowledgementMain is defined %}
+<Acknowledgements><![CDATA[{{ids.acknowledgementMain}}]]></Acknowledgements>
+{% endif %}
 </License>
 {% endif %}
 {% endfor %}
@@ -33,6 +41,9 @@
 {% endif %}
 {% endfor %}
 ]]></Files>
+{% if ids.acknowledgement is defined %}
+<Acknowledgements><![CDATA[{{ids.acknowledgement}}]]></Acknowledgements>
+{% endif %}
 </License>
 {% endif %}
 {% endfor %}
