@@ -1,11 +1,9 @@
 image: maven:latest
 types:  
   - build
-#  - test
+  - test
 #  - deploy
   
-#services:
-#  - postgres:9.3
 before_script:
   # Setup proxy
   - export http_proxy=http://proxy-ch.siemens.ch:84
@@ -25,12 +23,26 @@ before_script:
   - composer install --dev
   - cd vendor/ && git clone https://github.com/dmgerman/ninka.git && cd ninka/ && perl Makefile.PL && make && make install && cd ../..
   - cd ..
-  #- install/scripts/install-spdx-tools.sh
+  - install/scripts/install-spdx-tools.sh
   
-  # Create postgres DB
-  #- psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB;" -U postgres
-  #- psql -c "create database fossology;" -U postgres
- 
+   Create postgres DB
+  - psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB;" -U postgres
+  - psql -c "create database fossology;" -U postgres
+
+unitTesting:
+  type : test
+  script:
+    - cd src
+    - composer install && cd ..
+    - echo "Running PHP Unit tet"
+    - src/vendor/bin/phpunit -c src/phpunit.xml
+    - src/vendor/bin/phpcpd src/cli/ src/copyright/ src/decider*/ src/lib/ src/monk/ src/nomos/ src/readmeoss/ src/spdx2/ src/www/
+
+codeSniffer:
+  type : test
+  script:
+    - src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml src/lib/php/*/ src/www/ui/page/ src/www/ui/async/ src/spdx src/monk
+
 build_foss:
   type : build
   script: 
