@@ -541,7 +541,12 @@ ORDER BY lft asc
         $param, __METHOD__ . ".$condition.only");
     if (false === $row && isset($groupId))
     {
-      if(is_int($groupId)){
+      $userId = (isset($_SESSION) && array_key_exists('UserId', $_SESSION)) ? $_SESSION['UserId'] : 0;
+      if(!empty($userId)){
+        $param[] = $userId;
+        $extraCondition = "AND group_fk IN (SELECT group_fk FROM group_user_member WHERE user_fk=$".count($param).")";
+      }
+      if(is_int($groupId) && empty($userId)){
         $param[] = $groupId;
         $extraCondition = "AND group_fk=$".count($param);
       }
