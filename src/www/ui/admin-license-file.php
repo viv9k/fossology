@@ -170,7 +170,7 @@ class admin_license_file extends FO_Plugin
     if ($namestr == "All")
       $where = "";
     else
-      $where = "where rf_shortname like '". pg_escape_string($namestr) ."' ";
+      $where = "where rf_shortname like '". pg_escape_string($namestr) ."%' ";
 
     // $filter is one of these: "All", "done", "notdone"
     if ($filter != "all")
@@ -210,6 +210,8 @@ class admin_license_file extends FO_Plugin
     $ob .= "<th>$text</th>";
     $text = _("Active");
     $ob .= "<th>$text</th>";
+    $text = _("SPDX Compatible");
+    $ob .= "<th>$text</th>";
     $text = _("Shortname");
     $ob .= "<th>$text</th>";
     $text = _("Fullname");
@@ -241,6 +243,9 @@ class admin_license_file extends FO_Plugin
       $ob .= "<td align=center>$text</td>";
       $rf_active = ($row['rf_active'] == 't') ? "Yes" : "No";
       $text = _("$rf_active");
+      $ob .= "<td align=center>$text</td>";
+      $rf_spdx_compatible = ($row['rf_spdx_compatible'] == 't') ? "Yes" : "No";
+      $text = _("$rf_spdx_compatible");
       $ob .= "<td align=center>$text</td>";
       $ob .= "<td align=center>$row[rf_shortname]</td>";
       $ob .= "<td align=left>$row[rf_fullname]</td>";
@@ -307,7 +312,7 @@ class admin_license_file extends FO_Plugin
     }
     else
     {
-      $row = array('rf_active' =>'t', 'marydone'=>'f', 'rf_text_updatable'=>'t', 'rf_parent'=>0, 'rf_report'=>0, 'rf_risk');
+      $row = array('rf_active' =>'t', 'marydone'=>'f', 'rf_text_updatable'=>'t', 'rf_parent'=>0, 'rf_report'=>0, 'rf_risk', 'rf_spdx_compatible'=>'f');
     }
     
     foreach(array_keys($row) as $key)
@@ -323,6 +328,7 @@ class admin_license_file extends FO_Plugin
     $row['marydone'] = $this->dbManager->booleanFromDb($row['marydone'])?'true':'false';
     $row['rf_text_updatable'] = $this->dbManager->booleanFromDb($row['rf_text_updatable'])?'true':'false';
     $row['risk_level'] = $row['rf_risk'];
+    $row['rf_spdx_compatible'] = $this->dbManager->booleanFromDb($row['rf_spdx_compatible'])?'true':'false';
     $vars['isReadOnly'] = !(empty($rf_pk) || $row['rf_text_updatable']=='true');
     $vars['detectorTypes'] = array("1"=>"Reference License", "2"=>"Nomos", "3"=>"Unconcrete License");
 
@@ -374,13 +380,12 @@ class admin_license_file extends FO_Plugin
     $sql = "UPDATE license_ref SET
         rf_active=$2, marydone=$3,  rf_shortname=$4, rf_fullname=$5,
         rf_url=$6,  rf_notes=$7,  rf_text_updatable=$8,   rf_detector_type=$9,  rf_text=$10,
-        rf_md5=$md5term,
-        rf_risk=$11
+        rf_md5=$md5term, rf_risk=$11, rf_spdx_compatible=$12
           WHERE rf_pk=$1";
     $params = array($rfId,
         $_POST['rf_active'],$_POST['marydone'],$shortname,$fullname,
         $url,$notes,$_POST['rf_text_updatable'],$_POST['rf_detector_type'],$text,
-        $riskLvl);
+        $riskLvl,$_POST['rf_spdx_compatible']);
     $this->dbManager->prepare($stmt=__METHOD__.".$md5term", $sql);
     $this->dbManager->freeResult($this->dbManager->execute($stmt,$params));
 
@@ -443,12 +448,12 @@ class admin_license_file extends FO_Plugin
     $sql = "INSERT into license_ref (
         rf_active, marydone, rf_shortname, rf_fullname,
         rf_url, rf_notes, rf_md5, rf_text, rf_text_updatable,
-        rf_detector_type, rf_risk) 
+        rf_detector_type, rf_risk, rf_spdx_compatible) 
           VALUES (
-              $1, $2, $3, $4, $5, $6, $md5term, $7, $8, $9, $10) RETURNING rf_pk";
+              $1, $2, $3, $4, $5, $6, $md5term, $7, $8, $9, $10, $11) RETURNING rf_pk";
     $this->dbManager->prepare($stmt,$sql);
     $res = $this->dbManager->execute($stmt,array($_POST['rf_active'],$_POST['marydone'],$rf_shortname,$rf_fullname, 
-        $rf_url, $rf_notes, $rf_text,$_POST['rf_text_updatable'], $_POST['rf_detector_type'], $riskLvl));
+        $rf_url, $rf_notes, $rf_text,$_POST['rf_text_updatable'], $_POST['rf_detector_type'], $riskLvl, $_POST['rf_spdx_compatible']));
     $row = $this->dbManager->fetchArray($res);
     $rfId = $row['rf_pk'];
 

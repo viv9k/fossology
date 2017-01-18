@@ -16,6 +16,7 @@
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ***********************************************************/
+
 use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\Dao\UploadDao;
 
@@ -54,7 +55,7 @@ class admin_upload_delete extends FO_Plugin
    * \return string with the message.
    */
   function TryToDelete($uploadpk) {
-    if(!$this->uploadDao->isAccessible($uploadpk, Auth::getGroupId())){
+    if(!$this->uploadDao->isEditable($uploadpk, Auth::getGroupId())){
       $text=_("You dont have permissions to delete the upload");
       return DisplayMessage($text);
     }
