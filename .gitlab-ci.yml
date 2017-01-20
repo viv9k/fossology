@@ -1,17 +1,26 @@
 image: maven:latest
 types:  
-  - build
+  - compile
   - test
-#  - deploy
-  
+  - build-package
+
 before_script:
   # Setup proxy
   - export http_proxy=http://proxy-ch.siemens.ch:84
   - export https_proxy=http://proxy-ch.siemens.ch:84
   
   # Install build dependencies
-  - apt-get -qq update && apt-get -qq -y install lsb-release sudo postgresql php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl postgresql-server-dev-all debhelper && utils/fo-installdeps -e -y
-  
+  - apt-get -qq update && apt-get -qq -y install lsb-release sudo  php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl debhelper && utils/fo-installdeps -e -y
+  - apt-get -qq -y install postgresql postgresql-server-dev-all cppcheck php5-pgsql sqlite3 php5-sqlite libsqlite3-0 libsqlite3-dev 
+  - apt-get install -qq -y debhelper libglib2.0-dev libmagic-dev libxml2-dev
+  - apt-get install -qq -y libtext-template-perl librpm-dev  rpm libpcre3-dev libssl-dev
+  - apt-get install -qq -y apache2 libapache2-mod-php5 php5-pgsql php-pear php5-cli
+  - apt-get install -qq -y binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils
+  - apt-get install -qq -y rpm upx-ucl unrar-free unzip p7zip-full p7zip wget git-core subversion
+  - apt-get install -qq -y libpq-dev libcunit1-dev libcppunit-dev
+  - apt-get install -qq -y libboost-regex-dev libboost-program-options-dev
+  - apt-get install -y liblocal-lib-perl
+
   # Create and patch FOSSology cache
   - mkdir -p /var/local/cache/fossology && chown $(whoami) /var/local/cache/fossology
   
@@ -25,26 +34,44 @@ before_script:
   - cd ..
   - install/scripts/install-spdx-tools.sh
   
-   Create postgres DB
-  - psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB;" -U postgres
-  - psql -c "create database fossology;" -U postgres
+  # Create postgres DB
+  - /etc/init.d/postgresql start
+  - /etc/init.d/postgresql status
 
-unitTesting:
+  - sudo -u postgres psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB" 
+  - sudo -u postgres psql -c "CREATE DATABASE fossology OWNER fossy"
+  
+compile:
+  type : compile
+  script:
+    - make
+
+C-test:
   type : test
   script:
-    - cd src
-    - composer install && cd ..
-    - echo "Running PHP Unit tet"
-    - src/vendor/bin/phpunit -c src/phpunit.xml
+    - make all test-lib test-monk test-nomos
+    - cppcheck -q -isrc/nomos/agent_tests/testdata/NomosTestfiles/ -isrc/testing/dataFiles/ src/
+
+PHPCPD-test:
+  type : test
+  script:
     - src/vendor/bin/phpcpd src/cli/ src/copyright/ src/decider*/ src/lib/ src/monk/ src/nomos/ src/readmeoss/ src/spdx2/ src/www/
+  allow_failure: true
 
-codeSniffer:
+PHPCS-test:
   type : test
   script:
-    - src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml src/lib/php/*/ src/www/ui/page/ src/www/ui/async/ src/spdx src/monk
+    - echo "Running PHPCS test"
+    - src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml src/lib/php/*/ src/www/ui/page/ src/www/ui/async/ src/spdx2 src/monk 
+
+PhpUnit-test:
+  type : test
+  script:
+    - make 
+    - src/vendor/bin/phpunit -c src/phpunit.xml
 
 build_foss:
-  type : build
+  type : build-package
   script: 
     - make
     - dpkg-buildpackage -I
