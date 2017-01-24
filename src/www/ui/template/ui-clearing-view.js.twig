@@ -47,10 +47,7 @@ editableConfiguration = {
   "fnOnEdited": function (status){ if(status==="success") { $('#decTypeSet').addClass('decTypeWip');} } ,
   "fnOnDeleted": function(result) { createTable().fnDraw(false);},
   "sSuccessResponse": "success",
-  "aoColumns": [null, null,
-            {"type": "textarea", cssclass:"activeEditText", onblur: "cancel", "submit": "OK", "cancel": "{{'Cancel'|trans}}"},
-            {"type": "textarea", cssclass:"activeEditText", onblur: "cancel", "submit": "OK", "cancel": "{{'Cancel'|trans}}"},
-            {"type": "textarea", cssclass:"activeEditText", onblur: "cancel", "submit": "OK", "cancel": "{{'Cancel'|trans}}"}, null]
+  "aoColumns": [null, null, null, null, null, null]
 };
 
 function createClearingTable() {
@@ -58,6 +55,37 @@ function createClearingTable() {
   return otable;
 }
 
+function openTextModel(uploadTreeId, licenseId, what) {
+  var clearingsForSingleFile = $("#clearingsForSingleFile"+licenseId+what).attr("title");
+  idLicUploadTree = uploadTreeId+','+licenseId;
+  whatCol = what;
+  $("#referenceText").val(clearingsForSingleFile);
+  textModal.plainModal('open');
+}
+
+function closeTextModal() {
+  textModal.plainModal('close');
+}
+
+function submitTextModal(){
+  var post_data = {
+    "id": idLicUploadTree,
+    "columnId": whatCol,
+    "value": $("#referenceText").val()
+  };
+  $.ajax({
+    type: "POST",
+    url: "?mod=conclude-license&do=updateClearings",
+    data: post_data,
+    success: doOnSuccess
+  });
+}
+
+function doOnSuccess() {
+  textModal.plainModal('close');
+  oTable = $('#licenseDecisionsTable').dataTable(selectedLicensesTableConfig).makeEditable(editableConfiguration);
+  oTable.fnDraw(false);
+}
 addLicenseTableColumns = [
   {"sTitle": "{{ 'License'| trans }}", "sClass": "left"},
   {"sTitle": "{{ 'Action'| trans }}", "sClass": "center", "bSortable": false}
@@ -87,6 +115,7 @@ function createLicenseSelectionTable() {
 }
 
 $(document).ready(function () {
+  textModal = $('#textModal').plainModal();
   createClearingTable();
   createLicenseSelectionTable();
   $('img').tooltip();
