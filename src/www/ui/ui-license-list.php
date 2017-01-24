@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2015 Siemens AG
+ * Copyright (C) 2016-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,7 +104,7 @@ class ui_license_list extends FO_Plugin
   {
     /** @var ItemTreeBounds */
     $itemTreeBounds = $this->uploadDao->getItemTreeBounds($uploadtree_pk, $uploadtreeTablename);
-    $licensesPerFileName = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
+    $licensesPerFileName = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, true, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
 
     /* how many lines of data do you want to display */
     $currentNum = 0;
@@ -116,15 +116,47 @@ class ui_license_list extends FO_Plugin
           break;
         }
 
-        $lines[] = $fileName .': '.implode($licenseNames,', ') . '';
+        $lines[] = $fileName .', '.implode($this->rearrangeLicenseListForCSV($licenseNames),'; ') . '';
+        $linesText[] = $fileName .', '.implode($licenseNames,'; ') . '';
       }
       if (!$ignore && $licenseNames === false)
       {
         $lines[] = $fileName;
+        $linesText[]=$fileName;
       }
     }
-    return $lines;
+    return array($lines,$linesText);
   }
+
+
+  function rearrangeLicenseListForCSV($licenseNames)
+  {
+    foreach($licenseNames as $licenseName){
+      if(strstr($licenseName,"~")){
+        $collect=explode("~", $licenseName);
+        if($collect[1]==='I'){
+          $cleared .= $collect[0] .';' ;
+        }
+        if($collect[1]=='R'){
+          $removed .= $collect[0] .';' ;
+        } 
+        $licName .= $collect[0] .';' ;
+      }
+    }
+    if($cleared || $removed){
+      $cleared=rtrim($cleared,";");
+      $cleared=$cleared.',';
+      $removed=rtrim($removed,";");
+      $removed=$removed.',';
+      $licName=rtrim($licName,";");
+      $licName=$licName.',';
+      return $licenseName= array($licName, $cleared, $removed);
+    }
+    else{ 
+      return $licenseNames; 
+    }
+  }
+
 
   /**
    * \brief This function returns the scheduler status.
@@ -195,7 +227,7 @@ class ui_license_list extends FO_Plugin
     $V .= $this->renderString("ui-license-list-form.html.twig",$formVars);
 
     $V .= "<hr/>";
-    $lines = $this->createListOfLines($uploadtreeTablename, $uploadtree_pk, $agent_pks, $NomostListNum, $includeSubfolder, $exclude, $ignore);
+    list($lines,$linesText) = $this->createListOfLines($uploadtreeTablename, $uploadtree_pk, $agent_pks, $NomostListNum, $includeSubfolder, $exclude, $ignore);
 
     if (array_key_exists("warn",$lines))
     {
@@ -207,24 +239,26 @@ class ui_license_list extends FO_Plugin
       $V .= "<br><b>$warning</b><br>";
     }
 
+    $head = array("FilePath,Licenses,Identified,Removed");    
+    $content = array_merge($head, $lines);
     if ($dltext)
     {
       $request = $this->getRequest();
       $itemId = intval($request->get('item'));
       $path = Dir2Path($itemId, $uploadtreeTablename);
-      $fileName = $path[count($path) - 1]['ufile_name'] . ".txt";
+      $fileName = $path[count($path) - 1]['ufile_name'] . ".csv";
 
       $headers = array(
           "Content-Type" => "text",
           "Content-Disposition" => "attachment; filename=\"$fileName\""
       );
 
-      $response = new Response(implode("\n", $lines), Response::HTTP_OK, $headers);
+      $response = new Response(implode("\n", $content), Response::HTTP_OK, $headers);
       return $response;
     }
     else
     {
-      return $V . '<pre>' . implode("\n", $lines) . '</pre>';
+      return $V . '<pre>' . implode("\n", $linesText) . '</pre>';
     }
   }
 }

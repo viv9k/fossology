@@ -296,7 +296,7 @@ class LicenseDaoTest extends \PHPUnit_Framework_TestCase
 
     //**************************************************************************
     // Test with minimal input
-    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds);
+    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds,false);
 
     $key = "project.tar.gz/project.tar/project/folderB/subBfolderB/subBBsubBfolderA/BBBfileA";
     $this->assertArrayHasKey($key, $result);
@@ -316,14 +316,14 @@ class LicenseDaoTest extends \PHPUnit_Framework_TestCase
 
     //**************************************************************************
     // Test with empty agent list
-    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, array(),true,'',true);
+    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, false, array(),true,'',true);
 
     $expected = array();
     assertThat($result, is(equalTo($expected)));
 
     //**************************************************************************
     // Test with only one agent
-    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, array($agentId));
+    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, false, array($agentId));
 
     $key = "project.tar.gz/project.tar/project/folderB/subBfolderB/subBBsubBfolderA/BBBfileA";
     $this->assertArrayHasKey($key, $result);
@@ -333,7 +333,7 @@ class LicenseDaoTest extends \PHPUnit_Framework_TestCase
 
     //**************************************************************************
     // Test with excluding
-    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, array($agentId),true,"fileC");
+    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, false, array($agentId),true,"fileC");
 
     $key = "project.tar.gz/project.tar/project/folderB/subBfolderB/subBBsubBfolderA/BBBfileA";
     $this->assertArrayHasKey($key, $result);
@@ -346,7 +346,7 @@ class LicenseDaoTest extends \PHPUnit_Framework_TestCase
 
     //**************************************************************************
     // Test with container
-    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, array($agentId));
+    $result = $licDao->getLicensesPerFileNameForAgentId($itemTreeBounds, false, array($agentId));
 
     $key = "project.tar.gz";
     $this->assertArrayHasKey($key, $result);

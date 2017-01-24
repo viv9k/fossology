@@ -314,6 +314,7 @@ class LicenseDao extends Object
 
   /**
    * @param ItemTreeBounds $itemTreeBounds
+   * @param bool $clearedList
    * @param Array(int) $selectedAgentIds
    * @param bool $includeSubFolders
    * @param String $excluding
@@ -321,10 +322,12 @@ class LicenseDao extends Object
    * @return array
    */
   public function getLicensesPerFileNameForAgentId(ItemTreeBounds $itemTreeBounds,
+                                                   $clearedList,
                                                    $selectedAgentIds=null,
                                                    $includeSubfolders=true,
                                                    $excluding='',
-                                                   $ignore=false)
+                                                   $ignore=false
+                                                   )
   {
     $uploadTreeTableName = $itemTreeBounds->getUploadTreeTableName();
     $statementName = __METHOD__ . '.' . $uploadTreeTableName;
@@ -354,27 +357,40 @@ class LicenseDao extends Object
     if ($selectedAgentIds !== null)
     {
       $statementName .= ".".count($selectedAgentIds)."agents";
-      $agentSelect = "WHERE agent_fk IS NULL";
+      $agentSelect = "WHERE (agent_fk IS NULL";
       foreach($selectedAgentIds as $selectedAgentId)
       {
         $param[] = $selectedAgentId;
         $agentSelect .= " OR agent_fk = $".count($param);
       }
+      $agentSelect.=" )";
     }
-
+    
+    $field = "";
+    $addClearedList="";
+    $onlyCleared="";
+    if($clearedList)
+    {
+      $field = ", removed, cleared";
+      $addClearedList ="LEFT JOIN (SELECT uploadtree_fk, rf_fk, removed FROM clearing_event) as subselect3 ON subselect1.uploadtree_pk=subselect3.uploadtree_fk LEFT JOIN (SELECT rf_pk, rf_shortname as cleared from license_ref ) AS subselect4 ON subselect4.rf_pk = subselect3.rf_fk";
+      $onlyCleared = "AND (rf_shortname=cleared or cleared IS NULL)";    
+    } 
+    
     $sql = "
 SELECT ufile_name, lft, rgt, ufile_mode,
-       rf_shortname, agent_fk
+       rf_shortname, agent_fk $field
 FROM (SELECT
-        ufile_name,
+        uploadtree_pk, ufile_name,
         lft, rgt, ufile_mode, pfile_fk
       FROM $uploadTreeTableName
       WHERE $condition) AS subselect1
 LEFT JOIN (SELECT rf_shortname,pfile_fk,agent_fk
            FROM license_file, license_ref
            WHERE rf_fk = rf_pk) AS subselect2
-  ON subselect1.pfile_fk = subselect2.pfile_fk
-$agentSelect
+	   ON subselect1.pfile_fk = subselect2.pfile_fk
+  $addClearedList  
+  $agentSelect
+  $onlyCleared
 ORDER BY lft asc
 ";
 
@@ -387,7 +403,7 @@ ORDER BY lft asc
     $rgtStack = array($row['rgt']);
     $lastLft = $row['lft'];
     $path = implode($pathStack,'/');
-    $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore);
+    $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $clearedList, $ignore);
     while ($row = $this->dbManager->fetchArray($result))
     {
       if (!empty($excluding) && false!==strpos("/$row[ufile_name]/", $excluding))
@@ -402,7 +418,7 @@ ORDER BY lft asc
 
       $this->updateStackState($pathStack, $rgtStack, $lastLft, $row);
       $path = implode($pathStack,'/');
-      $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore);
+      $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $clearedList, $ignore);
     }
     $this->dbManager->freeResult($result);
     return array_reverse($licensesPerFileName);
@@ -426,15 +442,32 @@ ORDER BY lft asc
     }
   }
 
-  private function addToLicensesPerFileName(&$licensesPerFileName, $path, $row, $ignore)
+  private function addToLicensesPerFileName(&$licensesPerFileName, $path, &$row, $clearedList, $ignore)
   {
     if (($row['ufile_mode']&(1<<29)) ==0)
     {
-      if($row['rf_shortname'])
+      if($row['rf_shortname'] && $clearedList===true)
+      {
+        if(strcmp($row['rf_shortname'], $row['cleared'])==0 && $row['removed']=='f') 
+        {
+          $row['rf_shortname']=$row['rf_shortname']."~I";
+          $licensesPerFileName[$path][] = $row['rf_shortname'];
+        }
+        else if($row['rf_shortname'] && empty($row['cleared']))
+        {
+          $licensesPerFileName[$path][] = $row['rf_shortname'];
+        }
+        else if(!(strcmp($row['rf_shortname'],$row['cleared'])) && $row['removed']=='t')
+        {
+          $row['rf_shortname']=$row['rf_shortname']."~R";
+          $licensesPerFileName[$path][] = $row['rf_shortname'];
+        }
+      }
+      else if($row['rf_shortname'] && !$clearedList)
       {
         $licensesPerFileName[$path][] = $row['rf_shortname'];
       }
-    }
+     }  
     else if (!$ignore)
     {
       $licensesPerFileName[$path] = false;
