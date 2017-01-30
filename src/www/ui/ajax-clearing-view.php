@@ -213,18 +213,16 @@ class AjaxClearingView extends FO_Plugin
    */
   protected function getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $forValue, $what, $detectorType=0)
   {
+     $classAttr = "color:#000000;";
+     $value = "Click to add";
      if(empty($forValue) && $detectorType == 2 && $what == 2){
-        $classAttr = "color:red;font-weight:bold;";
-        $value = 'License by Nomos';
+       $classAttr = "color:red;font-weight:bold;";
      }
-     else if(!empty($forValue)){
-       $classAttr = "color:#666666;font-weight:bold";
-       $value = "Click to change";
-     }else{
-       $classAttr = "color:#666666;";
-       $value = "Click to add";
+ 
+     if(!empty($forValue)) {
+       $value = substr(ltrim($forValue, " \t\n"), 0, 15)."...";
      }
-    return "<a href=\"javascript:;\" style='$classAttr' id='clearingsForSingleFile$licenseId$what' onclick=\"openTextModel($uploadTreeId, $licenseId, $what);\" title='$forValue'>$value</a>";
+    return "<a href=\"javascript:;\" style='$classAttr' id='clearingsForSingleFile$licenseId$what' onclick=\"openTextModel($uploadTreeId, $licenseId, $what);\" title='".htmlspecialchars($forValue, ENT_QUOTES)."'>$value</a>";
   }
 
   /**
