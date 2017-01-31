@@ -192,6 +192,7 @@ class ui_license_list extends FO_Plugin
       $text = _("Permission Denied");
       return "<h2>$text</h2>";
     }
+    $packageName = $this->uploadDao->getUpload($upload_pk)->getFilename();
     $uploadtreeTablename = GetUploadtreeTableName($upload_pk);
 
     $warnings = array();
@@ -246,7 +247,7 @@ class ui_license_list extends FO_Plugin
       $request = $this->getRequest();
       $itemId = intval($request->get('item'));
       $path = Dir2Path($itemId, $uploadtreeTablename);
-      $fileName = $path[count($path) - 1]['ufile_name'] . ".csv";
+      $fileName = $packageName."-".$path[count($path) - 1]['ufile_name']."-".date("Ymd"). ".csv";
 
       $headers = array(
           "Content-Type" => "text",
