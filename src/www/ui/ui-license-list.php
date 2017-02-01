@@ -27,6 +27,10 @@ class ui_license_list extends FO_Plugin
   private $uploadDao;
   /** @var LicenseDao */
   private $licenseDao;
+  
+  protected $delimiter = ',';
+  /** @var string */
+  protected $enclosure = '"';
 
   function __construct()
   {
@@ -40,6 +44,18 @@ class ui_license_list extends FO_Plugin
     $this->uploadDao = $GLOBALS['container']->get('dao.upload');
     $this->licenseDao = $GLOBALS['container']->get('dao.license');
   }
+
+  public function setDelimiter($delimiter=',')
+  {
+    $this->delimiter = substr($delimiter,0,1);
+  } 
+     
+  public function setEnclosure($enclosure='"')
+  { 
+    $this->enclosure = substr($enclosure,0,1);
+  } 
+    
+
   /**
    * \brief Customize submenus.
    */
@@ -115,9 +131,15 @@ class ui_license_list extends FO_Plugin
           // TODO: the following should be done using a "LIMIT" statement in the sql query
           break;
         }
+ 
+        list($licenseName, $identified, $removed) = $this->licenseList($licenseNames);
 
-        $lines[] = $fileName .', '.implode($this->rearrangeLicenseListForCSV($licenseNames),'; ') . '';
-        $linesText[] = $fileName .', '.implode($licenseNames,'; ') . '';
+        $lines[] = array($fileName, $licenseName, $identified, $removed);
+	
+        if($identified){$identified = ' ['.$identified.']';}
+        if($removed){$removed = ' ['.$removed.']';}
+        if($licenseName){$licenseName = '['.$licenseName.']';}  
+        $linesText[] = $fileName.' : '. $licenseName.$identified.$removed. '';
       }
       if (!$ignore && $licenseNames === false)
       {
@@ -129,32 +151,29 @@ class ui_license_list extends FO_Plugin
   }
 
 
-  function rearrangeLicenseListForCSV($licenseNames)
+  function licenseList($licenseNames)
   {
     foreach($licenseNames as $licenseName){
       if(strstr($licenseName,"~")){
         $collect=explode("~", $licenseName);
         if($collect[1]==='I'){
-          $cleared .= $collect[0] .';' ;
+          $cleared .= $collect[0] .'; ' ;
         }
-        if($collect[1]=='R'){
-          $removed .= $collect[0] .';' ;
+        else if($collect[1]=='R'){
+          $removed .= $collect[0] .'; ' ;
         } 
-        $licName .= $collect[0] .';' ;
+        $licName .= $collect[0] .'; ' ;
+      }
+      else{
+        $licName .= $licenseName .'; '; 
       }
     }
-    if($cleared || $removed){
-      $cleared=rtrim($cleared,";");
-      $cleared=$cleared.',';
-      $removed=rtrim($removed,";");
-      $removed=$removed.',';
-      $licName=rtrim($licName,";");
-      $licName=$licName.',';
-      return $licenseName= array($licName, $cleared, $removed);
+    if($cleared || $removed || $licName){
+      $cleared=rtrim($cleared,"; ");
+      $removed=rtrim($removed,"; ");
+      $licName=rtrim($licName,"; ");
     }
-    else{ 
-      return $licenseNames; 
-    }
+    return array($licName, $cleared, $removed);
   }
 
 
@@ -239,23 +258,29 @@ class ui_license_list extends FO_Plugin
     {
       $V .= "<br><b>$warning</b><br>";
     }
-
-    $head = array("FilePath,Licenses,Identified,Removed");    
-    $content = array_merge($head, $lines);
+    
     if ($dltext)
     {
       $request = $this->getRequest();
       $itemId = intval($request->get('item'));
       $path = Dir2Path($itemId, $uploadtreeTablename);
       $fileName = $packageName."-".$path[count($path) - 1]['ufile_name']."-".date("Ymd"). ".csv";
-
+    
+      $out = fopen('php://output', 'w');
+      ob_start(); 
+      $head = array('Filepath','Detected_licenses','Indentified_Licenses','Removed_Licenses');    
+      fputcsv($out, $head, $this->delimiter, $this->enclosure);
+      foreach($lines as $row){
+        fputcsv($out, $row, $this->delimiter, $this->enclosure);
+      }   
+      $content = ob_get_contents();
+      ob_end_clean();
+     
       $headers = array(
           "Content-Type" => "text",
           "Content-Disposition" => "attachment; filename=\"$fileName\""
       );
-
-      $response = new Response(implode("\n", $content), Response::HTTP_OK, $headers);
-      return $response;
+      return new Response($content, Response::HTTP_OK, $headers);
     }
     else
     {
