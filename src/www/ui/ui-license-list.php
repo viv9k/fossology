@@ -135,11 +135,7 @@ class ui_license_list extends FO_Plugin
         list($licenseName, $identified, $removed) = $this->licenseList($licenseNames);
 
         $lines[] = array($fileName, $licenseName, $identified, $removed);
-	
-        if($identified){$identified = ' ['.$identified.']';}
-        if($removed){$removed = ' ['.$removed.']';}
-        if($licenseName){$licenseName = '['.$licenseName.']';}  
-        $linesText[] = $fileName.' : '. $licenseName.$identified.$removed. '';
+        $linesText[] = $fileName.' : '. ' ['.$licenseName.']'.' ['.$identified.']'.' ['.$removed.']'. '';
       }
       if (!$ignore && $licenseNames === false)
       {
