@@ -73,6 +73,7 @@ class ReadmeOssAgent extends Agent
     $this->heartbeat(0);
     $licenseStmts = array();
     $copyrightStmts = array();
+    $licenseStmtsMain = array();
 
     foreach($uploadIds as $addUploadId)
     {
@@ -86,11 +87,11 @@ class ReadmeOssAgent extends Agent
       $copyrightStmts = array_merge($copyrightStmts, $moreCopyrights['statements']);
       $this->heartbeat(count($moreCopyrights['statements']));
       $moreMainLicenses = $this->licenseMainGetter->getCleared($addUploadId, $groupId);
-      $licenseStmts = array_merge($licenseStmts, $moreMainLicenses['statements']);
+      $licenseStmtsMain = array_merge($licenseStmtsMain, $moreMainLicenses['statements']);
       $this->heartbeat(count($moreMainLicenses['statements']));
     }
 
-    $contents = array('licenses'=>$licenseStmts, 'copyrights'=>$copyrightStmts );
+    $contents = array('licensesMain'=>$licenseStmtsMain, 'licenses'=>$licenseStmts, 'copyrights'=>$copyrightStmts );
     $this->writeReport($contents, $uploadId);
 
     return true;
@@ -134,9 +135,20 @@ class ReadmeOssAgent extends Agent
     $break = str_repeat("\r\n", 2);
 
     $output = $separator1 . $break . $packageName . $break . $separator2 . $break;
-    foreach($contents['licenses'] as $licenseStatement){
-      $output .= $licenseStatement['text'] . $break;
-      $output .= $separator2 . $break;
+    if($contents['licensesMain'])
+    {
+      $output .= $separator1 . $break . " MAIN LICENSES " . $break . $separator2 . $break;
+      foreach($contents['licensesMain'] as $licenseStatementMain){
+        $output .= $licenseStatementMain['text'] . $break;
+        $output .= $separator2 . $break;
+      }
+    }
+    if(!empty($contents['licenses'])){
+      $output .= $separator1 . $break . " OTHER LICENSES " . $break . $separator2 . $break;
+      foreach($contents['licenses'] as $licenseStatement){
+        $output .= $licenseStatement['text'] . $break;
+        $output .= $separator2 . $break;
+      }
     }
     $copyrights = "";
     foreach($contents['copyrights'] as $copyrightStatement){
