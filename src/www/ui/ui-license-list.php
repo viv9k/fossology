@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2015 Siemens AG
+ * Copyright (C) 2014-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,14 +19,25 @@
 use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\Dao\UploadDao;
 use Fossology\Lib\Dao\LicenseDao;
+use Fossology\Lib\Dao\ClearingDao;
+use Fossology\Lib\Data\ClearingDecision;
+use Fossology\Lib\Data\DecisionTypes;
+use Fossology\Lib\BusinessRules\ClearingDecisionFilter;
 use Symfony\Component\HttpFoundation\Response;
 
 class ui_license_list extends FO_Plugin
 {
   /** @var UploadDao */
   private $uploadDao;
+
   /** @var LicenseDao */
   private $licenseDao;
+
+  /** @var ClearingDao */
+  private $clearingDao;
+
+  /** @var ClearingDecisionFilter */
+  private $clearingFilter;
 
   function __construct()
   {
@@ -39,6 +50,8 @@ class ui_license_list extends FO_Plugin
     parent::__construct();
     $this->uploadDao = $GLOBALS['container']->get('dao.upload');
     $this->licenseDao = $GLOBALS['container']->get('dao.license');
+    $this->clearingDao = $GLOBALS['container']->get('dao.clearing');
+    $this->clearingFilter = $GLOBALS['container']->get('businessrules.clearing_decision_filter');
   }
   /**
    * \brief Customize submenus.
@@ -102,10 +115,21 @@ class ui_license_list extends FO_Plugin
 
   function createListOfLines($uploadtreeTablename, $uploadtree_pk, $agent_pks, $NomostListNum, $includeSubfolder, $exclude, $ignore)
   {
+     $licensesPerFileName = array();
     /** @var ItemTreeBounds */
     $itemTreeBounds = $this->uploadDao->getItemTreeBounds($uploadtree_pk, $uploadtreeTablename);
-    $licensesPerFileName = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
-
+    $licensesPerFileNameOld = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
+    $allDecisions = $this->clearingDao->getFileClearingsFolder($itemTreeBounds, Auth::getGroupId());
+    $editedMappedLicenses = $this->clearingFilter->filterCurrentClearingDecisionsForLicenseList($allDecisions);
+    foreach($licensesPerFileNameOld as $path => $uploadTreePk){
+      foreach($uploadTreePk as $uploadTreeId => $licenseArray){
+        if($editedMappedLicenses[$uploadTreeId]){
+          $licensesPerFileName[$path] = $editedMappedLicenses[$uploadTreeId];
+        }else{
+          $licensesPerFileName[$path] = $licenseArray;
+        }
+      } 
+    }
     /* how many lines of data do you want to display */
     $currentNum = 0;
     foreach($licensesPerFileName as $fileName => $licenseNames){

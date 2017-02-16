@@ -363,10 +363,10 @@ class LicenseDao extends Object
     }
 
     $sql = "
-SELECT ufile_name, lft, rgt, ufile_mode,
+SELECT uploadtree_pk, ufile_name, lft, rgt, ufile_mode,
        rf_shortname, agent_fk
 FROM (SELECT
-        ufile_name,
+        uploadtree_pk, ufile_name,
         lft, rgt, ufile_mode, pfile_fk
       FROM $uploadTreeTableName
       WHERE $condition) AS subselect1
@@ -432,7 +432,7 @@ ORDER BY lft asc
     {
       if($row['rf_shortname'])
       {
-        $licensesPerFileName[$path][] = $row['rf_shortname'];
+        $licensesPerFileName[$path][$row['uploadtree_pk']][] = $row['rf_shortname'];
       }
     }
     else if (!$ignore)
