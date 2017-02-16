@@ -39,6 +39,12 @@ class ui_license_list extends FO_Plugin
   /** @var ClearingDecisionFilter */
   private $clearingFilter;
 
+  /** @var string */
+  protected $delimiter = ',';
+  
+  /** @var string */
+  protected $enclosure = '"';
+
   function __construct()
   {
     $this->Name = "license-list";
@@ -53,6 +59,17 @@ class ui_license_list extends FO_Plugin
     $this->clearingDao = $GLOBALS['container']->get('dao.clearing');
     $this->clearingFilter = $GLOBALS['container']->get('businessrules.clearing_decision_filter');
   }
+
+  public function setDelimiter($delimiter=',')
+  {
+    $this->delimiter = substr($delimiter,0,1);
+  }
+
+  public function setEnclosure($enclosure='"')
+  {
+    $this->enclosure = substr($enclosure,0,1);
+  }
+
   /**
    * \brief Customize submenus.
    */
@@ -118,16 +135,15 @@ class ui_license_list extends FO_Plugin
      $licensesPerFileName = array();
     /** @var ItemTreeBounds */
     $itemTreeBounds = $this->uploadDao->getItemTreeBounds($uploadtree_pk, $uploadtreeTablename);
-    $licensesPerFileNameOld = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
+    $licensesPerFileNameOld = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore, true);
     $allDecisions = $this->clearingDao->getFileClearingsFolder($itemTreeBounds, Auth::getGroupId());
     $editedMappedLicenses = $this->clearingFilter->filterCurrentClearingDecisionsForLicenseList($allDecisions);
     foreach($licensesPerFileNameOld as $path => $uploadTreePk){
       foreach($uploadTreePk as $uploadTreeId => $licenseArray){
         if($editedMappedLicenses[$uploadTreeId]){
-          $licensesPerFileName[$path] = $editedMappedLicenses[$uploadTreeId];
-        }else{
-          $licensesPerFileName[$path] = $licenseArray;
+          $licensesPerFileName[$path]['concludedResults'] = $editedMappedLicenses[$uploadTreeId];
         }
+        $licensesPerFileName[$path]['scanResults'] = $licenseArray;
       } 
     }
     /* how many lines of data do you want to display */
@@ -140,7 +156,7 @@ class ui_license_list extends FO_Plugin
           break;
         }
 
-        $lines[] = $fileName .': '.implode($licenseNames,', ') . '';
+        $lines[] = rtrim($fileName .': '.implode($licenseNames['scanResults'],' ') . ', '.implode($licenseNames['concludedResults'],' ') . '', ', ');
       }
       if (!$ignore && $licenseNames === false)
       {
@@ -236,14 +252,28 @@ class ui_license_list extends FO_Plugin
       $request = $this->getRequest();
       $itemId = intval($request->get('item'));
       $path = Dir2Path($itemId, $uploadtreeTablename);
-      $fileName = $path[count($path) - 1]['ufile_name'] . ".txt";
+      $fileName = $path[count($path) - 1]['ufile_name']."-".date("Ymd");
+
+      $out = fopen('php://output', 'w');
+      ob_start();
+      $head = array('file path', 'scan results', 'concluded results');
+      fputcsv($out, $head, $this->delimiter, $this->enclosure);
+      foreach($lines as $row){
+        $newRow = explode(':', str_replace(array(': ', ', '), ':', $row));
+       fputcsv($out, $newRow, $this->delimiter, $this->enclosure);
+      }
+      $content = ob_get_contents();
+      ob_end_clean();
 
       $headers = array(
-          "Content-Type" => "text",
-          "Content-Disposition" => "attachment; filename=\"$fileName\""
+        'Content-type' => 'text/csv, charset=UTF-8',
+        'Content-Disposition' => 'attachment; filename='.$fileName.'.csv',
+        'Pragma' => 'no-cache',
+        'Cache-Control' => 'no-cache, must-revalidate, maxage=1, post-check=0, pre-check=0',
+        'Expires' => 'Expires: Thu, 19 Nov 1981 08:52:00 GMT'
       );
 
-      $response = new Response(implode("\n", $lines), Response::HTTP_OK, $headers);
+      $response = new Response($content, Response::HTTP_OK, $headers);
       return $response;
     }
     else

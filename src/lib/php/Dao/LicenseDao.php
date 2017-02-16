@@ -324,7 +324,8 @@ class LicenseDao extends Object
                                                    $selectedAgentIds=null,
                                                    $includeSubfolders=true,
                                                    $excluding='',
-                                                   $ignore=false)
+                                                   $ignore=false,
+                                                   $includeUploadTreePk=false)
   {
     $uploadTreeTableName = $itemTreeBounds->getUploadTreeTableName();
     $statementName = __METHOD__ . '.' . $uploadTreeTableName;
@@ -387,7 +388,7 @@ ORDER BY lft asc
     $rgtStack = array($row['rgt']);
     $lastLft = $row['lft'];
     $path = implode($pathStack,'/');
-    $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore);
+    $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore, $includeUploadTreePk);
     while ($row = $this->dbManager->fetchArray($result))
     {
       if (!empty($excluding) && false!==strpos("/$row[ufile_name]/", $excluding))
@@ -402,7 +403,7 @@ ORDER BY lft asc
 
       $this->updateStackState($pathStack, $rgtStack, $lastLft, $row);
       $path = implode($pathStack,'/');
-      $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore);
+      $this->addToLicensesPerFileName($licensesPerFileName, $path, $row, $ignore, $includeUploadTreePk);
     }
     $this->dbManager->freeResult($result);
     return array_reverse($licensesPerFileName);
@@ -426,13 +427,17 @@ ORDER BY lft asc
     }
   }
 
-  private function addToLicensesPerFileName(&$licensesPerFileName, $path, $row, $ignore)
+  private function addToLicensesPerFileName(&$licensesPerFileName, $path, $row, $ignore, $includeUploadTreePk)
   {
     if (($row['ufile_mode']&(1<<29)) ==0)
     {
       if($row['rf_shortname'])
-      {
-        $licensesPerFileName[$path][$row['uploadtree_pk']][] = $row['rf_shortname'];
+      { 
+        if($includeUploadTreePk){
+          $licensesPerFileName[$path][$row['uploadtree_pk']][] = $row['rf_shortname'];
+        }else{
+          $licensesPerFileName[$path][] = $row['rf_shortname'];
+        }
       }
     }
     else if (!$ignore)
