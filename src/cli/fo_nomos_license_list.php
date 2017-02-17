@@ -148,7 +148,7 @@ function GetLicenseList($uploadtree_pk, $upload_pk, $showContainer, $excluding, 
   /** @var ItemTreeBounds */
   $itemTreeBounds = $uploadDao->getItemTreeBounds($uploadtree_pk, $uploadtreeTablename);
   $licensesPerFileName = $licenseDao->getLicensesPerFileNameForAgentId(
-    $itemTreeBounds, array($agent_pk), true, array(), $excluding, $ignore);
+    $itemTreeBounds, false, array($agent_pk), true, array(), $excluding, $ignore);
 
   foreach($licensesPerFileName as $fileName => $licenseNames)
   {
