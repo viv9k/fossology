@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2016-2017 Siemens AG
+ * Copyright (C) 2014-2015 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,10 +27,6 @@ class ui_license_list extends FO_Plugin
   private $uploadDao;
   /** @var LicenseDao */
   private $licenseDao;
-  
-  protected $delimiter = ',';
-  /** @var string */
-  protected $enclosure = '"';
 
   function __construct()
   {
@@ -44,18 +40,6 @@ class ui_license_list extends FO_Plugin
     $this->uploadDao = $GLOBALS['container']->get('dao.upload');
     $this->licenseDao = $GLOBALS['container']->get('dao.license');
   }
-
-  public function setDelimiter($delimiter=',')
-  {
-    $this->delimiter = substr($delimiter,0,1);
-  } 
-     
-  public function setEnclosure($enclosure='"')
-  { 
-    $this->enclosure = substr($enclosure,0,1);
-  } 
-    
-
   /**
    * \brief Customize submenus.
    */
@@ -120,7 +104,7 @@ class ui_license_list extends FO_Plugin
   {
     /** @var ItemTreeBounds */
     $itemTreeBounds = $this->uploadDao->getItemTreeBounds($uploadtree_pk, $uploadtreeTablename);
-    $licensesPerFileName = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, true, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
+    $licensesPerFileName = $this->licenseDao->getLicensesPerFileNameForAgentId($itemTreeBounds, $agent_pks, $includeSubfolder, array(), $exclude, $ignore);
 
     /* how many lines of data do you want to display */
     $currentNum = 0;
@@ -131,47 +115,16 @@ class ui_license_list extends FO_Plugin
           // TODO: the following should be done using a "LIMIT" statement in the sql query
           break;
         }
- 
-        list($licenseName, $identified, $removed) = $this->licenseList($licenseNames);
 
-        $lines[] = array($fileName, $licenseName, $identified, $removed);
-        $linesText[] = $fileName.' : '. ' ['.$licenseName.']'.' ['.$identified.']'.' ['.$removed.']'. '';
+        $lines[] = $fileName .': '.implode($licenseNames,', ') . '';
       }
       if (!$ignore && $licenseNames === false)
       {
         $lines[] = $fileName;
-        $linesText[]=$fileName;
       }
     }
-    return array($lines,$linesText);
+    return $lines;
   }
-
-
-  function licenseList($licenseNames)
-  {
-    foreach($licenseNames as $licenseName){
-      if(strstr($licenseName,"~")){
-        $collect=explode("~", $licenseName);
-        if($collect[1]==='I'){
-          $cleared .= $collect[0] .'; ' ;
-        }
-        else if($collect[1]=='R'){
-          $removed .= $collect[0] .'; ' ;
-        } 
-        $licName .= $collect[0] .'; ' ;
-      }
-      else{
-        $licName .= $licenseName .'; '; 
-      }
-    }
-    if($cleared || $removed || $licName){
-      $cleared=rtrim($cleared,"; ");
-      $removed=rtrim($removed,"; ");
-      $licName=rtrim($licName,"; ");
-    }
-    return array($licName, $cleared, $removed);
-  }
-
 
   /**
    * \brief This function returns the scheduler status.
@@ -207,7 +160,6 @@ class ui_license_list extends FO_Plugin
       $text = _("Permission Denied");
       return "<h2>$text</h2>";
     }
-    $packageName = $this->uploadDao->getUpload($upload_pk)->getFilename();
     $uploadtreeTablename = GetUploadtreeTableName($upload_pk);
 
     $warnings = array();
@@ -243,7 +195,7 @@ class ui_license_list extends FO_Plugin
     $V .= $this->renderString("ui-license-list-form.html.twig",$formVars);
 
     $V .= "<hr/>";
-    list($lines,$linesText) = $this->createListOfLines($uploadtreeTablename, $uploadtree_pk, $agent_pks, $NomostListNum, $includeSubfolder, $exclude, $ignore);
+    $lines = $this->createListOfLines($uploadtreeTablename, $uploadtree_pk, $agent_pks, $NomostListNum, $includeSubfolder, $exclude, $ignore);
 
     if (array_key_exists("warn",$lines))
     {
@@ -254,33 +206,25 @@ class ui_license_list extends FO_Plugin
     {
       $V .= "<br><b>$warning</b><br>";
     }
-    
+
     if ($dltext)
     {
       $request = $this->getRequest();
       $itemId = intval($request->get('item'));
       $path = Dir2Path($itemId, $uploadtreeTablename);
-      $fileName = $packageName."-".$path[count($path) - 1]['ufile_name']."-".date("Ymd"). ".csv";
-    
-      $out = fopen('php://output', 'w');
-      ob_start(); 
-      $head = array('Filepath','Detected_licenses','Indentified_Licenses','Removed_Licenses');    
-      fputcsv($out, $head, $this->delimiter, $this->enclosure);
-      foreach($lines as $row){
-        fputcsv($out, $row, $this->delimiter, $this->enclosure);
-      }   
-      $content = ob_get_contents();
-      ob_end_clean();
-     
+      $fileName = $path[count($path) - 1]['ufile_name'] . ".txt";
+
       $headers = array(
           "Content-Type" => "text",
           "Content-Disposition" => "attachment; filename=\"$fileName\""
       );
-      return new Response($content, Response::HTTP_OK, $headers);
+
+      $response = new Response(implode("\n", $lines), Response::HTTP_OK, $headers);
+      return $response;
     }
     else
     {
-      return $V . '<pre>' . implode("\n", $linesText) . '</pre>';
+      return $V . '<pre>' . implode("\n", $lines) . '</pre>';
     }
   }
 }
