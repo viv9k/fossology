@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
  * Copyright (C) 2008-2013 Hewlett-Packard Development Company, L.P.
- * Copyright (C) 2014-2016 Siemens AG
+ * Copyright (C) 2014-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,7 +57,8 @@ class UsersFromCSV extends DefaultPlugin
       $uploadFile = $request->files->get('file_input');
       $delimiter = $request->get('delimiter')?:',';
       $enclosure = $request->get('enclosure')?:'"';
-      $vars['message'] = $this->handleFileUpload($uploadFile,$delimiter,$enclosure);
+      $chAdminPass = $request->get('chAdminPass')?:'0';
+      $vars['message'] = $this->handleFileUpload($uploadFile,$delimiter,$enclosure,$chAdminPass);
     }
 
     $vars[self::KEY_UPLOAD_MAX_FILESIZE] = ini_get(self::KEY_UPLOAD_MAX_FILESIZE);
@@ -70,7 +71,7 @@ class UsersFromCSV extends DefaultPlugin
    * @param UploadedFile $uploadedFile
    * @return null|string
    */
-  protected function handleFileUpload($uploadedFile,$delimiter=',',$enclosure='"')
+  protected function handleFileUpload($uploadedFile,$delimiter=',',$enclosure='"',$chAdminPass='0')
   {
     $errMsg = '';
     if ( !($uploadedFile instanceof UploadedFile) )
@@ -93,6 +94,7 @@ class UsersFromCSV extends DefaultPlugin
     $UsersCsvImport = $this->getObject('app.users_csv_import');
     $UsersCsvImport->setDelimiter($delimiter);
     $UsersCsvImport->setEnclosure($enclosure);
+    $UsersCsvImport->setChangeAdminPassword($chAdminPass);
     return $UsersCsvImport->handleFile($uploadedFile->getRealPath());
   }
 
