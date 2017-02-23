@@ -14,7 +14,7 @@
 {% if licensesMain %}
 {% for ids in licensesMain %}
 {% if ids.textMain %}
-<License type="global" name="{{ids.contentMain}}" spdxidentifier="n/a">
+<License type="global" name="{{ids.contentMain}}" spdxidentifier="{{ids.contentMain}}">
 <Content><![CDATA[{{ids.textMain}}
 ]]></Content>
 <Files><![CDATA[{% for id in ids.files %}{% if id %}{{id}}
@@ -34,7 +34,7 @@
 {% if licenses %}
 {% for ids in licenses %}
 {% if ids.text %}
-<License type="{{ids.risk}}" name="{{ids.content}}" spdxidentifier="n/a">
+<License type="{{ids.risk}}" name="{{ids.content}}" spdxidentifier="{{ids.content}}">
 <Content><![CDATA[{{ids.text}}
 ]]></Content>
 <Files><![CDATA[{% for id in ids.files %}{% if id %}{{id}}
