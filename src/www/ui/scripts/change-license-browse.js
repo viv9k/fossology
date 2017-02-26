@@ -1,6 +1,6 @@
 /*
- Copyright (C) 2014, Siemens AG
- Author: Daniele Fognini, Johannes Najjar
+ Copyright (C) 2014-2017, Siemens AG
+ Author: Daniele Fognini, Johannes Najjar, Shaheem Azmal M MD
  
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ var removed = false;
 $(document).ready(function () {
   bulkModal = $('#bulkModal').plainModal();
   userModal = $('#userModal').plainModal();
+  clearingHistoryDataModal = $('#ClearingHistoryDataModal').plainModal();
 });
 
 function openBulkModal(uploadTreeId) {
@@ -51,6 +52,15 @@ function openUserModal(uploadTreeId) {
 
 function closeUserModal() {
   userModal.plainModal('close');
+}
+
+function openClearingHistoryDataModal(uploadTreeId) {
+  $('#uploadTreeId').val(uploadTreeId);
+  clearingHistoryDataModal.plainModal('open');
+}
+
+function closeClearingHistoryDataModal() {
+  clearingHistoryDataModal.plainModal('close');
 }
 
 function scheduleBulkScan() {

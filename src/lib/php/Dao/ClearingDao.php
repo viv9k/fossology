@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (C) 2014-2016, Siemens AG
+Copyright (C) 2014-2017, Siemens AG
 Author: Johannes Najjar
 
 This program is free software; you can redistribute it and/or
@@ -157,7 +157,7 @@ class ClearingDao extends Object
    * @param bool $onlyCurrent
    * @return ClearingDecision[]
    */
-  function getFileClearings(ItemTreeBounds $itemTreeBounds, $groupId, $onlyCurrent=true)
+  function getFileClearings(ItemTreeBounds $itemTreeBounds, $groupId, $onlyCurrent=true, $forClearingHistory=false)
   {
     $this->dbManager->begin();
 
@@ -168,7 +168,7 @@ class ClearingDao extends Object
 
     $decisionsCte = $this->getRelevantDecisionsCte($itemTreeBounds, $groupId, $onlyCurrent, $statementName, $params, $condition);
 
-    $clearingsWithLicensesArray = $this->getDecisionsFromCte($decisionsCte, $statementName, $params);
+    $clearingsWithLicensesArray = $this->getDecisionsFromCte($decisionsCte, $statementName, $params, $forClearingHistory);
 
     $this->dbManager->commit();
     return $clearingsWithLicensesArray;
@@ -211,7 +211,7 @@ class ClearingDao extends Object
    * @param array $params
    * @return ClearingDecision[]
    */
-  private function getDecisionsFromCte($decisionsCte, $statementName, $params) {
+  private function getDecisionsFromCte($decisionsCte, $statementName, $params, $forClearingHistory=false) {
     $sql = "$decisionsCte
             SELECT
               decision.*,
@@ -273,7 +273,9 @@ class ClearingDao extends Object
         $firstMatch = false;
         //prepare the new one
         $previousClearingId = $clearingId;
-        $previousItemId = $itemId;
+        if(!$forClearingHistory){
+          $previousItemId = $itemId;
+        }
         $clearingEvents = array();
         $clearingDecisionBuilder = ClearingDecisionBuilder::create()
             ->setClearingId($row['id'])
