@@ -23,14 +23,17 @@ include $(VARS)
 FILES = `find . -type f | grep -v svn |grep -v tests | grep -E "(php)$$"`
 
 DIR = `pwd` 
-
+THRIFTDIR = /tmp/thrift/lib/php/lib/Thrift
 all:
 	@echo "nothing to do"
 
 install: all
-	cd ~ && git clone https://github.com/apache/thrift.git
-	cp -ar ~/thrift/lib/php/lib/Thrift/ $(DIR)
-	rm -rf ~/thrift
+	@if [ -d $(THRIFTDIR) ]; then \
+		cp -ar $(THRIFTDIR)/ $(DIR); \
+	else \
+		cd /tmp && git clone https://github.com/apache/thrift.git ;\
+		cp -ar $(THRIFTDIR)/ $(DIR); \
+	fi
 	mkdir -p $(DESTDIR)$(MODDIR)/lib/Thrift
 	for file in $(FILES); do \
 		$(INSTALL_DATA) $$file $(DESTDIR)$(MODDIR)/lib/Thrift/$$file; \
@@ -38,11 +41,12 @@ install: all
 
 uninstall:
 	@echo "Removing thrift libs"
-	rm -rf $(DESTDIR)$(MODDIR)/lib/thrift
+	rm -rf $(DESTDIR)$(MODDIR)/lib/Thrift
 
 clean:
-	@echo "nothing to do"
-
+	@echo "Removing Thrift lib"
+	rm -rf Thrift
+        
 test:
 	@echo "nothing to do"
 
