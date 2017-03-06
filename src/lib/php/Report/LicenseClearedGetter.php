@@ -165,14 +165,22 @@ class LicenseClearedGetter extends ClearedGetterCommon
     $itemTreeBounds = $this->uploadDao->getParentItemBounds($uploadId);
     $scannerLicenseHistogram = $this->licenseDao->getLicenseHistogram($itemTreeBounds, $allAgentIds);
     $editedLicensesHist = $this->clearingDao->getClearedLicenseIdAndMultiplicities($itemTreeBounds, $groupId);
-    $totalLicenses = array_unique(array_merge(array_keys($scannerLicenseHistogram), array_keys($editedLicensesHist)));
+    $noScannerLicenseFoundCount = array_key_exists(LicenseDao::NO_LICENSE_FOUND, $scannerLicenseHistogram)
+            ? $scannerLicenseHistogram[LicenseDao::NO_LICENSE_FOUND]['count'] : 0;
+    $editedNoLicenseFoundCount = array_key_exists(LicenseDao::NO_LICENSE_FOUND, $editedLicensesHist)
+            ? $editedLicensesHist[LicenseDao::NO_LICENSE_FOUND]['count'] : 0;
 
+    $totalLicenses = array_unique(array_merge(array_keys($scannerLicenseHistogram), array_keys($editedLicensesHist)));
     foreach($totalLicenses as $licenseShortName){
       if (array_key_exists($licenseShortName, $scannerLicenseHistogram)){
         $count = $scannerLicenseHistogram[$licenseShortName]['unique'];
       }
       $editedCount = array_key_exists($licenseShortName, $editedLicensesHist) ? $editedLicensesHist[$licenseShortName]['count'] : 0;
-      $LicenseHistArray[] = array("scannerCount" => $count, "editedCount" => $editedCount, "licenseShortname" => $licenseShortName);
+      if(strcmp($licenseShortName, LicenseDao::NO_LICENSE_FOUND) !== 0){
+        $LicenseHistArray[] = array("scannerCount" => $count, "editedCount" => $editedCount, "licenseShortname" => $licenseShortName);
+      }else{
+        $LicenseHistArray[] = array("scannerCount" => $noScannerLicenseFoundCount, "editedCount" => $editedNoLicenseFoundCount, "licenseShortname" => $licenseShortName);
+      }
     }
     return $LicenseHistArray;
   }
