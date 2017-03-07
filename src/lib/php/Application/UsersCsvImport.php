@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (C) 2014-2016, Siemens AG
+Copyright (C) 2014-2017, Siemens AG
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,6 +38,9 @@ class UsersCsvImport {
 
   /** @var string */
   protected $enclosure = '"';
+
+  /** @var string */
+  protected $changeadminPassword = '0';
 
   /** @var null|array */
   protected $headrow = null;
@@ -80,6 +83,11 @@ class UsersCsvImport {
   public function setEnclosure($enclosure='"')
   {
     $this->enclosure = substr($enclosure,0,1);
+  }
+
+  public function setChangeAdminPassword($changeadminPassword='0')
+  {
+    $this->changeadminPassword = $changeadminPassword;
   }
   
   /**
@@ -214,34 +222,44 @@ class UsersCsvImport {
     $agentList = "agent_copyright,agent_ecc,agent_mimetype,agent_monk,agent_nomos,agent_pkgagent";
 
     if(!empty($row['userName'])){
-
       $userData = array();
       $userData['user_perm'] = $this->userPermissions[$row['userPerm']];
+
       if(empty($userData['user_perm'])){
         $userData['user_perm'] = $this->userPermissions['none'];
       }
+
       $userData['root_folder_fk'] = $this->handleCsvFolders($row['rootFolder']);
 
-      $getUserIdIfUserExists = $this->dbManager->getSingleRow('SELECT user_pk,user_seed,user_pass FROM users WHERE user_name = $1 LIMIT 1;',
+      $getUserIdIfUserExists = $this->dbManager->getSingleRow('SELECT user_pk,user_seed,user_pass,user_perm FROM users WHERE user_name = $1 LIMIT 1;',
         array($row['userName']),'userName.check'.rand());
-      /* 
-         Checking for userseed and password of new password is added.
-         Changing of password requires emptying of userseed.
-      */
+
+      /** 
+      **  Checking for userseed and password of new password is added.
+      **  Changing of password requires emptying of userseed.
+      **/
       if(empty($row['userSeed']) && (strcmp($row['userPass'], $getUserIdIfUserExists['user_pass']) !== 0)){
-          $userData['user_seed'] = rand() . rand();
-          $userData['user_pass'] = sha1($userData['user_seed'] . $row['userPass']);
+        $userData['user_seed'] = rand() . rand();
+        $userData['user_pass'] = sha1($userData['user_seed'] . $row['userPass']);
       }else{
-          $userData['user_seed'] = $row['userSeed'];
-          $userData['user_pass'] = $row['userPass'];
+        $userData['user_seed'] = $row['userSeed'];
+        $userData['user_pass'] = $row['userPass'];
       }
+
+      if(empty($this->changeadminPassword) && ($getUserIdIfUserExists['user_perm'] == $this->userPermissions['admin'])){
+        $userData['user_seed'] = $getUserIdIfUserExists['user_seed'];
+        $userData['user_pass'] = $getUserIdIfUserExists['user_pass'];
+      }
+
       if(empty($getUserIdIfUserExists)){
         $addUser = add_user($row['userName'], $row['description'], $userData['user_seed'], $userData['user_pass'], $userData['user_perm'], $row['userEmail'], $row['emailNotify'], $agentList, $userData['root_folder_fk'], $default_bucketpool_fk='');
+
         if(empty($addUser)){
           $logMessage.= "User record ".$row['userName']." added";
         }else{
           $logMessage.= "For user ".$row['userName'] ." :: ".$addUser;
         }
+
       }else{
         $userData['user_desc'] = $row['description'];
         $userData['user_email'] = $row['userEmail'];
