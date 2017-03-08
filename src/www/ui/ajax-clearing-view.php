@@ -324,12 +324,12 @@ class AjaxClearingView extends FO_Plugin
       $acknowledgementField = $this->getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $acknowledgement, 3);
       $commentField = $this->getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $comment, 4);
       $table[$licenseShortName] = array('DT_RowId' => $id,
-          '0' => $licenseShortNameWithLink,
-          '1' => implode("<br/>", $types),
-          '2' => $reportInfoField,
-          '3' => $acknowledgementField,
-          '4' => $commentField,
-          '5' => $actionLink);
+          '0' => $actionLink,
+          '1' => $licenseShortNameWithLink,
+          '2' => implode("<br/>", $types),
+          '3' => $reportInfoField,
+          '4' => $acknowledgementField,
+          '5' => $commentField);
     }
 
     foreach ($removedLicenses as $licenseShortName => $clearingResult)
