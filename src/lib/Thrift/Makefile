@@ -17,22 +17,24 @@
 ######################################################################
 
 TOP = ../../..
+
 VARS = $(TOP)/Makefile.conf
 include $(VARS)
 
 FILES = `find . -type f | grep -v svn |grep -v tests | grep -E "(php)$$"`
 
-DIR = `pwd` 
-THRIFTDIR = /tmp/thrift/lib/php/lib/Thrift
+CURRENTDIR = `pwd`
+THRIFTDIR = thrift/lib/php/lib/Thrift
+
 all:
 	@echo "nothing to do"
 
 install: all
-	@if [ -d $(THRIFTDIR) ]; then \
-		cp -ar $(THRIFTDIR)/ $(DIR); \
+	@if [ -d $(TOP)/$(THRIFTDIR) ]; then \
+		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
 	else \
-		cd /tmp && git clone https://github.com/apache/thrift.git ;\
-		cp -ar $(THRIFTDIR)/ $(DIR); \
+		git clone --branch 0.10.0 https://github.com/apache/thrift.git $(TOP)/thrift; \
+		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
 	fi
 	mkdir -p $(DESTDIR)$(MODDIR)/lib/Thrift
 	for file in $(FILES); do \
@@ -46,7 +48,8 @@ uninstall:
 clean:
 	@echo "Removing Thrift lib"
 	rm -rf Thrift
-        
+	rm -rf $(TOP)/thrift
+				        
 test:
 	@echo "nothing to do"
 
