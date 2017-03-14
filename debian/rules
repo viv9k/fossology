@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-# Sample debian/rules that uses debhelper.
+# Sample debian/rules that uses debhelper. 
+# debhelper is licensed under GPL-2.0, more info at:
+# http://joeyh.name/code/debhelper/
 #
 # This file was originally written by Joey Hess and Craig Small.
 # As a special exception, when this file is copied by dh-make into a
@@ -85,6 +87,7 @@ install-arch:
 	$(MAKE) DESTDIR=$(CURDIR)/debian/fossology-common \
            PREFIX=/usr SYSCONFDIR=/etc/fossology LOCALSTATEDIR=/var \
            -C src composer_install
+
 	cp $(CURDIR)/Word2007.php $(CURDIR)/debian/fossology-common/usr/share/fossology/vendor/phpoffice/phpword/src/PhpWord/Writer/
 	mkdir -p $(CURDIR)/debian/fossology-common/usr/share/fossology/setup
 	cp $(CURDIR)/install/scripts/* $(CURDIR)/debian/fossology-common/usr/share/fossology/setup

@@ -13,10 +13,10 @@ filter PBGRP = Applications/Engineering
 filter PBLIC = GPLv2
 
 # PBDEP is replaced by the list of dependencies
-filter PBDEP = file php-xml 
+filter PBDEP = file,php-xml 
 
 # PBBUILDDEP is replaced by the list of build dependencies
-filter PBBUILDDEP = perl-Text-Template subversion file
+filter PBBUILDDEP = perl-Text-Template,subversion,file
 # libextractor and perl-Text-Template available as rpmforge packages
 
 # PBSUF is replaced by the package suffix ($pbsuf'} in code)

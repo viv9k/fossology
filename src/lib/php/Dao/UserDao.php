@@ -392,4 +392,18 @@ class UserDao extends Object
     }
     return $groupRow['group_name'];
   }
+
+  /**
+   * @param int $userId
+   * @return string
+   */
+  public function getUserEmail($userId)
+  {
+    $userRow = $this->dbManager->getSingleRow("SELECT user_email FROM users WHERE user_pk=$1",array($userId),__METHOD__);
+    if(!$userRow)
+    {
+      throw new \Exception('unknown user with id='.$userId);
+    }
+    return $userRow['user_email'];
+  }
 }
