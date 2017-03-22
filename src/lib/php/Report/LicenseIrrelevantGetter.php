@@ -26,8 +26,12 @@ class LicenseIrrelevantGetter extends ClearedGetterCommon
   /** @var ClearingDao */
   private $clearingDao;
 
-  public function __construct() {
+  /** @var irreleavntFilesOnly */
+  private $irreleavntFilesOnly;
+
+  public function __construct($irreleavntFilesOnly=true) {
     $this->clearingDao = $GLOBALS['container']->get('dao.clearing');
+    $this->irreleavntFilesOnly = $irreleavntFilesOnly;
     parent::__construct($groupBy = 'text');
   }
 
@@ -52,22 +56,34 @@ class LicenseIrrelevantGetter extends ClearedGetterCommon
   {
     $statements = array();
     foreach($ungrupedStatements as $statement) {
+      $fileName = $statement['fileName'];
       $dirName = dirname($statement['fileName']);
       $baseName = basename($statement['fileName']);
-
-      if (array_key_exists($dirName, $statements))
-      {
-        $currentFiles = &$statements[$dirName]['files'];
-        if (!in_array($baseName, $currentFiles)){
-          $currentFiles[] = $baseName;
+      $comment = $statement['comment'];
+      $licenseName = $statement['shortname'];
+      if($this->irreleavntFilesOnly){
+        if (array_key_exists($dirName, $statements))
+        {
+          $currentFiles = &$statements[$dirName]['files'];
+          if (!in_array($baseName, $currentFiles)){
+            $currentFiles[] = $baseName;
+          }
+        }
+        else{
+          $statements[$dirName] = array(
+             "content" => convertToUTF8($dirName, false),
+             "files" => array($baseName)
+          );
         }
       }
-      else
-      {
-        $statements[$dirName] = array(
-          "content" => convertToUTF8($dirName, false),
-          "files" => array($baseName)
-        );
+      else{
+        if($comment){
+          $statements[] = array(
+            "content" => $licenseName,
+            "text" => $comment,
+            "files" => array($fileName)
+          );
+        }
       }
     }
     return $statements;
