@@ -14,7 +14,7 @@
 {% if licensesMain %}
 {% for ids in licensesMain %}
 {% if ids.textMain %}
-<License type="global" name="{{ids.contentMain}}" spdxidentifier="{{ids.contentMain}}">
+<License type="global" name="{{ids.contentMain|e}}" spdxidentifier="{{ids.contentMain|e}}">
 <Content><![CDATA[{{ids.textMain}}
 ]]></Content>
 <Files><![CDATA[{% for id in ids.files %}{% if id %}{{id}}
@@ -22,7 +22,7 @@
 {% endfor %}
 ]]></Files>
 {% if ids.acknowledgementMain is defined %}
-<Acknowledgements><![CDATA[{{ids.acknowledgementMain}}]]></Acknowledgements>
+<Acknowledgements><![CDATA[{{ids.acknowledgementMain|e}}]]></Acknowledgements>
 {% endif %}
 </License>
 {% endif %}
@@ -34,7 +34,7 @@
 {% if licenses %}
 {% for ids in licenses %}
 {% if ids.text %}
-<License type="{{ids.risk}}" name="{{ids.content}}" spdxidentifier="{{ids.content}}">
+<License type="{{ids.risk}}" name="{{ids.content|e}}" spdxidentifier="{{ids.content|e}}">
 <Content><![CDATA[{{ids.text}}
 ]]></Content>
 <Files><![CDATA[{% for id in ids.files %}{% if id %}{{id}}
@@ -42,7 +42,7 @@
 {% endfor %}
 ]]></Files>
 {% if ids.acknowledgement is defined %}
-<Acknowledgements><![CDATA[{{ids.acknowledgement}}]]></Acknowledgements>
+<Acknowledgements><![CDATA[{{ids.acknowledgement|e}}]]></Acknowledgements>
 {% endif %}
 </License>
 {% endif %}
