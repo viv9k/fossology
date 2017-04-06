@@ -21,6 +21,11 @@ before_script:
   - apt-get install -qq -y libboost-regex-dev libboost-program-options-dev
   - apt-get install -y liblocal-lib-perl
 
+  # TO resolve ninka build dependency
+  - git clone --branch release-1.1104 https://github.com/dagolden/IO-CaptureOutput.git
+  - cd IO-CaptureOutput && perl Makefile.PL && make && make test && make install && cd ..
+  - rm -rf IO-CaptureOutput
+
   # Create and patch FOSSology cache
   - mkdir -p /var/local/cache/fossology && chown $(whoami) /var/local/cache/fossology
   
