@@ -61,6 +61,9 @@ class UnifiedReport extends Agent
   /** @var BulkMatchesGetter  */
   private $bulkMatchesGetter;
 
+  /** @var licenseIrrelevantCommentGetter  */
+  private $licenseIrrelevantCommentGetter;
+
   /** @var UploadDao */
   private $uploadDao;
 
@@ -109,6 +112,7 @@ class UnifiedReport extends Agent
     $this->licenseMainGetter = new LicenseMainGetter();
     $this->bulkMatchesGetter = new BulkMatchesGetter();
     $this->licenseIrrelevantGetter = new LicenseIrrelevantGetter();
+    $this->licenseIrrelevantCommentGetter = new LicenseIrrelevantGetter(false);
 
     parent::__construct(REPORT_AGENT_NAME, AGENT_VERSION, AGENT_REV);
 
@@ -225,15 +229,17 @@ class UnifiedReport extends Agent
 
     $this->licenseClearedGetter->setOnlyComments(true);
     $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
-    
+
     $licensesIrre = $this->licenseIrrelevantGetter->getCleared($uploadId, $groupId);
+
+    $licensesIrreComment = $this->licenseIrrelevantCommentGetter->getCleared($uploadId, $groupId);
 
     $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
     $copyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
-    
+
     $ungrupedStatements = $this->eccClearedGetter->getUnCleared($uploadId, $groupId);
     $ecc = $this->groupStatements($ungrupedStatements, true);
-    
+
     $ungrupedStatements = $this->ipClearedGetter->getUnCleared($uploadId, $groupId);
     $ip = $this->groupStatements($ungrupedStatements, true);
 
@@ -245,6 +251,7 @@ class UnifiedReport extends Agent
                       "ecc" => $ecc,
                       "ip" => $ip,
                       "licensesIrre" => $licensesIrre,
+                      "licensesIrreComment" => $licensesIrreComment,
                       "licensesMain" => $licensesMain,
                       "licensesHist" => $licensesHist
                      );
@@ -881,6 +888,11 @@ class UnifiedReport extends Agent
     $titleSubHeadingIrre = "(Path, Files)";
     $this->getRowsAndColumnsForIrre($section, $heading, $contents['licensesIrre']['statements'], $titleSubHeadingIrre);
 
+    /* Display irrelavant file license comment  */
+    $subHeading = "Comment for Irrelevant files";
+    $section->addTitle(htmlspecialchars("$subHeading"), 3);
+    $titleSubHeadingNotes = "(License name, Comment Entered, File path)";
+    $this->bulkLicenseTable($section, "", $contents['licensesIrreComment']['statements'], $titleSubHeadingNotes);
 
     /* clearing protocol change log table */
     $sR->clearingProtocolChangeLogTable($section);
