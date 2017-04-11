@@ -547,6 +547,7 @@ class UnifiedReport extends Agent
         $cell2->addText($licenseText, $this->licenseTextColumn, "pStyle");
         if(!empty($licenseMain["files"])){
           $cell3 = $table->addCell($thirdColLen, $styleColumn);
+          asort($licenseMain["files"]);
           foreach($licenseMain["files"] as $fileName){
             $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
           }
@@ -593,6 +594,7 @@ class UnifiedReport extends Agent
         $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["text"], ENT_DISALLOWED));
         $cell2->addText($licenseText, $this->licenseTextColumn, "pStyle");
         $cell3 = $table->addCell($thirdColLen, null, "pStyle");
+        asort($licenseStatement["files"]);
         foreach($licenseStatement["files"] as $fileName){ 
           $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
         }
@@ -636,6 +638,7 @@ class UnifiedReport extends Agent
           $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["text"], ENT_DISALLOWED));
           $cell2->addText($licenseText, $this->licenseTextColumn, "pStyle");
           $cell3 = $table->addCell($thirdColLen, $riskarray['color']);
+          asort($licenseStatement["files"]);
           foreach($licenseStatement["files"] as $fileName){ 
             $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
           }
@@ -682,6 +685,7 @@ class UnifiedReport extends Agent
         $cell2 = $table->addCell($secondColLen);
         $cell2->addText(htmlspecialchars($statements['comments'], ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
         $cell3 = $table->addCell($thirdColLen);
+        asort($statements["files"]);
         foreach($statements['files'] as $fileName){ 
           $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
         }
@@ -716,6 +720,7 @@ class UnifiedReport extends Agent
         $cell1 = $table->addCell($firstColLen);
         $cell1->addText(htmlspecialchars($statements['content']),null, "pStyle");
         $cell2 = $table->addCell($secondColLen);
+        asort($statements["files"]);
         foreach($statements['files'] as $fileName){
           $cell2->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
         }
