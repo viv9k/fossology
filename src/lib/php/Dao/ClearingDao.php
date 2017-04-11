@@ -59,7 +59,6 @@ class ClearingDao extends Object
   private function getRelevantDecisionsCte(ItemTreeBounds $itemTreeBounds, $groupId, $onlyCurrent, &$statementName, &$params, $condition="")
   {
     $uploadTreeTable = $itemTreeBounds->getUploadTreeTableName();
-
     $params[] = DecisionTypes::WIP; $p1 = "$". count($params);
     $userId = (isset($_SESSION) && array_key_exists('UserId', $_SESSION)) ? $_SESSION['UserId'] : 0;
     if(!empty($userId)){
@@ -228,7 +227,7 @@ class ClearingDao extends Object
               ce.comment AS comment,
               ce.acknowledgement AS acknowledgement
             FROM decision
-              LEFT JOIN users ON decision.user_id = users.user_pk
+            LEFT JOIN users ON decision.user_id = users.user_pk
             LEFT JOIN clearing_decision_event cde ON cde.clearing_decision_fk = decision.id
             LEFT JOIN clearing_event ce ON ce.clearing_event_pk = cde.clearing_event_fk
             LEFT JOIN license_ref lr ON lr.rf_pk = ce.rf_fk
@@ -768,7 +767,8 @@ INSERT INTO clearing_decision (
     $statementName = __METHOD__ ;
     $sql = $uploadTreeProxy->asCte()
         .' INSERT INTO clearing_decision (uploadtree_fk,pfile_fk,user_fk,group_fk,decision_type,scope) 
-          SELECT uploadtree_pk itemid,pfile_fk pfile_id, $3, $4, $5, $6 FROM UploadTreeView';
+          SELECT uploadtree_pk itemid,pfile_fk pfile_id, $3, $4, $5, $6 FROM UploadTreeView
+	  WHERE NOT EXISTS (SELECT uploadtree_fk FROM clearing_decision WHERE decision_type=$5 and uploadtree_fk=UploadTreeView.uploadtree_pk)';
     $this->dbManager->prepare($statementName, $sql);
     $res = $this->dbManager->execute($statementName,$params);
     $this->dbManager->freeResult($res);
@@ -835,7 +835,16 @@ INSERT INTO clearing_decision (
     $params = array();
     $decisionsCte = $this->getRelevantDecisionsCte($itemTreeBounds, $groupId, $onlyCurrent, $statementName, $params);
     $params[] = DecisionTypes::IRRELEVANT;
-    $sql = "$decisionsCte SELECT itemid uploadtree_pk FROM decision WHERE type_id=$".count($params);
+    $sql = "$decisionsCte
+            SELECT
+	    itemid as uploadtree_pk,
+            lr.rf_shortname AS shortname,
+	    comment
+            FROM decision
+            LEFT JOIN clearing_decision_event cde ON cde.clearing_decision_fk = decision.id
+            LEFT JOIN clearing_event ce ON ce.clearing_event_pk = cde.clearing_event_fk
+            LEFT JOIN license_ref lr ON lr.rf_pk = ce.rf_fk
+            WHERE type_id=$".count($params);
     $this->dbManager->prepare($statementName, $sql);
     $res = $this->dbManager->execute($statementName, $params);
     $irrelevantFiles = $this->dbManager->fetchAll($res);
