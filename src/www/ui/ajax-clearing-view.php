@@ -347,12 +347,12 @@ class AjaxClearingView extends FO_Plugin
         $id = implode(',', $idArray);
         $table[$licenseShortName] = array('DT_RowId' => $id,
             'DT_RowClass' => 'removed',
-            '0' => $licenseShortNameWithLink,
-            '1' => implode("<br/>", $agents),
-            '2' => "-",
+            '0' => $actionLink,
+            '1' => $licenseShortNameWithLink,
+            '2' => implode("<br/>", $agents),
             '3' => "-",
             '4' => "-",
-            '5' => $actionLink);
+            '5' => "-",);
       }
     }
 
