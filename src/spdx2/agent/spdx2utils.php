@@ -49,6 +49,10 @@ class SpdxTwoUtils
    */
   static public function addPrefixOnDemand($license, $spdxValidityChecker = null)
   {
+    if(empty($license) || $license === "NOASSERTION")
+    {
+      return "NOASSERTION";
+    }
     if(strpos($license, " OR ") !== false)
     {
       return "(" . $license . ")";
@@ -80,12 +84,10 @@ class SpdxTwoUtils
 
   static public function addPrefixOnDemandList($licenses, $spdxValidityChecker = null)
   {
-    $ret = array();
-    foreach($licenses as $license)
+    return array_map(function ($license) use ($spdxValidityChecker)
     {
-      $ret[] = self::addPrefixOnDemand($license, $spdxValidityChecker);
-    }
-    return $ret;
+      return SpdxTwoUtils::addPrefixOnDemand($license, $spdxValidityChecker);
+    },$licenses);
   }
 
   /**
@@ -101,10 +103,7 @@ class SpdxTwoUtils
       return "";
     }
 
-    $licenses = array_map(function ($license) use ($spdxValidityChecker)
-    {
-      return SpdxTwoUtils::addPrefixOnDemand($license, $spdxValidityChecker);
-    },$licenses);
+    $licenses = self::addPrefixOnDemandList($licenses, $spdxValidityChecker);
     sort($licenses, SORT_NATURAL | SORT_FLAG_CASE);
 
     if(count($licenses) == 3 &&

@@ -4,6 +4,7 @@
 
 TOP = ..
 VARS = $(TOP)/Makefile.conf
+COMPOSER_PHAR ?= composer
 include $(VARS)
 
 # the directories we do things in by default
@@ -52,7 +53,8 @@ $(BUILDDIRS):
 	$(MAKE) -s -C $(@:build-%=%)
 
 # install depends on everything being built first
-install: all $(INSTALLDIRS) composer_install
+install: install_offline composer_install
+install_offline: all $(INSTALLDIRS)
 $(INSTALLDIRS):
 	$(MAKE) -s -C $(@:install-%=%) install
 
@@ -79,12 +81,12 @@ $(CLEANDIRS):
 	$(MAKE) -s -C $(@:clean-%=%) clean
 
 phpvendors:
-	composer install -q
+	$(COMPOSER_PHAR) install -q
 
 composer_install:
 	@echo "current dir: '$${PWD}'"
 	$(INSTALL_DATA) composer.json composer.lock $(DESTDIR)$(MODDIR)
-	(cd $(DESTDIR)$(MODDIR); composer install -q --no-dev)
+	(cd $(DESTDIR)$(MODDIR); export COMPOSER_HOME=/dev/null; $(COMPOSER_PHAR) install -q --no-dev)
 	(cp ../Word2007.php $(DESTDIR)$(MODDIR)/vendor/phpoffice/phpword/src/PhpWord/Writer/)
 
 .PHONY: subdirs $(BUILDDIRS)

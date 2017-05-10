@@ -1,0 +1,308 @@
+fossology (3.0.0~rc1-1) unstable; urgency=low
+
+  * unofficial build version
+
+ -- bcornec <bruno.cornec@hpe.com>  Fri, 26 Aug 2016 16:35:55 +0800
+
+fossology (3.0.0) unstable; urgency=low
+
+  * New Features
+    *New folder navigation** : Jquery based table UI for downloads including sorting and filtering with more handling attributes per upload.
+    *New license UI for editing concluded licenses** : Instead of providing a separate UI for license conclusion, now a single file view license UI allows for efficient license situation review: highlighted texts and selected licenses are moving together to one view now.
+    *Re-use of license decisions** : At uploading a new file, a user can select existing uploads for reusing already applied license decisions, if the file hash is the same.
+    *Bulk assignment of license decisions based on text phrases** : When identifying a phrase hinting to particular license (e.g. "license info can be found in readme"), the user can define this text as search string and assign a license decision to every matching file.
+    *Auto-decision of the Monk and Nomos scanner find the same license in the same text area** : If both scanners find the same license by short name, then a license decision can be applied automatically.
+    *Adding Ninka as optional scanner** : At upload or at scheduling jobs, the user can run Ninka scanner with FOSSology as third license scanner.
+    *New UI for editing copyrights** : Separate display for URL, E-Mails, copyright statements and authorship notes.
+    *Adding the concept of candidate licenses, to let users add licenses as candidates for the system** : New licenses must be added carefully to the server database. However, in order not to stop a user a reviewing an upload, candidate licenses can be registered for addition to the server by the server admin later.
+    *License import and export using a CSV interface** : Using CSV formatted files, licenses with the reference texts can be imported and exported to the FOSSology server.
+    *Adding readme / copying file generation** : Concluded licenses and copyright statements are written into a text file that is information for the distribution.
+    *SPDX 2.0 file generation** : Based on the scan results and concluded licenses, SPDX 2.0 XML format is generated (passes verification tool).
+  * Issues: Corrections
+    * #508 : Copyright agent fails to show copyrights without license information : Corrected filter value
+    * #492 : Correcting SPDX-non compliant LicenseRefs : FOSSology license refs contained so characters like single quotes which are not SPDX compliant
+    * #490 : Missing (report) cache for license overview : Fixed performance issue with separate new view in PHP
+    * #479 : Correcting Nomos Segmentation fault : That was an issue also shown in testing, corrected
+    * #472 : Adding escaping to license texts in SPDX output : If a license contains non-std chars, the generated extracted texts could contains also these non-UTF-8 characters. As such, the SPDX was invalid.
+    * #469 : Adding tooltip to the priority of the browse menu : In order to explain the user what the green and blue arrows in the priority column mean
+    * #467 : Adding header content of main table in the browse view : In order to tell the user which the current folder is that is displayed
+    * #465 : using wget_agent can modify files : Fixed an incompatibility with the wget call
+    * #404 : Error when load the license browse page : Fixed error in migration script
+    * #401 : At fo_nomos_license_list.php using --user instead of --username : Fixed by corrected commit
+    * #400 : Upload from File page cannot select folder : Corrected the according FolderDAO (data access object)
+    * #392 : Error when run cli cp2foss script : Corrected wrong function call
+    * #384 : Dashboard failure in 2.6.2 : Was a compatibility issue between different postgresql versions, solved for 9.2 and 9.3 now
+    * #366 : Incomplete scheduler error message  : Loggin missing columns
+    * #364 : At large number of jobs - performance problem : Correcting the SQL query to be a dimension faster
+    * #362 : Allow install to skip version (to skip versions at updates) : Changed the fossinit.php accordingly
+    * #360 : MIT and University of Illinois Open Source licenses not detected : Added licenses
+    * #359 : Remove hardcoded path in wget_agent : Fixed / removed hardcoced path
+    * #355 : Password in DBConnection string is printed to Fossology log when connection attempt fails : Password is removed from connection info map before printed to log
+    * #352 : Copyright agent using uploadtree: is it better now? : Ran analyses on copyright agent which confirmed copyright performance / precision
+    * #350 : License not found : Not really licenses, but some license references where not found, but they are found now with correction to the Nomos
+    * #349 : cp2foss fails to upload a directory using '*' option  : Corrected the use of wild cards
+    * #347 : Copyright agent 2.5.0: support copyright symbol  : Copyright symbol in UTF-8 is supported
+    * #345 : copyright agent 2.5.0: non-ASCII symbols : Changed copyright agent does cover also non-ASCII symbols
+    * #339 : A read only user can find none public files : Corrected access rights
+    * #335 : Scanner dependency: Monk agent rescan link not shown (needed for new licenses) : Adding manual setting to allow for enabling monk rescans
+    * #323 : Completely remove BSAM : Removed BSAM sub-project and UI references from codebase
+    * #282 : Need License Admin Documentation : Added documentation to the fossology.org wiki
+    * #264 : Nomos missing unidentified license ("Tapjoy") : Corrected and Nomos finds it now
+    * #259 : Documentation fix for copyright agent : Corrected documentation of the copyright agent
+    * #251 : On Maintenance page, be able to check all checkboxes one time : Corrected issue
+    * #218 : Edit users forgets users agent selections : Corrected issue
+    * #213 : Copyright - missed after long year string, for example ten years in a row : Corrected issue
+    * #212 : Moving an upload folder fails (circle protection) : Corrected issue
+    * #24 : Migration issue with table license_file_audit  : Corrected issue
+  * Issues: Enhancements
+    * #342 : Show Jobs - add estimated completion date/time : New completion time column was added (ETA)
+    * #319 : Tooltips for UI elements : Added tooltips mechanism and text for many UI elements
+    * #224 : At listing of copyrights - add text filter : Added a filter field - comes with the new jquery UI
+    * #214 : Create survey & solicit fossology users to respond to questions about fossology usage : yeay: http://www.fossology.org/projects/fossology/wiki/WhoUsesFOSSology
+  * Issues: Closed w/o Particular Commit
+    * #474 : copyright browser file path misplaced : Indeed, but UI needs major correction anyways, unchanged
+    * #388 : Major Nomos Regression with AGPL : Checked that license finding is acceptable
+    * #387 : Both Monk and Nomos appear to miss PostgreSQL License : Checked that license are found with reference file
+    * #338 : License browser regression - schedule link : Checked that link is there
+    * #318 : Scaling performance issues : Checked that large files seem to work with tables (also referring to #490)
+    * #216 : ‘(c)' is recognized as a copyright signature wrongly : Retested with current version and does not seem to be a serious problem since false positives have been reduced
+    * #247 : The maintagent - add feature to remove failed uploads  : Closed because user can remove uploads also with the menu item for organising uploads
+    * #238 : Browser tab interference when using FOSSology : Changes in the PHP UI do not show this issue anymore
+    * #225 : Folder selection fails in Edit Uploaded File Properties : Retested and current version does not show issue anymore
+    * #219 : New regex scanner module : There is on new module in the form of the all-new copyright agent (in c++) which is also generalised and thus extensible for new applications
+    * #215 : Flag license as possibly proprietary : Closed without modification because it needs to be solved with commercial license options
+    * #180 : Push continuous integration information to fossology.org : Is going to be moved to TLF
+    * #26 : View License Audit Link confusing with Edit concluded license  : Covered with changes in the UI anyways
+    * #25 : Pull SPDX module into master branch : Closed, because SPDX module was there
+
+ -- Steffen Weber <steffen.weber@tngtech.com>  Thu, 23 Jul 2015 16:34:24 +0200
+
+fossology (2.6.0) unstable; urgency=low
+
+    * monk.  This is a new license scanner contributed by our friends at Siemens and TNGTech.  Monk looks for complete licenses (as defined in the database) and reports the percentage match (see also License highlighting below).
+    * License highlighting.  Now when you view a license you can see exactly what was added or removed from a license.  This works especially well with monk since monk scans for complete licenses (stored in the fossology database).  But it also works to show you what snippet nomos matched to identify a license.
+    * New license browser
+    * fo_copyright_list can now list files that contain a copyright, or list files that do not contain a copyright.
+    * fo_license_list has new options to exclude licenses (or directories)
+    * Many new licenses added
+    * Old bugs fixed, new ones added. see our "issue tracker": (link outdated)
+
+ -- Steffen Weber <steffen.weber@tngtech.com>  Thu, 25 Jun 2015 18:48:38 +0200
+
+fossology (2.5.0) unstable; urgency=low
+
+  * Note
+    * Be aware that the only supported upgrade path is a sequential one 2.0 > 2.1 > 2.2 > 2.3 > 2.4 > 2.5.
+    * If you run into any upgrade errors, for example with the copyright table, please let us know.
+    * Many thanks to all of you who submitted bugs, patches and suggestions.  FOSSology is for everyone, please help make it better.
+  * What Changed
+    * Switched source code repository to GIT (but still on SourceForge)
+    * Fixed unpack failure when archive asks for password
+    * Make nightly builds publicly accessible
+    * Fix Ubuntu 12.04 packaging error
+    * Improve FOSSology upgrade speed
+    * New command line program to list buckets (fo_bucket_list)
+    * Several user interface bugs fixed.
+  * License scanner updates:
+    * Fixed issue detecting Apache 2.0 reference
+    * Fix for GPL-v3 being labeled GPL-v3+ in certain cases
+    * Fixed several special cases where GPL was labelled LGPL or missed completely
+    * Fix problem of embedded quote in license names
+    * Fix case of GPL-2.0+ being identified as GPL-2.0
+    * Fix EPL labeled as CPL
+    * Fix special case of missed Boost software license
+    * Multiple fixes for special cases where GPL was missed
+    * Fix missed Sun Legal Notice
+    * Fix case where upload was failing on directories that contain spaces
+    * Fix special case where Freetype license was missed
+    * Fix MIT that should have been MIT-style
+    * Fix special case of missed CPL-1.0
+    * Fix cases of missed file references 
+    * Add LIBGCJ license
+    * Add WordNet (was being detected as MIT/Princeton license
+    * Add Interbase-1.0 license
+    * Add KnowledgeTree-1.1
+    * Add Open Cascade Technology Public License
+    * Add identifing licenses referenced in .spec files
+    * Add ACE license
+    * Add FACE license
+    * Add Tapjoy license
+    * Add ClearSilver license
+    * Add LGPL-2.1+-KDE-exception
+
+ -- Steffen Weber <steffen.weber.ext@siemens.com>  Tue, 12 May 2015 10:25:45 +0100
+
+fossology (2.4.1) unstable; urgency=low
+
+  * bugfix
+
+ -- Steffen Weber <steffen.weber.ext@siemens.com>  Thu, 9 Mar 2015 11:31:45 +0100
+
+fossology (2.4.0) unstable; urgency=low
+
+  * bugfixes
+
+ -- Steffen Weber <steffen.weber.ext@siemens.com>  Thu, 5 Mar 2015 14:30:00 +0100
+
+fossology (2.3.0) unstable; urgency=low
+
+  * bugfixes
+
+ -- Steffen Weber <steffen.weber.ext@siemens.com>  Mon, 1 Jan 2015 12:00:00 +0100
+
+fossology (2.2.0) unstable; urgency=low
+
+  * bugfixes
+
+ -- Andreas Wuerl <andreas.wuerl.ext@siemens.com>  Fri, 19 Dec 2014 08:00:00 +0100
+
+fossology (2.1.0) unstable; urgency=low
+
+  * bugfixes
+
+
+ -- Andreas Wuerl <andreas.wuerl.ext@siemens.com>  Fri, 21 Nov 2014 08:00:00 +0100
+
+fossology (2.0.0-1) unstable; urgency=low
+
+  * New upstream release
+  * New package structure
+
+ -- madong <madong@bl480c1>  Fri, 08 Jun 2012 15:35:55 +0800
+
+fossology (2.0.0~rc3-1) unstable; urgency=low
+
+  * Release candidate 3 for v2.0
+
+ -- madong <madong@bl480c-1>  Fri, 01 Jun 2012 15:22:47 +0800
+
+fossology (2.0.0~rc1-1) unstable; urgency=low
+
+  * The first release candidate for v2.0
+
+ -- madong <madong@bl480c-1>  Wed, 02 May 2012 15:22:47 +0800
+
+fossology (1.4.1-1) unstable; urgency=low
+
+  * New upstream release
+  * Bug Fix release
+  * Use project-builder to create deb
+
+ -- Mark Donohoe <markd@localhost.localdomain>  Thu, 30 Jun 2011 17:27:23 -0700
+
+fossology (1.4.0-1) unstable; urgency=low
+
+  * New upstream release
+  * New Comparison tool
+  * Simplified User Interface
+  * authentication using Siteminder
+  * Multiple file upload from URL
+  * Bugs fix
+  
+ -- Mark Donohoe <markd@localhost.localdomain>  Thu, 05 May 2011 17:55:09 -0700
+
+fossology (1.3.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Groups
+  * File Tagging
+  * Copyright agent replaced
+  * Fixed a cp2foss authentication bug
+  * fixed unpack defects and made some improvements
+
+ -- Mark Donohoe <markd@steezy>  Fri, 07 Jan 2011 10:35:08 -0800
+
+fossology (1.2.1~SVNBUILD-1) unstable; urgency=low
+
+  * unofficial build version
+
+ -- Matt Taggart <taggart@debian.org>  Fri, 06 Aug 2010 16:53:49 -0700
+
+fossology (1.2.0-2) unstable; urgency=low
+
+  * added upstream fixes to 1.2.0 that will go in 1.2.1
+    - fix pkgagent bug, svn#3363
+    - free temp name string on fopen error condition, svn#3362
+    - fix too many open files bug, svn#3361
+    - add error checking to fopen, svn#3359
+    - fix pkgagent dsc parsing, svn#3358
+    - fix copyright wrong variable name, svn#3355
+    - bucket agent fixes, svn#3351-3353
+    - fix missing copyright database, svn#3348
+    - init script restart output, svn#3346
+
+ -- Matt Taggart <taggart@debian.org>  Fri, 06 Aug 2010 15:12:18 -0700
+
+fossology (1.2.0-1) unstable; urgency=low
+
+  * New upstream release
+  * Added build-dep on python-pyrex, python, and python-dev, and
+     fossology-common depends on python due to libfosspython.
+  * Add python Depends to agent packages.
+  * Update standards version.
+  * Make references to licenses in copyright more specific.
+  * Add upstream SVN#3338 fix for ununpack p7zip.
+
+ -- Matt Taggart <taggart@debian.org>  Tue, 20 Jul 2010 16:20:31 -0700
+
+fossology (1.1.0-2) unstable; urgency=low
+
+  * Acknowledge NMU
+   - Replace depends on xpdf-utils with poppler-utils (Closes: #550653 )
+  * fix description to actually be a proper sentence (Closes: #539716 )
+  * change fossology-db to better explain that it will create the db
+    (Closes: #540252 )
+  * fix typo in init script Provides (will be in next upstream)
+      (Closes: #541854 )
+  * Build against PostgreSQL 8.4. (Closes: #559582 )
+  * patch from upstream SVN 2848 to build libs with -fPIC
+  * patch from upstream SVN 2484 to make selftest not check agent timestamps
+  * fix some lintian warnings and update to Policy 3.8.4
+  * patch from upstream SVN 2585 and 2605 to fix fo_notify
+
+ -- Matt Taggart <taggart@debian.org>  Fri, 09 Apr 2010 00:29:34 -0700
+
+fossology (1.1.0-1.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Replace depends on xpdf-utils with poppler-utils (Closes: #550653)
+
+ -- Alexander Reichle-Schmehl <tolimar@debian.org>  Fri, 22 Jan 2010 23:31:16 +0100
+
+fossology (1.1.0-1) unstable; urgency=low
+
+  * New upstream release (Closes: #521864, #531864, #531866 )
+  * fossology-scheduler-single now automatically gives the user a new
+    Scheduler.conf, to ensure that new agents get added.
+    fossology-scheduler still warns the user to review.
+  * Added mail-transport-agent Suggests since the new, but optional,
+    fo-notify needs sendmail(1).
+
+ -- Matt Taggart <taggart@debian.org>  Thu, 16 Jul 2009 09:56:05 -0700
+
+fossology (1.0.0-2) unstable; urgency=low
+
+  * Add explicit agents dependency on libextractor-plugins since
+    shlibdeps doesn't automatically figure it out.
+  * Add pointer in copyright to lgpl, thanks Frank Lichtenheld.
+
+ -- Matt Taggart <taggart@debian.org>  Mon, 26 Jan 2009 13:31:23 -0800
+
+fossology (1.0.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Matt Taggart <taggart@debian.org>  Wed, 17 Dec 2008 13:48:56 -0800
+
+fossology (1.0.0~rc2-1) unstable; urgency=low
+
+  * Upstream 1.0.0 release candidate 2
+
+ -- Matt Taggart <taggart@debian.org>  Tue, 02 Dec 2008 15:47:37 -0800
+
+fossology (1.0.0~rc1-1) unstable; urgency=low
+
+  * Upstream 1.0.0 release candidate 1
+
+ -- Matt Taggart <taggart@debian.org>  Wed, 12 Nov 2008 03:01:48 -0800
+
