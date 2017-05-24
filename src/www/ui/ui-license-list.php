@@ -157,7 +157,11 @@ class ui_license_list extends FO_Plugin
           break;
         }
 
-        $lines[] = rtrim($fileName .': '.implode($licenseNames['scanResults'],' ') . ', '.implode($licenseNames['concludedResults'],' ') . '', ', ');
+        if(!empty($licenseNames['concludedResults'])){
+          $lines[] = rtrim($fileName .': '.implode($licenseNames['scanResults'],' ') . ', '.implode($licenseNames['concludedResults'],' ') . '', ', ');
+        }else{
+          $lines[] = rtrim($fileName .': '.implode($licenseNames['scanResults'],' ') . '');
+        }
       }
       if (!$ignore && $licenseNames === false)
       {
