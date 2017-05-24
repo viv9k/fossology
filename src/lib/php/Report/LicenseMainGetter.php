@@ -50,6 +50,7 @@ class LicenseMainGetter extends ClearedGetterCommon
     foreach ($mainLicIds as $originLicenseId) {
       $allLicenseCols = $this->licenseDao->getLicenseById($originLicenseId, $groupId); 
       $allStatements[] = array(
+        'licenseId' => $originLicenseId,
         'risk' => $allLicenseCols->getRisk(),
         'content' => $licenseMap->getProjectedShortname($originLicenseId),
         'text' => $allLicenseCols->getText()

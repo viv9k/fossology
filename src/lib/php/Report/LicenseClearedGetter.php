@@ -82,6 +82,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
 
         $originLicenseId = $clearingLicense->getLicenseId();
         $licenseId = $licenseMap->getProjectedId($originLicenseId);
+
         if($this->onlyAcknowledgements){
           $text = $acknowledgement;
           $risk = "";
@@ -99,6 +100,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
         }
 
         $ungroupedStatements[] = array(
+          'licenseId' => $licenseId,
           'risk' => $risk, 
           'content' => $licenseMap->getProjectedShortname($originLicenseId, $clearingLicense->getShortName()),
           'uploadtree_pk' => $clearingDecision->getUploadTreeId(),
