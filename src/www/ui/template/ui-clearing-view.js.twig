@@ -47,11 +47,7 @@ editableConfiguration = {
   "fnOnEdited": function (status){ if(status==="success") { $('#decTypeSet').addClass('decTypeWip');} } ,
   "fnOnDeleted": function(result) { createTable().fnDraw(false);},
   "sSuccessResponse": "success",
-<<<<<<< HEAD
   "aoColumns": [null, null, null, null, null, null]
-=======
-  "aoColumns": [null, null, null,{"type": "textarea", cssclass:"activeEditText", onblur: "cancel", "submit": "OK", "cancel": "{{'Cancel'|trans}}"}, {}]
->>>>>>> master
 };
 
 function createClearingTable() {
