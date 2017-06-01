@@ -1,7 +1,7 @@
 <?php
 /*
  Copyright (C) 2014-2017, Siemens AG
- Author: Daniele Fognini, Johannes Najjar, Shaheem Azmal M MD
+ Author: Daniele Fognini, Johannes Najjar
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
