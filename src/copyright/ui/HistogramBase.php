@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2016 Siemens AG
+ * Copyright (C) 2014-2017 Siemens AG
  * Author: J.Najjar
  *
  * This program is free software; you can redistribute it and/or
