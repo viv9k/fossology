@@ -494,8 +494,8 @@
 
 
   $Schema["TABLE"]["ip"]["ct_pk"]["DESC"] = "";
-  $Schema["TABLE"]["ip"]["ct_pk"]["ADD"] = "ALTER TABLE \"ip\" ADD COLUMN \"ct_pk\" int8 DEFAULT nextval('ecc_ct_pk_seq'::regclass)";
-  $Schema["TABLE"]["ip"]["ct_pk"]["ALTER"] = "ALTER TABLE \"ip\" ALTER COLUMN \"ct_pk\" SET NOT NULL, ALTER COLUMN \"ct_pk\" SET DEFAULT nextval('ecc_ct_pk_seq'::regclass)";
+  $Schema["TABLE"]["ip"]["ct_pk"]["ADD"] = "ALTER TABLE \"ip\" ADD COLUMN \"ct_pk\" int8 DEFAULT nextval('ip_ct_pk_seq'::regclass)";
+  $Schema["TABLE"]["ip"]["ct_pk"]["ALTER"] = "ALTER TABLE \"ip\" ALTER COLUMN \"ct_pk\" SET NOT NULL, ALTER COLUMN \"ct_pk\" SET DEFAULT nextval('ip_ct_pk_seq'::regclass)";
 
   $Schema["TABLE"]["ip"]["agent_fk"]["DESC"] = "";
   $Schema["TABLE"]["ip"]["agent_fk"]["ADD"] = "ALTER TABLE \"ip\" ADD COLUMN \"agent_fk\" int8";
@@ -528,6 +528,43 @@
   $Schema["TABLE"]["ip"]["is_enabled"]["DESC"] = "COMMENT ON COLUMN \"ip\".\"is_enabled\" IS 'true to enable, false to disable'";
   $Schema["TABLE"]["ip"]["is_enabled"]["ADD"] = "ALTER TABLE \"ip\" ADD COLUMN \"is_enabled\" bool DEFAULT true";
   $Schema["TABLE"]["ip"]["is_enabled"]["ALTER"] = "ALTER TABLE \"ip\" ALTER COLUMN \"is_enabled\" DROP NOT NULL, ALTER COLUMN \"is_enabled\" SET DEFAULT true";
+
+
+  $Schema["TABLE"]["keyword"]["ct_pk"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["ct_pk"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"ct_pk\" int8 DEFAULT nextval('keyword_ct_pk_seq'::regclass)";
+  $Schema["TABLE"]["keyword"]["ct_pk"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"ct_pk\" SET NOT NULL, ALTER COLUMN \"ct_pk\" SET DEFAULT nextval('keyword_ct_pk_seq'::regclass)";
+
+  $Schema["TABLE"]["keyword"]["agent_fk"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["agent_fk"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"agent_fk\" int8";
+  $Schema["TABLE"]["keyword"]["agent_fk"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"agent_fk\" SET NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["pfile_fk"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["pfile_fk"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"pfile_fk\" int8";
+  $Schema["TABLE"]["keyword"]["pfile_fk"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"pfile_fk\" SET NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["content"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["content"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"content\" text";
+  $Schema["TABLE"]["keyword"]["content"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"content\" DROP NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["hash"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["hash"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"hash\" text";
+  $Schema["TABLE"]["keyword"]["hash"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"hash\" DROP NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["type"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["type"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"type\" text";
+  $Schema["TABLE"]["keyword"]["type"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"type\" DROP NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["copy_startbyte"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["copy_startbyte"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"copy_startbyte\" int4";
+  $Schema["TABLE"]["keyword"]["copy_startbyte"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"copy_startbyte\" DROP NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["copy_endbyte"]["DESC"] = "";
+  $Schema["TABLE"]["keyword"]["copy_endbyte"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"copy_endbyte\" int4";
+  $Schema["TABLE"]["keyword"]["copy_endbyte"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"copy_endbyte\" DROP NOT NULL";
+
+  $Schema["TABLE"]["keyword"]["is_enabled"]["DESC"] = "COMMENT ON COLUMN \"keyword\".\"is_enabled\" IS 'true to enable, false to disable'";
+  $Schema["TABLE"]["keyword"]["is_enabled"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"is_enabled\" bool DEFAULT true";
+  $Schema["TABLE"]["keyword"]["is_enabled"]["ALTER"] = "ALTER TABLE \"keyword\" ALTER COLUMN \"is_enabled\" DROP NOT NULL, ALTER COLUMN \"is_enabled\" SET DEFAULT true";
 
 
   $Schema["TABLE"]["file_picker"]["file_picker_pk"]["DESC"] = "";
@@ -1721,6 +1758,12 @@
 
   $Schema["SEQUENCE"]["ecc_ct_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ecc_ct_pk_seq\"";
   $Schema["SEQUENCE"]["ecc_ct_pk_seq"]["UPDATE"] = "SELECT setval('ecc_ct_pk_seq',(SELECT greatest(1,max(ct_pk)) val FROM ecc))";
+
+  $Schema["SEQUENCE"]["ip_ct_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ip_ct_pk_seq\"";
+  $Schema["SEQUENCE"]["ip_ct_pk_seq"]["UPDATE"] = "SELECT setval('ip_ct_pk_seq',(SELECT greatest(1,max(ct_pk)) val FROM ip))";
+
+  $Schema["SEQUENCE"]["keyword_ct_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"keyword_ct_pk_seq\"";
+  $Schema["SEQUENCE"]["keyword_ct_pk_seq"]["UPDATE"] = "SELECT setval('keyword_ct_pk_seq',(SELECT greatest(1,max(ct_pk)) val FROM keyword))";
 
   $Schema["SEQUENCE"]["ecc_decision_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ecc_decision_pk_seq\"";
   $Schema["SEQUENCE"]["ecc_decision_pk_seq"]["UPDATE"] = "SELECT setval('ecc_decision_pk_seq',(SELECT greatest(1,max(copyright_decision_pk)) val FROM ecc_decision))";
