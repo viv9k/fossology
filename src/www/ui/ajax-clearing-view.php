@@ -323,6 +323,7 @@ class AjaxClearingView extends FO_Plugin
       $reportInfoField = $this->getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $reportInfo, 2, $detectorType);
       $acknowledgementField = $this->getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $acknowledgement, 3);
       $commentField = $this->getBuildClearingsForSingleFile($uploadTreeId, $licenseId, $comment, 4);
+
       $table[$licenseShortName] = array('DT_RowId' => $id,
           '0' => $actionLink,
           '1' => $licenseShortNameWithLink,
