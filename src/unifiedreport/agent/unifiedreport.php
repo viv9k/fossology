@@ -36,6 +36,7 @@ include_once(__DIR__ . "/version.php");
 include_once(__DIR__ . "/reportStatic.php");
 include_once(__DIR__ . "/sw360Licenses.php");
 include_once(__DIR__ . "/sw360Component.php");
+include_once(__DIR__ . "/obligations.php");
 
 class UnifiedReport extends Agent
 {
@@ -127,6 +128,7 @@ class UnifiedReport extends Agent
     $countLoop = 0;
     $thousandLoop = 0; 
     foreach($ungrupedStatements as $statement) {
+      $licenseId = $statement['licenseId'];
       $content = convertToUTF8($statement['content'], false);
       $content = htmlspecialchars($content, ENT_DISALLOWED);
       $comments = convertToUTF8($statement['comments'], false);
@@ -166,6 +168,7 @@ class UnifiedReport extends Agent
         }
       } else {
         $singleStatement = array(
+            "licenseId" => $licenseId,
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
@@ -184,6 +187,7 @@ class UnifiedReport extends Agent
       }
       if(!empty($statement['textfinding']) && $agentCall == "copyright"){
         $findings[$fileName] = array(
+            "licenseId" => $licenseId,
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
@@ -216,14 +220,14 @@ class UnifiedReport extends Agent
 
     $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $licenses = $this->groupStatements($ungrupedStatements, true, "license");
-    
+
     $licensesMain = $this->licenseMainGetter->getCleared($uploadId, $groupId);
 
     $licensesHist = $this->licenseClearedGetter->getLicenseHistogramForReport($uploadId, $groupId);
-    
+
     $ungrupedStatements = $this->bulkMatchesGetter->getUnCleared($uploadId, $groupId);
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
-    
+
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
     $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
 
@@ -801,10 +805,11 @@ class UnifiedReport extends Agent
     $sR = new ReportStatic($timestamp);
     
     $licenseObli = new Sw360License();
+    $licenseObligation = new ObligationsToLicenses();
     
     $groupName = $this->userDao->getGroupNameById($groupId);
     
-    $results = $licenseObli->sw360GetLicense($uploadId, $groupName, $contents['licenses']['statements']);
+    list($obligations, $whiteLists) = $licenseObligation->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
 
     /* Header starts */
     $sR->reportHeader($section);
@@ -822,7 +827,7 @@ class UnifiedReport extends Agent
     $sR->todoTable($section);
 
     /* Todoobligation table */
-    $sR->todoObliTable($section, $results);
+    $sR->todoObliTable($section, $obligations);
 
 
     /* Display acknowledgement */
@@ -873,6 +878,9 @@ class UnifiedReport extends Agent
     $whiteLicense = array("color" => array("bgColor" => "FFFFFF"), "riskLevel" => array("", "0", "1"));
     $this->licensesTable($section, $heading, $contents['licenses']['statements'], $whiteLicense, $titleSubHeadingLicense);
 
+    $heading = "Overview of All Licenses with or without Obligations";
+    $titleSubHeadingObli = "(License ShortName, Obligation)";
+    $sR->allLicensesWithAndWithoutObligations($section, $heading, $obligations, $whiteLists, $titleSubHeadingObli);
 
     /* Display copyright statements and files */
     $heading = "Copyrights";

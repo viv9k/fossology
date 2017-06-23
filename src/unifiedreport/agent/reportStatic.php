@@ -26,6 +26,12 @@ class ReportStatic
   /** @var timeStamp */
   private $timeStamp;
 
+  /** @var subHeadingStyle */
+  private $subHeadingStyle = array("size" => 9,
+                                   "align" => "center",
+                                   "bold" => true
+                                  );
+
   /** @var tablestyle */
   private $tablestyle = array("borderSize" => 2,
                               "name" => "Arial",
@@ -320,7 +326,7 @@ class ReportStatic
    * @param1 Section $section
    * @param2 array of obloigations  
    */ 
-  function todoObliTable(Section $section, $results)
+  function todoObliTable(Section $section, $obligations)
   {
     $firstRowStyle = array("bgColor" => "D2D0CE");
     $firstRowTextStyle = array("size" => 11, "bold" => true);
@@ -398,53 +404,62 @@ class ReportStatic
     $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
     $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
 
-    $html = new Html;
-
-    if(!empty($results)){ 
-      foreach($results as $key=>$value){
-        if(!empty($value)){
-          $num = count($value);
-          if($num == 1){
-            $table->addRow($rowWidth);
-            $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($key), $firstRowTextStyle);
-            $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($value[0]["License Name"]));
-            $cell = $table->addCell($thirdColLen);
-            $html->addHtml($cell, $value[0]["Text"]);
-            $table->addCell($fourthColLen)->addText(htmlspecialchars($value[0]["DevelopmentString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-            $table->addCell($fifthColLen)->addText(htmlspecialchars($value[0]["DistributionString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-          }
-          else{
-            $table->addRow($rowWidth);
-            $table->addCell($firstColLen,$cellRowSpan)->addText(htmlspecialchars($key), $firstRowTextStyle);
-            $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($value[0]["License Name"]));
-            $cell = $table->addCell($thirdColLen);
-            $html->addHtml($cell, $value[0]["Text"]);
-            $table->addCell($fourthColLen)->addText(htmlspecialchars($value[0]["DevelopmentString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-            $table->addCell($fifthColLen)->addText(htmlspecialchars($value[0]["DistributionString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-            for($j=1;$j<$num;$j++){
-              $table->addRow($rowWidth);
-              $table->addCell($firstColLen,$cellRowContinue)->addText(htmlspecialchars($key), $firstRowTextStyle);
-              $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($value[$j]["License Name"]));
-              $cell = $table->addCell($thirdColLen);
-              $html->addHtml($cell, $value[$j]["Text"]);
-              $table->addCell($fourthColLen)->addText(htmlspecialchars($value[$j]["DevelopmentString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-              $table->addCell($fifthColLen)->addText(htmlspecialchars($value[$j]["DistributionString"]), $secondRowTextStyle2Bold, array("align" => "center"));
-            }
-          }
-        }
-        else{
+    if(!empty($obligations)){
+      foreach($obligations as $obligationlist){
+        foreach($obligationlist as $obligation){
           $table->addRow($rowWidth);
-          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($key), $firstRowTextStyle);
-          $table->addCell($secondColLen,$secondColStyle);
-          $table->addCell($thirdColLen);
-          $table->addCell($fourthColLen);
-          $table->addCell($fifthColLen);
+          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]), $firstRowTextStyle);
+          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
+          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["ob_text"]));
+          $table->addCell($fourthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
+          $table->addCell($fifthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
         }
+      }
+    }
+    else{
+      $table->addRow($rowWidth);
+      $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($key), $firstRowTextStyle);
+      $table->addCell($secondColLen,$secondColStyle);
+      $table->addCell($thirdColLen);
+      $table->addCell($fourthColLen);
+      $table->addCell($fifthColLen);
+    }
+    $section->addTextBreak();
+  }
+
+  /**
+   * @param Section $section
+   */
+  function allLicensesWithAndWithoutObligations(Section $section, $heading, $obligations, $whiteLists, $titleSubHeadingObli)
+  {
+    $section->addTitle(htmlspecialchars("$heading"), 2);
+    $section->addText($titleSubHeadingObli, $this->subHeadingStyle);
+    $firstRowStyle = array("size" => 12, "bold" => false);
+
+    $rowWidth = 200;
+    $firstColLen = 3500;
+    $secondColLen = 10000;
+
+    $table = $section->addTable($this->tablestyle);
+
+    if(!empty($obligations)){
+      foreach($obligations as $obligationList){
+        foreach($obligationList as $obligation){
+          $table->addRow($rowWidth);
+          $table->addCell($secondColLen,$firstColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
+          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]));
+        }
+      }
+    }
+    if(!empty($whiteLists)){
+      foreach($whiteLists as $whiteList){
+        $table->addRow($rowWidth);
+        $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($whiteList));
+        $table->addCell($secondColLen,$firstColStyle)->addText("");
       }
     }
     $section->addTextBreak();
   }
-  
   
   /**
    * @param Section $section 

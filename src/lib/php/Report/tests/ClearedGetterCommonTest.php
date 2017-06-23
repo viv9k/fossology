@@ -35,10 +35,10 @@ class TestClearedGetter extends ClearedGetterCommon
   protected function getStatements($uploadId, $uploadTreeTableName, $userId = null, $groupId=null)
   {
     return array(
-      array("risk" => "5", "content" => "1", "text" => "t1", "comments" => "c1", "textfinding" => "tf1", "description" => "d1" ,"uploadtree_pk" => 1),
-      array("risk" => "4", "content" => "1", "text" => "t2", "comments" => "c1", "uploadtree_pk" => 2),
-      array("risk" => "4", "content" => "2", "text" => "t3", "comments" => "c3", "uploadtree_pk" => 3),
-      array("risk" => "3", "content" => "1", "text" => "t4", "comments" => "c4", "textfinding" => "tf1", "description" => "d2" ,"uploadtree_pk" => 4),
+      array("licenseId" => "371","risk" => "5", "content" => "1", "text" => "t1", "comments" => "c1", "textfinding" => "tf1", "description" => "d1" ,"uploadtree_pk" => 1),
+      array("licenseId" => "213","risk" => "4", "content" => "1", "text" => "t2", "comments" => "c1", "uploadtree_pk" => 2),
+      array("licenseId" => "243","risk" => "4", "content" => "2", "text" => "t3", "comments" => "c3", "uploadtree_pk" => 3),
+      array("licenseId" => "8","risk" => "3", "content" => "1", "text" => "t4", "comments" => "c4", "textfinding" => "tf1", "description" => "d2" ,"uploadtree_pk" => 4),
     );
   }
 }
@@ -127,13 +127,15 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
     $expected = array(
       "statements" => array(
         array(
-          "risk" => "5", 
+          "licenseId" => "371",
+          "risk" => "5",
           "content" => "1",
           "text" => "d1",
           "comments" => "c1",
           "files" => array("a/1", "a/2")
         ),
         array(
+          "licenseId" => "213",
           "risk" => "5", 
           "content" => "tf1",
           "text" => "d1",
@@ -141,6 +143,7 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "files" => array("a/1")
         ),
         array(
+          "licenseId" => "243",
           "risk" => "3", 
           "content" => "tf1",
           "text" => "d2",
@@ -148,6 +151,7 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "files" => array("a/4")
         ),
         array(
+          "licenseId" => "8",
           "risk" => "4", 
           "content" => "2",
           "text" => "t3",
@@ -201,28 +205,32 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
     $expected = array(
       "statements" => array(
         array(
-          "risk" => "5", 
+          "licenseId" => "371",
+          "risk" => "5",
           "content" => "tf1",
           "text" => "d1",
           "comments" => "c1",
           "files" => array("a/1")
         ),
         array(
-          "risk" => "4", 
+          "licenseId" => "243",
+          "risk" => "4",
           "content" => "1",
           "text" => "t2",
           "comments" => "c1",
           "files" => array("a/2")
         ),
         array(
-          "risk" => "4", 
+         "licenseId" => "213",
+          "risk" => "4",
           "content" => "2",
           "text" => "t3",
           "comments" => "c3",
           "files" => array("a/b/1")
         ),
         array(
-          "risk" => "3", 
+          "licenseId" => "8",
+          "risk" => "3",
           "content" => "tf1",
           "text" => "d1",
           "comments" => "c1",
