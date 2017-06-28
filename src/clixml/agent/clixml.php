@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2016, Siemens AG
+ * Copyright (C) 2017, Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -140,6 +140,94 @@ class CliXml extends Agent
     return true;
   }
 
+  private function groupStatements(&$ungrupedStatements, $extended, $agentCall="")
+  {
+    $statements = array();
+    $countLoop = 0;
+    $thousandLoop = 0;
+    foreach($ungrupedStatements as $statement) {
+      $content = convertToUTF8($statement['content'], false);
+      $content = htmlspecialchars($content, ENT_DISALLOWED);
+      $comments = convertToUTF8($statement['comments'], false);
+      $fileName = $statement['fileName'];
+
+      if (!array_key_exists('text', $statement))
+      {
+        $description = $statement['description'];
+        $textfinding = $statement['textfinding'];
+
+        if ($description === null) {
+          $text = "";
+        } else {
+          if(!empty($textfinding) && empty($agentCall)){
+            $content = $textfinding;
+          }
+          $text = $description;
+        }
+      }
+      else
+      {
+        $text = $statement['text'];
+      }
+
+      if($agentCall == "license"){
+        $this->groupBy = "text";
+      }else{
+        $this->groupBy = "content";
+      }
+      $groupBy = $statement[$this->groupBy];
+
+      if(empty($comments) && array_key_exists($groupBy, $statements))
+      {
+        $currentFiles = &$statements[$groupBy]['files'];
+        if (!in_array($fileName, $currentFiles)){
+          $currentFiles[] = $fileName;
+        }
+      } else {
+        $singleStatement = array(
+            "content" => convertToUTF8($content, false),
+            "text" => convertToUTF8($text, false),
+            "files" => array($fileName)
+          );
+        if ($extended) {
+          $singleStatement["comments"] = convertToUTF8($comments, false);
+          $singleStatement["risk"] =  $statement['risk'];
+        }
+
+        if (empty($comments)) {
+          $statements[$groupBy] = $singleStatement;
+        }
+        else {
+          $statements[] = $singleStatement;
+        }
+      }
+      if(!empty($statement['textfinding']) && $agentCall == "copyright"){
+        $findings[$fileName] = array(
+            "content" => convertToUTF8($statement['textfinding'], false),
+            "text" => convertToUTF8($text, false),
+            "files" => array($fileName)
+          );
+        if ($extended) {
+          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+        }
+      }
+      $countLoop += 1;
+      if(is_int($countLoop/500)) {
+        $thousandLoop++;
+        $this->heartbeat(1);
+      }
+    }
+    if(!empty($findings)){
+      $statements = array_merge($findings, $statements);
+    }
+
+    arsort($statements);
+    $actualHeartbeat = count($statements) - $thousandLoop;
+    $this->heartbeat($actualHeartbeat);
+    return array("statements" => array_values($statements));
+  }
+
+
   protected function getTemplateFile($partname)
   {
     $prefix = $this->outputFormat . "-";
@@ -158,12 +246,17 @@ class CliXml extends Agent
   protected function renderPackage($uploadId, $groupId)
   {
     $this->heartbeat(0);
-    $licenses = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
+    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+    $licenses = $this->groupStatements($ungrupedStatements, true, "license");
     $this->heartbeat(count($licenses["statements"]));
+
     $licensesMain = $this->licenseMainGetter->getCleared($uploadId, $groupId);
+
     $this->heartbeat(count($licensesMain["statements"]));
-    $copyrights = $this->cpClearedGetter->getCleared($uploadId, $groupId);
+    $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
+    $copyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
     $this->heartbeat(count($copyrights["statements"]));
+
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
     $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
     $countAcknowledgement = count($licenseAcknowledgements["statements"]);
@@ -260,8 +353,8 @@ class CliXml extends Agent
       $contents["licensesMain"][$i]["textMain"] = $contents["licensesMain"][$i]["text"];
       $contents["licensesMain"][$i]["riskMain"] = $contents["licensesMain"][$i]["risk"];
       if(array_key_exists('acknowledgement', $contents["licensesMain"][$i])){
-      $contents["licensesMain"][$i]["acknowledgementMain"] = $contents["licensesMain"][$i]["acknowledgement"];
-      unset($contents["licensesMain"][$i]["acknowledgement"]);
+        $contents["licensesMain"][$i]["acknowledgementMain"] = $contents["licensesMain"][$i]["acknowledgement"];
+        unset($contents["licensesMain"][$i]["acknowledgement"]);
       }
       unset($contents["licensesMain"][$i]["content"]);
       unset($contents["licensesMain"][$i]["text"]);
