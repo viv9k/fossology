@@ -38,6 +38,7 @@
 //#include "files.hpp"
 #include "database.hpp"
 #include "cleanEntries.hpp"
+#define THREADS 2
 
 extern "C" {
 #include "libfossology.h"
