@@ -194,7 +194,7 @@ int bulk_identification(MonkState* state) {
     int resultsCount = PQntuples(filesResult);
     haveError = 0;
 #ifdef MONK_MULTI_THREAD
-    #pragma omp parallel
+    #pragma omp parallel num_threads(THREADS)
 #endif
     {
       MonkState threadLocalStateStore = *state;

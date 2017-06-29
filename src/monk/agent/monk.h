@@ -44,7 +44,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include <glib.h>
 #include "libfossdbmanager.h"
 
-#if GLIB_CHECK_VERSION(2,32,0)
+#define THREADS 2
+
+#if GLIB_CHECK_VERSION(2,32,0) 
 #define MONK_MULTI_THREAD
 #endif
 

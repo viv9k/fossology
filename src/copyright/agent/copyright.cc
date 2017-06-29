@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     const unsigned long fileNamesCount = fileNames.size();
     bool fileError = false;
 
-#pragma omp parallel
+#pragma omp parallel num_threads(THREADS)
     {
 #pragma omp for
       for (unsigned int argn = 0; argn < fileNamesCount; ++argn)

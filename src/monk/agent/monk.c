@@ -17,7 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 
 #include "monk.h"
-
+#include <omp.h>
 #include "license.h"
 #include "scheduler.h"
 #include "cli.h"
@@ -40,7 +40,7 @@ int processUploadId(MonkState* state, int uploadId, Licenses* licenses) {
 
   int threadError = 0;
 #ifdef MONK_MULTI_THREAD
-  #pragma omp parallel
+  #pragma omp parallel num_threads(THREADS)
 #endif
   {
     MonkState threadLocalStateStore = *state;

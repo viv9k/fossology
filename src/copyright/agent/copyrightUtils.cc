@@ -300,7 +300,7 @@ bool processUploadId(const CopyrightState& state, int uploadId, CopyrightDatabas
 {
   vector<unsigned long> fileIds = databaseHandler.queryFileIdsForUpload(state.getAgentId(), uploadId);
 
-#pragma omp parallel
+#pragma omp parallel num_threads(THREADS)
   {
     CopyrightDatabaseHandler threadLocalDatabaseHandler(std::move(databaseHandler.spawn()));
 
