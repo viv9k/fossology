@@ -556,7 +556,7 @@ ORDER BY lft asc
         $extraCondition = "AND group_fk=$".count($param);
       }
       $row = $this->dbManager->getSingleRow(
-        "SELECT rf_pk, rf_shortname, rf_fullname, rf_text, rf_url, rf_risk, rf_detector_type FROM license_candidate WHERE $condition $extraCondition",
+        "SELECT rf_pk, rf_shortname, rf_fullname, rf_text, rf_url, rf_risk, rf_detector_type, rf_spdx_compatible FROM license_candidate WHERE $condition $extraCondition",
         $param, __METHOD__ . ".$condition.group");
     }
     if (false === $row)

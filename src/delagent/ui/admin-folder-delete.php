@@ -1,10 +1,7 @@
 <?php
-
-use Fossology\Lib\Auth\Auth;
-use Fossology\Lib\Db\DbManager;
 /***********************************************************
  Copyright (C) 2008-2013 Hewlett-Packard Development Company, L.P.
- Copyright (C) 2015-2016 Siemens AG
+ Copyright (C) 2015-2017 Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -19,6 +16,9 @@ use Fossology\Lib\Db\DbManager;
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  ***********************************************************/
+
+use Fossology\Lib\Auth\Auth;
+use Fossology\Lib\Db\DbManager;
 
 define("TITLE_admin_folder_delete", _("Delete Folder"));
 

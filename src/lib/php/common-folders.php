@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
  Copyright (C) 2008-2015 Hewlett-Packard Development Company, L.P.
- Copyright (C) 2014 Siemens AG
+ Copyright (C) 2014-2017 Siemens AG
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
