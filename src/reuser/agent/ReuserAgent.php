@@ -152,7 +152,9 @@ class ReuserAgent extends Agent
       while($row = $this->dbManager->fetchArray($res))
       {
         $newPath = $treeDao->getRepoPathOfPfile($row['pfile_fk']);
-        $this->copyClearingDecisionIfDifferenceIsSmall($reusedPath, $newPath, $clearingDecision, $row['uploadtree_pk']);
+        if(!empty($newPath)){
+          $this->copyClearingDecisionIfDifferenceIsSmall($reusedPath, $newPath, $clearingDecision, $row['uploadtree_pk']);
+        }
       }
       $this->dbManager->freeResult($res);
     }
