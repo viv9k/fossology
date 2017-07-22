@@ -245,11 +245,6 @@ bool saveToDatabase(const string& s, const list<match>& matches, unsigned long p
     }
   }
 
-  if (count == 0)
-  {
-    copyrightDatabaseHandler.insertNoResultInDatabase(agentId, pFileId);
-  }
-
   return copyrightDatabaseHandler.commit();
 }
 

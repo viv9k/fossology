@@ -283,20 +283,6 @@ std::vector<unsigned long> CopyrightDatabaseHandler::queryFileIdsForUpload(int a
   return queryResult.getSimpleResults<unsigned long>(0, fo::stringToUnsignedLong);
 }
 
-bool CopyrightDatabaseHandler::insertNoResultInDatabase(long int agentId, long int pFileId) const
-{
-  return dbManager.execPrepared(
-    fo_dbManager_PrepareStamement(
-      dbManager.getStruct_dbManager(),
-      "insertNoResultInDatabase",
-      "INSERT INTO "
-      IDENTITY
-      "(agent_fk, pfile_fk) VALUES($1,$2)",
-      long, long
-    ),
-    agentId, pFileId
-  );
-}
 
 bool CopyrightDatabaseHandler::insertInDatabase(DatabaseEntry& entry) const
 {
