@@ -58,6 +58,94 @@ class ReadmeOssAgent extends Agent
     $this->agentSpecifLongOptions[] = self::UPLOAD_ADDS.':';
   }
 
+  private function groupStatements(&$ungrupedStatements, $extended, $agentCall="")
+  {
+    $statements = array();
+    $countLoop = 0;
+    $thousandLoop = 0;
+    foreach($ungrupedStatements as $statement) {
+      $content = convertToUTF8($statement['content'], false);
+      $content = htmlspecialchars($content, ENT_DISALLOWED);
+      $comments = convertToUTF8($statement['comments'], false);
+      $fileName = $statement['fileName'];
+
+      if (!array_key_exists('text', $statement))
+      {
+        $description = $statement['description'];
+        $textfinding = $statement['textfinding'];
+        if ($description === null) {
+          $text = "";
+        } else {
+          if(!empty($textfinding) && empty($agentCall)){
+            $content = $textfinding;
+          }
+          $text = $description;
+        }
+      }
+      else
+      {
+        $text = $statement['text'];
+      }
+
+      if($agentCall == "license"){
+        $this->groupBy = "text";
+      }else{
+        $this->groupBy = "content";
+      }
+      $groupBy = $statement[$this->groupBy];
+
+      if(empty($comments) && array_key_exists($groupBy, $statements))
+      {
+        $currentFiles = &$statements[$groupBy]['files'];
+        if (!in_array($fileName, $currentFiles)){
+          $currentFiles[] = $fileName;
+        }
+      } else {
+        $singleStatement = array(
+          "content" => convertToUTF8($content, false),
+          "text" => convertToUTF8($text, false),
+          "files" => array($fileName)
+        );
+        if ($extended) {
+          $singleStatement["comments"] = convertToUTF8($comments, false);
+          $singleStatement["risk"] =  $statement['risk'];
+        }
+
+        if (empty($comments)) {
+          $statements[$groupBy] = $singleStatement;
+        }
+        else {
+          $statements[] = $singleStatement;
+        }
+      }
+      if(!empty($statement['textfinding']) && $agentCall == "copyright"){
+        $findings[$fileName] = array(
+          "content" => convertToUTF8($statement['textfinding'], false),
+          "text" => convertToUTF8($text, false),
+          "files" => array($fileName)
+        );
+        if ($extended) {
+          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+        }
+      }
+      $countLoop += 1;
+      if(is_int($countLoop/500)) {
+        $thousandLoop++;
+        $this->heartbeat(1);
+      }
+    }
+    if(!empty($findings)){
+      $statements = array_merge($findings, $statements);
+    }
+
+    arsort($statements);
+    $actualHeartbeat = count($statements) - $thousandLoop;
+    $this->heartbeat($actualHeartbeat);
+    return array("statements" => array_values($statements));
+  }
+
+
+
   /**
    * @todo without wrapper
    */
@@ -81,7 +169,8 @@ class ReadmeOssAgent extends Agent
       if (!$this->uploadDao->isAccessible($addUploadId, $groupId)) {
         continue;
       }
-      $moreLicenses = $this->licenseClearedGetter->getCleared($addUploadId, $groupId);
+      $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+      $moreLicenses = $this->groupStatements($ungrupedStatements, true, "license");
       $licenseStmts = array_merge($licenseStmts, $moreLicenses['statements']);
       $this->heartbeat(count($moreLicenses['statements']));
 
@@ -89,8 +178,8 @@ class ReadmeOssAgent extends Agent
       $moreAcknowledgements = $this->licenseClearedGetter->getCleared($addUploadId, $groupId);
       $licenseAcknowledgements = array_merge($licenseAcknowledgements, $moreAcknowledgements['statements']);
       $this->heartbeat(count($moreAcknowledgements['statements']));
-
-      $moreCopyrights = $this->cpClearedGetter->getCleared($addUploadId, $groupId);
+      $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
+      $moreCopyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
       $copyrightStmts = array_merge($copyrightStmts, $moreCopyrights['statements']);
       $this->heartbeat(count($moreCopyrights['statements']));
 
