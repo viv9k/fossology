@@ -233,8 +233,11 @@ class CopyrightHistogramProcessPost extends FO_Plugin
         $tableName = "keyword";
         $filter="none";
         break;
-      default:
+      case "statement" :
         $tableName = "copyright";
+        break;
+      default:
+        $tableName = "author";
     }
     return $tableName;
   }

@@ -401,9 +401,14 @@ class copyright_list extends FO_Plugin
         $modBack = "keyword-hist";
         $viewName = "keyword-view";
         break;
-      default:
+      case "statement" :
         $tableName = "copyright";
         $modBack = "copyright-hist";
+        $viewName = "copyright-view";
+        break;
+      default:
+        $tableName = "author";
+        $modBack = "email-hist";
         $viewName = "copyright-view";
     }
     return array($tableName, $modBack,$viewName);
