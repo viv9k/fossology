@@ -332,12 +332,12 @@ class CliXml extends Agent
     $lenMainLics = $lenLicsMain = count($contents["licensesMain"]);
     for($j=0; $j<$lenLicsMain; $j++){
       for($i=0; $i<$lenTotalLics; $i++){
-        if(array_key_exists('acknowledgement', $contents["licenses"][$i])){
-          $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
-        }
         if(!strcmp($contents["licenses"][$i]["content"], $contents["licensesMain"][$j]["content"])){
           if(!strcmp($contents["licenses"][$i]["text"], $contents["licensesMain"][$j]["text"])){
             $contents["licensesMain"][$j]["files"] = $contents["licenses"][$i]["files"];
+            if(array_key_exists('acknowledgement', $contents["licenses"][$i])){
+              $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
+            }
           } else {
             $lenMainLics++;
             $contents["licensesMain"][$lenMainLics] = $contents["licenses"][$i];
