@@ -405,15 +405,13 @@ class ReportStatic
     $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
 
     if(!empty($obligations)){
-      foreach($obligations as $obligationlist){
-        foreach($obligationlist as $obligation){
+      foreach($obligations as $obligation){
           $table->addRow($rowWidth);
-          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]), $firstRowTextStyle);
-          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
-          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["ob_text"]));
+          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["topic"]), $firstRowTextStyle);
+          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars(implode(",",$obligation["license"])));
+          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["text"]));
           $table->addCell($fourthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
           $table->addCell($fifthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
-        }
       }
     }
     else{
@@ -443,12 +441,10 @@ class ReportStatic
     $table = $section->addTable($this->tablestyle);
 
     if(!empty($obligations)){
-      foreach($obligations as $obligationList){
-        foreach($obligationList as $obligation){
-          $table->addRow($rowWidth);
-          $table->addCell($secondColLen,$firstColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
-          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]));
-        }
+      foreach($obligations as $obligation){
+        $table->addRow($rowWidth);
+        $table->addCell($secondColLen,$firstColStyle)->addText(htmlspecialchars(implode(",",$obligation["license"])));
+        $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["topic"]));
       }
     }
     if(!empty($whiteLists)){
