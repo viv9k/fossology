@@ -119,7 +119,6 @@ abstract class ClearedGetterCommon
     $statements = array();
     $findings = array();
     foreach($ungrupedStatements as $statement) {
-      $licenseId = $statement['licenseId'];
       $content = convertToUTF8($statement['content'], false);
       $content = htmlspecialchars($content, ENT_DISALLOWED);
       $comments = convertToUTF8($statement['comments'], false);
@@ -155,12 +154,12 @@ abstract class ClearedGetterCommon
         }
       } else {
         $singleStatement = array(
-            "licenseId" => $licenseId,
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
           );
         if ($extended) {
+          $singleStatement["licenseId"] = $statement['licenseId'];
           $singleStatement["comments"] = convertToUTF8($comments, false);
           $singleStatement["risk"] =  $statement['risk'];
         }
