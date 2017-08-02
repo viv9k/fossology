@@ -100,14 +100,11 @@ class ObligationsToLicenses
       $obTopic = $obligation['ob_topic'];
       $obText = $obligation['ob_text'];
       $licenseName = $obligation['rf_shortname'];
-      $groupBy = $obTopic;
-      if(!strcmp($groupedOb[$groupBy]['text'], $obText)){
-        if(array_key_exists($groupBy, $groupedOb))
-        {
-          $currentLics = &$groupedOb[$groupBy]['license'];
-          if (!in_array($licenseName, $currentLics)){
-            $currentLics[] = $licenseName;
-          }
+      $groupBy = $obText;
+      if(array_key_exists($groupBy, $groupedOb)) {
+        $currentLics = &$groupedOb[$groupBy]['license'];
+        if (!in_array($licenseName, $currentLics)){
+          $currentLics[] = $licenseName;
         }
       }
       else{
