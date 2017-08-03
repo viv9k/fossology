@@ -198,7 +198,7 @@ class UnifiedReport extends Agent
       }
       //To keep the schedular alive for large files 
       $countLoop += 1;
-      if(is_int($countLoop/10000)) {
+      if(is_int($countLoop/500)) {
         $thousandLoop++;
         $this->heartbeat(1);
       }

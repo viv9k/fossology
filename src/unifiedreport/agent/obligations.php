@@ -97,21 +97,26 @@ class ObligationsToLicenses
   function groupObligations($obligations)
   {
     foreach($obligations as $obligation ) {
-      $groups[$obligation['ob_pk']][] = $obligation;
-    }
-    foreach($groups as $group){
-      for($i=1; $i <= sizeof($group)+1; $i++)
-      {
-        if(strcmp($group[0]['ob_topic'], $group[$i]['ob_topic'])==0){
-          if(strcmp($group[0]['ob_text'], $group[$i]['ob_text'])==0){
-            $group[0]['rf_shortname'] = $group[0]['rf_shortname'].','.$group[$i]['rf_shortname'];
-            unset($group[$i]);
-          }
+      $obTopic = $obligation['ob_topic'];
+      $obText = $obligation['ob_text'];
+      $licenseName = $obligation['rf_shortname'];
+      $groupBy = $obText;
+      if(array_key_exists($groupBy, $groupedOb)) {
+        $currentLics = &$groupedOb[$groupBy]['license'];
+        if (!in_array($licenseName, $currentLics)){
+          $currentLics[] = $licenseName;
         }
       }
-      $newGroup[] = $group;
+      else{
+        $singleOb = array(
+         "topic" => $obTopic,
+         "text" => $obText,
+         "license" => array($licenseName)
+        );
+        $groupedOb[$groupBy] = $singleOb;
+      }
     }
-    return $newGroup;
+    return $groupedOb;
   }
 
   /**
