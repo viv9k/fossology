@@ -243,6 +243,7 @@ class ReportStatic
     $r8c2 = "Obligations and risk assessment regarding distribution";
     $r9c2 = "Ensure that your distribution terms which are agreed with Siemens’ customers (e.g. standard terms, “AGB”, or individual agreements) define that the open source license conditions shall prevail over the Siemens’ license conditions with respect to the open source software (usually this is part of Readme OSS).";
     $r10c2 = "Do not use any names, trademarks, service marks or product names of the author(s) and/or licensors to endorse or promote products derived from this software component without the prior written consent of the author(s) and/or the owner of such rights.";
+    $r11c2 = "Add a statement to the README_OSS that the OSS portions of this Product are provided royalty-free and can be used at no charge";
 
     $table = $section->addTable($this->tablestyle);
 
@@ -298,7 +299,7 @@ class ReportStatic
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r11c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen);
+    $cell = $table->addCell($secondColLen, $secondRowColorStyle)->addText(htmlspecialchars($r11c2), $rowTextStyleRight, "pStyle");
 
     $section->addTextBreak();
   }
@@ -318,7 +319,7 @@ class ReportStatic
     $firstColStyle = array ("size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
     $secondColStyle = array ("size" => 11 , "bold"=> true, "bgcolor"=> "E0FFFF");
     $subHeading = " Additional obligations, restrictions & risks beyond common rules";
-    $subHeadingInfoText1 = "  In this chapter you will find the summary of additional license conditions (relevant for development and distribution) for the OSS component. This chapter contains all obligations of included OSS licenses (need to get added manually during component clearing process). The examples below can be removed if not applicable.";
+    $subHeadingInfoText1 = "This chapter contains all obligations in addition to “common obligations, restrictions and risks” (common rules) of included OSS licenses (need to get added manually during component clearing process).";
 
     $cellRowSpan = array("vMerge" => "restart", "valign" => "top","size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
     $cellRowContinue = array("vMerge" => "continue","size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
