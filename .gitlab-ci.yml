@@ -6,8 +6,8 @@ types:
 
 before_script:
   # Setup proxy
-  - export http_proxy=http://proxy-ch.siemens.ch:84
-  - export https_proxy=http://proxy-ch.siemens.ch:84
+  - export http_proxy=http://194.138.0.3:9400
+  - export https_proxy=http://194.138.0.3:9400
   
   # Install build dependencies
   - apt-get -qq update && apt-get -qq -y install lsb-release sudo  php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl debhelper && utils/fo-installdeps -e -y
