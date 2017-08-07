@@ -51,23 +51,23 @@
     return otable;
   }
     
-    function deleteCandidate(rfPk,removeData) {
-      if(removeData == '0') {
+    function deleteCandidate(rfPk) {
         if (confirm("Remove this license from candidate license list?")) {
           $.ajax({
             type: 'POST',
             dataType: 'text',
             url: '?mod=admin_license_candidate&action=deletecandidate',
             data: { deleteRfPk : rfPk },
-            success: function(data) {
-              $("#deletecandidate" + rfPk).closest("tr").hide();
+            success: function(dataOnSuccess) {
+              if(dataOnSuccess == "true"){
+                $("#deletecandidate" + rfPk).closest("tr").hide();
+              }else{
+                alert(dataOnSuccess);
+              }
             },
             error: function() { alert('error'); }
           });
         }
-      }else{
-        alert(removeData);
-      }
     }
 
     $(document).ready(function () {
