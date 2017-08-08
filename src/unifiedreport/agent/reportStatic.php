@@ -198,6 +198,7 @@ class ReportStatic
   function todoTable(Section $section)
   {   
     $rowStyle = array("bgColor" => "E0E0E0", "spaceBefore" => 0, "spaceAfter" => 0, "spacing" => 0);
+    $secondRowColorStyle = array("bgColor" => "98c662"); 
     $rowTextStyleLeft = array("size" => 10, "bold" => true);
     $rowTextStyleRight = array("size" => 10, "bold" => false);
     $rowTextStyleRightBold = array("size" => 10, "bold" => true);
@@ -224,8 +225,6 @@ class ReportStatic
     $r9c1 = "3.a";
     $r10c1 = "3.b";
     $r11c1 = "3.c";
-    $r12c1 = "4";
-    $r13c1 = "4.a";
 
     $r1c2 = "Documentation of license conditions and copyright notices in product documentation (ReadMe_OSS)";
     $r2c21 = "All relevant licenses (global and others - see below) must be added to the legal approved Readme_OSS template.";
@@ -244,11 +243,7 @@ class ReportStatic
     $r8c2 = "Obligations and risk assessment regarding distribution";
     $r9c2 = "Ensure that your distribution terms which are agreed with Siemens’ customers (e.g. standard terms, “AGB”, or individual agreements) define that the open source license conditions shall prevail over the Siemens’ license conditions with respect to the open source software (usually this is part of Readme OSS).";
     $r10c2 = "Do not use any names, trademarks, service marks or product names of the author(s) and/or licensors to endorse or promote products derived from this software component without the prior written consent of the author(s) and/or the owner of such rights.";
-    $r11c2 = "";
-    $r12c2 = "Required wording to be put in the ReadMe_OSS";
-    $r13c21 = "The following statement must be added to any manual. The language of the statement is equal to the manual language. Check translation with documentation department.";
-    $r13c22 = "English:";
-    $r13c23 = "	The product contains, among other things, Open Source Software developed by third parties. The Open Source Software used in the product and the license agreements concerning this software can be found in the Readme_OSS. These Open Source Software files are protected by copyright. Your compliance with those license conditions will entitle you to use the Open Source Software as foreseen in the relevant license. In the event of conflicts between Siemens license conditions and the Open Source Software license conditions, the Open Source Software conditions shall prevail with respect to the Open Source Software portions of the software. The Open Source Software is licensed royalty-free. Insofar as the applicable Open Source Software License Conditions provide for it you can order the source code of the Open Source Software from your Siemens sales contact - against payment of the shipping and handling charges - for a period of at least 3 years since purchase of the Product. We are liable for the Product including the Open Source Software contained in it pursuant to the license conditions applicable to the Product. Any liability for the Open Source Software beyond the program flow intended for the Product is explicitly excluded. Furthermore any liability for defects resulting from modifications to the Open Source Software by you or third parties is excluded. We do not provide any technical support for the Product if it has been modified.";
+    $r11c2 = "Add a statement to the README_OSS that the OSS portions of this Product are provided royalty-free and can be used at no charge";
 
     $table = $section->addTable($this->tablestyle);
 
@@ -258,18 +253,18 @@ class ReportStatic
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r2c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen);
+    $cell = $table->addCell($secondColLen,$secondRowColorStyle);
     $cell->addText(htmlspecialchars($r2c21), $rowTextStyleRight, "pStyle");
     $cell->addText(htmlspecialchars($r2c22), $rowTextStyleRightBold, "pStyle");
     $cell->addText(htmlspecialchars($r2c23),$rowTextStyleRight, "pStyle");
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r3c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen)->addText(htmlspecialchars($r3c2), $rowTextStyleRight, "pStyle");
+    $cell = $table->addCell($secondColLen,$secondRowColorStyle)->addText(htmlspecialchars($r3c2), $rowTextStyleRight, "pStyle");
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r4c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen)->addText(htmlspecialchars($r4c2), $rowTextStyleRight, "pStyle");
+    $cell = $table->addCell($secondColLen,$secondRowColorStyle)->addText(htmlspecialchars($r4c2), $rowTextStyleRight, "pStyle");
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen, $rowStyle)->addText(htmlspecialchars($r5c1), $rowTextStyleLeft, "pStyle");
@@ -296,7 +291,7 @@ class ReportStatic
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r9c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen)->addText(htmlspecialchars($r9c2), $rowTextStyleRight, "pStyle");
+    $cell = $table->addCell($secondColLen, $secondRowColorStyle)->addText(htmlspecialchars($r9c2), $rowTextStyleRight, "pStyle");
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r10c1), $rowTextStyleLeft, "pStyle");
@@ -304,19 +299,7 @@ class ReportStatic
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r11c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen);
-    $cell->addText(htmlspecialchars($r11c2), $rowTextStyleRightBold, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $rowStyle)->addText(htmlspecialchars($r12c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen, $rowStyle)->addText(htmlspecialchars($r12c2), $rowTextStyleRightBold, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r13c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen);
-    $cell->addText(htmlspecialchars($r13c21), $rowTextStyleRightBold, "pStyle");
-    $cell->addText(htmlspecialchars($r13c22), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r13c23), $rowTextStyleRight, "pStyle");
+    $cell = $table->addCell($secondColLen, $secondRowColorStyle)->addText(htmlspecialchars($r11c2), $rowTextStyleRight, "pStyle");
 
     $section->addTextBreak();
   }
@@ -336,7 +319,7 @@ class ReportStatic
     $firstColStyle = array ("size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
     $secondColStyle = array ("size" => 11 , "bold"=> true, "bgcolor"=> "E0FFFF");
     $subHeading = " Additional obligations, restrictions & risks beyond common rules";
-    $subHeadingInfoText1 = "  In this chapter you will find the summary of additional license conditions (relevant for development and distribution) for the OSS component. This chapter contains all obligations of included OSS licenses (need to get added manually during component clearing process). The examples below can be removed if not applicable.";
+    $subHeadingInfoText1 = "This chapter contains all obligations in addition to “common obligations, restrictions and risks” (common rules) of included OSS licenses (need to get added manually during component clearing process).";
 
     $cellRowSpan = array("vMerge" => "restart", "valign" => "top","size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
     $cellRowContinue = array("vMerge" => "continue","size" => 11 , "bold"=> true, "bgcolor" => "FFFFC2");
@@ -345,75 +328,23 @@ class ReportStatic
     $section->addText(htmlspecialchars($subHeadingInfoText1));
 
     $rowWidth = 200;
-    $firstColLen = 2000;
-    $secondColLen = 1500;
+    $firstColLen = 3000;
+    $secondColLen = 2500;
     $thirdColLen = 9000;
-    $fourthColLen = 1500;
-    $fifthColLen = 1500; 
-   
+
     $table = $section->addTable($this->tablestyle);
     
     $table->addRow($rowWidth);
     $cell = $table->addCell($firstColLen, $firstRowStyle)->addText(htmlspecialchars("Obligation"), $firstRowTextStyle);
     $cell = $table->addCell($secondColLen, $firstRowStyle)->addText(htmlspecialchars("License"), $firstRowTextStyle);
     $cell = $table->addCell($thirdColLen, $firstRowStyle)->addText(htmlspecialchars("License section reference and short Description"), $firstRowTextStyle);
-    $cell = $table->addCell($fourthColLen, $firstRowStyle)->addText(htmlspecialchars("Focus area for Development "), $firstRowTextStyle);
-    $cell = $table->addCell($fifthColLen, $firstRowStyle)->addText(htmlspecialchars("Focus area for Distribution"), $firstRowTextStyle);
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Dual Licensing (optional obligation, check with license)"), $firstRowTextStyle);
-    $cell = $table->addCell($secondColLen, $secondColStyle);
-    $cell = $table->addCell($thirdColLen);
-    $cell->addText(htmlspecialchars("Add explicit note to Readme_OSS:"), $secondRowTextStyle2);
-    $cell->addText(htmlspecialchars("To the extend files may be licensed under <license1> or <license2>, in this context <license1> has been chosen."), $secondRowTextStyle2);
-    $cell->addText(htmlspecialchars("This shall not restrict the freedom of future contributors to choose either <license1> or <license2>.”"), $secondRowTextStyle2);
-    $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
-    $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Do not use the following Files"), $firstRowTextStyle);
-    $cell = $table->addCell($secondColLen, $secondColStyle);
-    $cell = $table->addCell($thirdColLen);
-    $cell->addText(htmlspecialchars("<reason for that>"), $secondRowTextStyle2);
-    $cell->addText(htmlspecialchars("Filelist:"), $secondRowTextStyle2Bold, $secondRowTextStyle2);
-    $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
-    $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Additional binaries found (dependencies)"), $firstRowTextStyle);
-    $cell = $table->addCell($secondColLen, $secondColStyle);
-    $cell = $table->addCell($thirdColLen);
-    $cell->addText(htmlspecialchars("The following dependencies were found in the source code. If the dependencies will be part of the final product, they must be cleared before this component may be used within a Siemens product"), $secondRowTextStyle2);
-    $cell->addText(htmlspecialchars("If you want to use the binaries distributed with the source/binaries ((where no corresponding source code is part of the distribution of this component) you must do a clearing also for those components (add them to the Mainline Portal). The license conditions of the additional binaries are NOT part of this clearing protocol."), $secondRowTextStyle1);
-    $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
-    $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Export restrictions"), $firstRowTextStyle);
-    $cell = $table->addCell($secondColLen, $secondColStyle);
-    $cell = $table->addCell($thirdColLen);
-    $cell->addText(htmlspecialchars("Assess potential export restrictions specified in the license text regarding this software component."), $secondRowTextStyle2);
-    $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
-    $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $firstColStyle)->addText(htmlspecialchars("Restrictions for use"), $firstRowTextStyle);
-    $cell = $table->addCell($secondColLen, $secondColStyle);
-    $cell = $table->addCell($thirdColLen);
-    $cell->addText(htmlspecialchars("Assess potential restrictions for use specified in the license text regarding this software component."), $secondRowTextStyle2);
-    $cell = $table->addCell($fourthColLen)->addText(htmlspecialchars("Not applicable"));
-    $cell = $table->addCell($fifthColLen)->addText(htmlspecialchars("Not applicable"));
 
     if(!empty($obligations)){
-      foreach($obligations as $obligationlist){
-        foreach($obligationlist as $obligation){
+      foreach($obligations as $obligation){
           $table->addRow($rowWidth);
-          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]), $firstRowTextStyle);
-          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
-          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars($obligation["ob_text"]));
-          $table->addCell($fourthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
-          $table->addCell($fifthColLen)->addText(htmlspecialchars("NA"), $secondRowTextStyle2Bold, array("align" => "center"));
-        }
+          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["topic"]), $firstRowTextStyle);
+          $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars(implode(",",$obligation["license"])));
+          $table->addCell($thirdColLen)->addText(htmlspecialchars($obligation["text"]));
       }
     }
     else{
@@ -421,8 +352,6 @@ class ReportStatic
       $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($key), $firstRowTextStyle);
       $table->addCell($secondColLen,$secondColStyle);
       $table->addCell($thirdColLen);
-      $table->addCell($fourthColLen);
-      $table->addCell($fifthColLen);
     }
     $section->addTextBreak();
   }
@@ -443,12 +372,10 @@ class ReportStatic
     $table = $section->addTable($this->tablestyle);
 
     if(!empty($obligations)){
-      foreach($obligations as $obligationList){
-        foreach($obligationList as $obligation){
-          $table->addRow($rowWidth);
-          $table->addCell($secondColLen,$firstColStyle)->addText(htmlspecialchars($obligation["rf_shortname"]));
-          $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["ob_topic"]));
-        }
+      foreach($obligations as $obligation){
+        $table->addRow($rowWidth);
+        $table->addCell($secondColLen,$firstColStyle)->addText(htmlspecialchars(implode(",",$obligation["license"])));
+        $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["topic"]));
       }
     }
     if(!empty($whiteLists)){
