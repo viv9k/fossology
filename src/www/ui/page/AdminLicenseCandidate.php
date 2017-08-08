@@ -171,27 +171,9 @@ class AdminLicenseCandidate extends DefaultPlugin
     {
       $link = Traceback_uri() . '?mod=' . self::NAME . '&rf=' . $row['rf_pk'];
       $edit = '<a href="' . $link . '"><img border="0" src="images/button_edit.png"></a>';
-      $licName = htmlentities($row['rf_shortname']);
-      $stmt = __METHOD__.".$row[rf_pk]";
-      $dbManager->prepare($stmt, "SELECT DISTINCT(uploadtree_fk) FROM clearing_event "
-                                ."WHERE rf_fk=$1 AND removed=false AND uploadtree_fk NOT IN "
-                                ."(SELECT DISTINCT(uploadtree_fk) FROM clearing_event WHERE "
-                                ."rf_fk=$1 AND removed=TRUE);");
-      $result = $dbManager->execute($stmt, array($row['rf_pk']));
-      $dataFetch = $dbManager->fetchAll($result);
-      $dbManager->freeResult($result);
-      if(empty($dataFetch)){
-        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',0)" src="images/icons/close_16.png">';
-      }else{
-        $treeDao = $this->getObject('dao.tree');
-        $Path  = "Cannot remove license $licName, because it is in use at".'\n\n';
-        foreach($dataFetch as $cnt => $uploadTreeFk){
-          $Path .= $cnt+1;
-          $Path .= ") ".$treeDao->getFullPath($uploadTreeFk['uploadtree_fk'], 'uploadtree').'\n';
-        }
-        $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].',\''.$Path.'\')" src="images/icons/close_16.png">';
-      }
-      $aaData[] = array($edit, $licName,
+      $delete = '<img border="0" id="deletecandidate'.$row['rf_pk'].'" onClick="deleteCandidate('.$row['rf_pk'].')" src="images/icons/close_16.png">';
+
+      $aaData[] = array($edit, htmlentities($row['rf_shortname']),
           htmlentities($row['rf_fullname']),
           '<div style="overflow-y:scroll;max-height:150px;margin:0;">' . nl2br(htmlentities($row['rf_text'])) . '</div>',
           htmlentities($row['group_name']),$delete
@@ -300,8 +282,27 @@ class AdminLicenseCandidate extends DefaultPlugin
   protected function doDeleteCandidate($rfPk)
   {
     $dbManager = $this->getObject('db.manager');
-    $dbManager->getSingleRow('DELETE FROM license_candidate WHERE rf_pk=$1', array($rfPk), __METHOD__.".delete");
-    return new Response('Successfully deleted', Response::HTTP_OK, array('Content-type'=>'text/plain'));
+    $stmt = __METHOD__.".$rfPk";
+    $dbManager->prepare($stmt, "SELECT DISTINCT(uploadtree_fk) FROM clearing_event "
+                               ."WHERE rf_fk=$1 AND removed=false AND uploadtree_fk NOT IN "
+                               ."(SELECT DISTINCT(uploadtree_fk) FROM clearing_event WHERE "
+                               ."rf_fk=$1 AND removed=TRUE);");
+    $result = $dbManager->execute($stmt, array($rfPk));
+    $dataFetch = $dbManager->fetchAll($result);
+    $dbManager->freeResult($result);
+    if(empty($dataFetch)){
+      $dbManager->getSingleRow('DELETE FROM license_candidate WHERE rf_pk=$1', array($rfPk), __METHOD__.".delete");
+      return new Response('true', Response::HTTP_OK, array('Content-type'=>'text/plain'));
+    }else{
+      $treeDao = $this->getObject('dao.tree');
+      $Path  = "Cannot remove license, because it is in use at \n\n";
+      foreach($dataFetch as $cnt => $uploadTreeFk){
+        $Path .= $cnt+1;
+        $Path .= ") ".$treeDao->getFullPath($uploadTreeFk['uploadtree_fk'], 'uploadtree')."\n";
+      }
+      return new Response($Path, Response::HTTP_OK, array('Content-type'=>'text/plain'));  
+
+    }
   }
 
 }
