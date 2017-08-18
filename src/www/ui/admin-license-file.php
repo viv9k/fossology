@@ -344,7 +344,7 @@ class admin_license_file extends FO_Plugin
   {
     $sql = "SELECT count(*) from license_ref where rf_pk <> $1 and (LOWER(rf_shortname) = LOWER($2) or (rf_text <> ''
       and rf_text = $3 and LOWER(rf_text) NOT LIKE 'license by nomos.'))";
-    $check_count = $this->dbManager->getSingleRow($sql,array($rfId,$shortname,$text),__METHOD__.'.countLicensesByNomos');
+    $check_count = $this->dbManager->getSingleRow($sql,array($rfId,$shortname,pg_escape_string($text)),__METHOD__.'.countLicensesByNomos');
     return (0 < $check_count['count']);
   }
   
