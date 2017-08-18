@@ -1,7 +1,7 @@
 <?php
 /***********************************************************
  Copyright (C) 2008-2014 Hewlett-Packard Development Company, L.P.
- Copyright (C) 2015-2016, Siemens AG
+ Copyright (C) 2015-2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -312,7 +312,7 @@ class admin_license_file extends FO_Plugin
     }
     else
     {
-      $row = array('rf_active' =>'t', 'marydone'=>'f', 'rf_text_updatable'=>'t', 'rf_parent'=>0, 'rf_report'=>0, 'rf_risk', 'rf_spdx_compatible'=>'f');
+      $row = array('rf_active' =>'t', 'marydone'=>'f', 'rf_text_updatable'=>'t', 'rf_parent'=>0, 'rf_report'=>0, 'rf_risk'=>0, 'rf_spdx_compatible'=>'f');
     }
     
     foreach(array_keys($row) as $key)
