@@ -1,92 +1,160 @@
-image: maven:latest
-types:  
+image: docker.siemens.com/ccp/vm:v5
+
+stages:
   - compile
   - test
   - build-package
+  - deploy
 
 before_script:
-  # Setup proxy
-  - export http_proxy=http://194.138.0.3:9400
-  - export https_proxy=http://194.138.0.3:9400
-  
   # Install build dependencies
-  - apt-get -qq update && apt-get -qq -y install lsb-release sudo  php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl debhelper && utils/fo-installdeps -e -y
-  - apt-get -qq -y install postgresql postgresql-server-dev-all cppcheck php5-pgsql sqlite3 php5-sqlite libsqlite3-0 libsqlite3-dev 
-  - apt-get install -qq -y debhelper libglib2.0-dev libmagic-dev libxml2-dev
-  - apt-get install -qq -y libtext-template-perl librpm-dev  rpm libpcre3-dev libssl-dev
-  - apt-get install -qq -y apache2 libapache2-mod-php5 php5-pgsql php-pear php5-cli
-  - apt-get install -qq -y binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils
-  - apt-get install -qq -y rpm upx-ucl unrar-free unzip p7zip-full p7zip wget git-core subversion
-  - apt-get install -qq -y libpq-dev libcunit1-dev libcppunit-dev
-  - apt-get install -qq -y libboost-regex-dev libboost-program-options-dev
-  - apt-get install -y liblocal-lib-perl
+  - sudo apt-get -qq update
+  - sudo apt-get -qq -y install lsb-release sudo php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl debhelper
+  - sudo utils/fo-installdeps -e -o -y
+  - sudo apt-get -qq -y install postgresql postgresql-server-dev-all cppcheck php5-pgsql sqlite3 php5-sqlite libsqlite3-0 libsqlite3-dev
+  - sudo apt-get install -qq -y debhelper libglib2.0-dev libmagic-dev libxml2-dev
+  - sudo apt-get install -qq -y libtext-template-perl librpm-dev  rpm libpcre3-dev libssl-dev
+  - sudo apt-get install -qq -y apache2 libapache2-mod-php5 php5-pgsql php-pear php5-cli
+  - sudo apt-get install -qq -y binutils bzip2 cabextract cpio sleuthkit genisoimage poppler-utils
+  - sudo apt-get install -qq -y rpm upx-ucl unrar-free unzip p7zip-full p7zip wget git-core subversion
+  - sudo apt-get install -qq -y libpq-dev libcunit1-dev libcppunit-dev
+  - sudo apt-get install -qq -y libboost-regex-dev libboost-program-options-dev
+  - sudo apt-get install -y liblocal-lib-perl
 
   # TO resolve ninka build dependency
-  - git clone --branch release-1.1104 https://github.com/dagolden/IO-CaptureOutput.git
-  - cd IO-CaptureOutput && perl Makefile.PL && make && make test && make install && cd ..
-  - rm -rf IO-CaptureOutput
+  - git clone --branch release-1.1104 https://code.siemens.com/mirror/io-captureoutput.git
+  - cd io-captureoutput && perl Makefile.PL && make && make test && sudo make install && cd ..
+  - rm -rf io-captureoutput
 
   # Create and patch FOSSology cache
-  - mkdir -p /var/local/cache/fossology && chown $(whoami) /var/local/cache/fossology
-  
+  - sudo mkdir -p /var/local/cache/fossology && sudo chown $(whoami) /var/local/cache/fossology
+
   # Install composer
-  - mv install/composer /usr/local/bin/composer
-  
+  # - sudo mv install/composer /usr/local/bin/composer
+
   # Install composer dependencies
   - cd src
-  - composer install --dev
-  - cd vendor/ && git clone https://github.com/dmgerman/ninka.git && cd ninka/ && perl Makefile.PL && make && make install && cd ../..
+  # - composer install --dev
+  - wget http://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar
+  - tar xvf php-vendor.tar
+  - rm -rf php-vendor.tar
+  - current_dir=`pwd` 
+  - cd && git clone https://code.siemens.com/mirror/ninka.git && cd ninka/ && perl Makefile.PL && make && sudo make install
+  # jump back to project root level
+  - cd $current_dir
   - cd ..
-  - install/scripts/install-spdx-tools.sh
   
   # Create postgres DB
-  - /etc/init.d/postgresql start
-  - /etc/init.d/postgresql status
+  - sudo /etc/init.d/postgresql start
+  - sudo /etc/init.d/postgresql status
 
-  - sudo -u postgres psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB" 
+  - sudo -u postgres psql -c "CREATE USER fossy WITH PASSWORD 'fossy' CREATEDB"
   - sudo -u postgres psql -c "CREATE DATABASE fossology OWNER fossy"
-  
+
 compile:
-  type : compile
+  tags:
+   - VLAN
+  stage: compile
   script:
+    - echo "Running compile"
     - make
 
 C-test:
-  type : test
+  tags:
+    - VLAN
+  stage: test
   script:
-    - make all test-lib test-monk test-nomos
-    - cppcheck -q -isrc/nomos/agent_tests/testdata/NomosTestfiles/ -isrc/testing/dataFiles/ src/
+    - echo "Running C test"
+    - sudo make all test-lib test-monk test-nomos
+    - sudo cppcheck -q -isrc/nomos/agent_tests/testdata/NomosTestfiles/ -isrc/testing/dataFiles/ src/
 
 PHPCPD-test:
-  type : test
+  tags:
+    - VLAN
+  stage: test
   script:
-    - src/vendor/bin/phpcpd src/cli/ src/copyright/ src/decider*/ src/lib/ src/monk/ src/nomos/ src/readmeoss/ src/spdx2/ src/www/
+    - echo "Running PHPCPD test"
+    - sudo src/vendor/bin/phpcpd src/cli/ src/copyright/ src/decider*/ src/lib/ src/monk/ src/nomos/ src/readmeoss/ src/spdx2/ src/www/
   allow_failure: true
 
 PHPCS-test:
-  type : test
+  tags:
+    - VLAN
+  stage: test
   script:
     - echo "Running PHPCS test"
-    - src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml src/lib/php/*/ src/www/ui/page/ src/www/ui/async/ src/spdx2 src/monk 
+    - sudo src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml src/lib/php/*/ src/www/ui/page/ src/www/ui/async/ src/spdx2 src/monk 
 
 PhpUnit-test:
-  type : test
+  tags:
+    - VLAN
+  stage: test
   script:
+    - echo "Running PhpUnit test"
     - make 
-    - wget https://github.com/spdx/tools/releases/download/v2.1.0/SPDXTools-v2.1.0.zip
+    - wget http://linux.siemens.de/pub/tools/FOSSologyNG/SPDXTools-v2.1.0.zip
     - unzip SPDXTools-v2.1.0 && mv SPDXTools-v2.1.0/spdx-tools-2.1.0-jar-with-dependencies.jar src/spdx2/agent_tests/Functional/ 
     - rm -rf SPDXTools-v2.1.0*
-    - src/vendor/bin/phpunit -c src/phpunit.xml
+    - sudo src/vendor/bin/phpunit -c src/phpunit.xml
 
 build_foss:
-  type : build-package
+  tags:
+    - VLAN
+  stage : build-package
   script: 
+    - echo "Running build_foss"
     - make
     - dpkg-buildpackage -I
-    - pwd
     - mkdir packages  
     - cp ../*.deb packages/
+    
+    # creating archive
+    - tar -czvf fossologyng-master-current.tar.gz packages/*.deb
+    
+    # adding host key to list of known hosts 
+    - mkdir ~/.ssh   
+    - ssh-keyscan -H $PACKAGE_SERVER_NAME > ~/.ssh/known_hosts
+    
+    # super important: adding key to ssh agent, othewiese the private key file is not considered
+    - echo $PACKAGE_SERVER_KEY > key
+    - chmod 600 key
+    - eval $(ssh-agent -s)
+    - ssh-add  <(echo "$PACKAGE_SERVER_KEY")
+    - ssh-add -L
+    
+    # finally copying the artifacts
+    - scp -i key fossologyng-master-current.tar.gz fossy@$PACKAGE_SERVER_NAME:$PACKAGE_SERVER_PATH
   artifacts:
     expire_in: 1 day
     paths:
       - packages
+      
+deploy-dev:
+  tags:
+    - VLAN
+  stage : deploy
+  script: 
+    - echo "Running deploy-dev"
+    # download files (artifacts are not transferred between stages
+    - wget http://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-master-current.tar.gz
+    # adding host key to list of known hosts 
+    - mkdir ~/.ssh   
+    - ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts
+    # super important: adding key to ssh agent, othewiese the private key file is not considered
+    - echo $DEVDEPLOY_SERVER_KEY > key
+    - chmod 600 key
+    - eval $(ssh-agent -s)
+    - ssh-add  <(echo "$DEVDEPLOY_SERVER_KEY")
+    - ssh-add -L
+    # copying the artifacts
+    - scp -i key fossologyng-master-current.tar.gz ubuntu@$DEVDEPLOY_SERVER_NAME:/home/ubuntu
+    # logging in and artifacts install
+    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "tar -x --overwrite -z -f fossologyng-master-current.tar.gz"
+    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "rm -f packages/fossology-ninka*"
+    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo dpkg -i packages/*.deb"
+    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo apt-get -f install -y"
+  only:
+    - master
+
+
+
