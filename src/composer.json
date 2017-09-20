@@ -36,8 +36,7 @@
             "Fossology\\DeciderJob\\UI\\": "deciderjob/ui",
             "Fossology\\Decider\\UI\\": "decider/ui",
             "Fossology\\UI\\Page\\": "www/ui/page"
-        },
-        "classmap": [ "lib/thrift/gen-php", "lib/Thrift" ]
+        }
     },
     "config": {
         "platform": {

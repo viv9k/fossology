@@ -19,7 +19,7 @@ TOP = ../..
 VARS = $(TOP)/Makefile.conf
 include $(VARS)
 
-DIRS = c php cpp thrift Thrift
+DIRS = c php cpp
 TESTDIRS = c cpp
 
 DIR_LOOP = @set -e; for dir in $(DIRS); do $(MAKE) -s -C $$dir $(1); done

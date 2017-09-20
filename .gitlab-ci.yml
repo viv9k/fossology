@@ -97,12 +97,12 @@ PhpUnit-test:
     - rm -rf SPDXTools-v2.1.0*
     - sudo src/vendor/bin/phpunit -c src/phpunit.xml
 
-build_foss:
+package:
   tags:
     - VLAN
   stage : build-package
   script: 
-    - echo "Running build_foss"
+    - echo "Running package"
     - make
     - dpkg-buildpackage -I
     - mkdir packages  
@@ -112,7 +112,7 @@ build_foss:
     - tar -czvf fossologyng-master-current.tar.gz packages/*.deb
     
     # adding host key to list of known hosts 
-    - mkdir ~/.ssh   
+    - mkdir -p ~/.ssh   
     - ssh-keyscan -H $PACKAGE_SERVER_NAME > ~/.ssh/known_hosts
     
     # super important: adding key to ssh agent, othewiese the private key file is not considered
@@ -132,6 +132,7 @@ build_foss:
 deploy-dev:
   tags:
     - VLAN
+  allow_failure: true
   stage : deploy
   script: 
     - echo "Running deploy-dev"

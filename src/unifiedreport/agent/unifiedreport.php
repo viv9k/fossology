@@ -1,7 +1,7 @@
 <?php
 /*
  Author: Daniele Fognini, Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2016, Siemens AG
+ Copyright (C) 2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -34,8 +34,6 @@ use PhpOffice\PhpWord\Shared\Html;
 
 include_once(__DIR__ . "/version.php");
 include_once(__DIR__ . "/reportStatic.php");
-include_once(__DIR__ . "/sw360Licenses.php");
-include_once(__DIR__ . "/sw360Component.php");
 include_once(__DIR__ . "/obligations.php");
 
 class UnifiedReport extends Agent
@@ -403,9 +401,7 @@ class UnifiedReport extends Agent
       $allHistLicenses = rtrim($allHistLicenses, ", ");
     }
     
-    $cComponent = new Sw360Component();
-    $newSw360Component= $cComponent->processGetComponent($uploadId);
-    
+    $newSw360Component = array();
     $table = $section->addTable($this->tablestyle);
     
     $table->addRow($rowWidth);
@@ -804,10 +800,7 @@ class UnifiedReport extends Agent
 
     $sR = new ReportStatic($timestamp);
     
-    $licenseObli = new Sw360License();
     $licenseObligation = new ObligationsToLicenses();
-    
-    $groupName = $this->userDao->getGroupNameById($groupId);
     
     list($obligations, $whiteLists) = $licenseObligation->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
 

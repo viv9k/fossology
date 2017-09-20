@@ -26,10 +26,10 @@ all:
 	@echo "nothing to do"
 
 install: all
-	mkdir -p $(DESTDIR)$(MODDIR)/lib/thrift
-	for file in $(FILES); do \
-		$(INSTALL_DATA) $$file $(DESTDIR)$(MODDIR)/lib/thrift/$$file; \
-	done
+#	mkdir -p $(DESTDIR)$(MODDIR)/lib/thrift
+#	for file in $(FILES); do \
+#		$(INSTALL_DATA) $$file $(DESTDIR)$(MODDIR)/lib/thrift/$$file; \
+#	done
 
 uninstall:
 	@echo "Removing thrift libs"
