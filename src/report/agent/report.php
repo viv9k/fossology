@@ -1,7 +1,7 @@
 <?php
 /*
  Author: Daniele Fognini, Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2016, Siemens AG
+ Copyright (C) 2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -34,8 +34,6 @@ use PhpOffice\PhpWord\Shared\Html;
 
 include_once(__DIR__ . "/version.php");
 include_once(__DIR__ . "/reportStatic.php");
-include_once(__DIR__ . "/sw360Licenses.php");
-include_once(__DIR__ . "/sw360Component.php");
 
 class ReportAgent extends Agent
 {
@@ -368,9 +366,7 @@ class ReportAgent extends Agent
       $allMainLicenses = rtrim($allMainLicenses, ", ");
     }
     
-    $cComponent = new Sw360Component();
-    $newSw360Component= $cComponent->processGetComponent($uploadId);
-    
+    $newSw360Component = array();
     $table = $section->addTable($this->tablestyle);
     
     $table->addRow($rowWidth);
@@ -765,12 +761,7 @@ class ReportAgent extends Agent
 
     $sR = new ReportStatic($timestamp);
     
-    $licenseObli = new Sw360License();
-    
-    $groupName = $this->userDao->getGroupNameById($groupId);
-    
-    $results = $licenseObli->sw360GetLicense($uploadId, $groupName, $contents['licenses']['statements']);
-
+    $results = array();
     /* Header starts */
     $sR->reportHeader($section);
 

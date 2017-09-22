@@ -30,16 +30,16 @@ all:
 	@echo "nothing to do"
 
 install: all
-	@if [ -d $(TOP)/$(THRIFTDIR) ]; then \
-		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
-	else \
-		git clone --branch 0.10.0 https://github.com/apache/thrift.git $(TOP)/thrift; \
-		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
-	fi
-	mkdir -p $(DESTDIR)$(MODDIR)/lib/Thrift
-	for file in $(FILES); do \
-		$(INSTALL_DATA) $$file $(DESTDIR)$(MODDIR)/lib/Thrift/$$file; \
-	done
+#	@if [ -d $(TOP)/$(THRIFTDIR) ]; then \
+#		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
+#	else \
+#		git clone --branch 0.10.0 https://github.com/apache/thrift.git $(TOP)/thrift; \
+#		cp -ar $(TOP)/$(THRIFTDIR)/ $(CURRENTDIR); \
+#	fi
+#	mkdir -p $(DESTDIR)$(MODDIR)/lib/Thrift
+#	for file in $(FILES); do \
+#		$(INSTALL_DATA) $$file $(DESTDIR)$(MODDIR)/lib/Thrift/$$file; \
+#	done
 
 uninstall:
 	@echo "Removing thrift libs"
