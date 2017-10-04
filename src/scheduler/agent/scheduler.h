@@ -153,9 +153,9 @@ extern GThread* main_thread;
  */
 #define CONF_VARIABLES_TYPES(apply)                               \
   apply(uint32_t, fork_backoff_time,     atoi, %d, 5)             \
-  apply(uint32_t, agent_death_timer,     atoi, %d, 180)           \
+  apply(uint32_t, agent_death_timer,     atoi, %d, 480)           \
   apply(uint32_t, agent_update_interval, atoi, %d, 120)           \
-  apply(uint32_t, agent_update_number,   atoi, %d, 5)             \
+  apply(uint32_t, agent_update_number,   atoi, %d, 15)             \
   apply(gint,     interface_nthreads,    atoi, %d, 10)
 
 /** The extern declaractions of configuration varaibles */
