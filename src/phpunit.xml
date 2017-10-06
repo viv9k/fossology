@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<phpunit bootstrap="./phpunit-bootstrap.php" colors="true">
+<phpunit
+  bootstrap="./phpunit-bootstrap.php" colors="true"
+  convertErrorsToExceptions="true"
+  convertNoticesToExceptions="false"
+  stopOnFailure="false">
   <php>
     <env name="SYSCONFDIR" value="src/lib/php/tests/sysconfigDirTest"/>
   </php>
@@ -24,7 +28,6 @@
       <directory suffix="Test.php">spdx2/agent_tests</directory>
       <directory suffix="Test.php">clixml/agent_tests</directory>
     </testsuite>
-
   </testsuites>
 
   <filter>
