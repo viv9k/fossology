@@ -30,6 +30,7 @@ DIRS = \
 	reuser \
 	scheduler \
 	spdx2 \
+	reportImport \
 	clixml \
 	unifiedreport \
 	ununpack \

@@ -16,6 +16,7 @@
         "symfony/dependency-injection": "2.6.*",
         "twig/twig": "1.*",
         "twig/extensions": "1.*",
+        "easyrdf/easyrdf": "0.9.*",
         "omines/oauth2-gitlab": "~1.0",
         "phpoffice/phpword": "0.12.0"
     },
