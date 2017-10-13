@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2015 Siemens AG
+ * Copyright (C) 2014-2017 Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,14 +67,6 @@ class AdminLicenseCandidate extends DefaultPlugin
    */
   protected function handle(Request $request)
   {
-    $action = $request->get('action');
-    $deleteRfPk = intval($request->get('deleteRfPk'));
-    
-    if($action=="deletecandidate" && isset($deleteRfPk))
-    {
-      return $this->doDeleteCandidate($deleteRfPk);
-    }
-
     $rf = intval($request->get('rf'));
     if ($rf<1)
     {
@@ -150,6 +142,9 @@ class AdminLicenseCandidate extends DefaultPlugin
           return $this->render('admin_license_candidate.html.twig', $this->mergeWithDefault($vars));
         }
         $vars['message'] = 'Sorry, this feature is not ready yet.';
+        break;
+      case 'deletecandidate':
+        return $this->doDeleteCandidate($rf);
         break;
     }
       
@@ -282,11 +277,14 @@ class AdminLicenseCandidate extends DefaultPlugin
   protected function doDeleteCandidate($rfPk)
   {
     $dbManager = $this->getObject('db.manager');
-    $stmt = __METHOD__.".$rfPk";
-    $dbManager->prepare($stmt, "SELECT DISTINCT(uploadtree_fk) FROM clearing_event "
-                               ."WHERE rf_fk=$1 AND removed=false AND uploadtree_fk NOT IN "
-                               ."(SELECT DISTINCT(uploadtree_fk) FROM clearing_event WHERE "
-                               ."rf_fk=$1 AND removed=TRUE);");
+    $stmt = __METHOD__.".getUploadtreeFkForUsedCandidates";
+    $dbManager->prepare($stmt, "SELECT uploadtree_fk
+                                  FROM clearing_event
+                                 WHERE removed=false
+                                   AND date_added IN(SELECT max(date_added)
+                                                       FROM clearing_event
+                                                      WHERE rf_fk=$1
+                                                       GROUP BY uploadtree_fk)");
     $result = $dbManager->execute($stmt, array($rfPk));
     $dataFetch = $dbManager->fetchAll($result);
     $dbManager->freeResult($result);
@@ -295,13 +293,12 @@ class AdminLicenseCandidate extends DefaultPlugin
       return new Response('true', Response::HTTP_OK, array('Content-type'=>'text/plain'));
     }else{
       $treeDao = $this->getObject('dao.tree');
-      $Path  = "Cannot remove license, because it is in use at \n\n";
+      $message = "<ol style='padding-left:1em;'>";
       foreach($dataFetch as $cnt => $uploadTreeFk){
-        $Path .= $cnt+1;
-        $Path .= ") ".$treeDao->getFullPath($uploadTreeFk['uploadtree_fk'], 'uploadtree')."\n";
+        $message .= "<li>".$treeDao->getFullPath($uploadTreeFk['uploadtree_fk'], 'uploadtree')."</li>";
       }
-      return new Response($Path, Response::HTTP_OK, array('Content-type'=>'text/plain'));  
-
+      $message .= "</ol>";
+      return new Response($message, Response::HTTP_OK, array('Content-type'=>'text/plain'));  
     }
   }
 
