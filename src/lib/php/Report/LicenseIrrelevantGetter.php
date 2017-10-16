@@ -52,7 +52,7 @@ class LicenseIrrelevantGetter extends ClearedGetterCommon
    * @param type $ungrupedStatements
    * @return type
    */
-  protected function groupStatements($ungrupedStatements)
+  protected function groupStatements($ungrupedStatements, $extended, $agentcall)
   {
     $statements = array();
     foreach($ungrupedStatements as $statement) {
