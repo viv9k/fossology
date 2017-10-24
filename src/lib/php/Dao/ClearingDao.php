@@ -812,6 +812,10 @@ INSERT INTO clearing_decision (
     $this->dbManager->freeResult($res);
   }
   
+  /**
+   * @param uploadId
+   * @param int $groupId
+   */
   public function getMainLicenseIds($uploadId, $groupId)
   {
     $stmt = __METHOD__;
@@ -826,12 +830,22 @@ INSERT INTO clearing_decision (
     return $ids;
   }
   
+  /**
+   * @param $uploadId
+   * @param int $groupId
+   * @param int $licenseId
+   */
   public function makeMainLicense($uploadId, $groupId, $licenseId)
   {
     $this->dbManager->insertTableRow('upload_clearing_license',
             array('upload_fk'=>$uploadId,'group_fk'=>$groupId,'rf_fk'=>$licenseId));
   }
-  
+
+  /**
+   * @param uploadId
+   * @param int $groupId
+   * @param int $licenseId
+   */  
   public function removeMainLicense($uploadId, $groupId, $licenseId)
   {
     $this->dbManager->getSingleRow('DELETE FROM upload_clearing_license WHERE upload_fk=$1 AND group_fk=$2 AND rf_fk=$3',

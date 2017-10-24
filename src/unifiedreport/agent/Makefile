@@ -1,4 +1,4 @@
-# Copyright Siemens AG 2014
+# Copyright Siemens AG 2017
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
@@ -10,7 +10,7 @@ VARS=$(TOP)/Makefile.conf
 DEPS=$(TOP)/Makefile.deps
 include $(VARS)
 
-EXE=unifiedreport.php reportStatic.php version.php obligations.php
+EXE=unifiedreport.php reportStatic.php reportSummary.php version.php obligations.php
 WRAP=unifiedreport
 
 all: version.php

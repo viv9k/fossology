@@ -659,13 +659,24 @@ ORDER BY lft asc
     return $refArray['rf_pk'];
   }
 
-
+  /**
+   * @param array("License by Nomos.")
+   * @return int count of license_ref
+   */
   public function getLicenseCount()
   {
     $licenseRefTable = $this->dbManager->getSingleRow("SELECT COUNT(*) cnt FROM license_ref WHERE rf_text!=$1", array("License by Nomos."));
     return intval($licenseRefTable['cnt']);
   }
 
+  /**
+   * @param int $rf_pk 
+   * @param string $shortname 
+   * @param string $fullname 
+   * @param string $rfText, $rfNotes 
+   * @param string $readyformerge
+   * @param int $riskLvl
+   */
   public function updateCandidate($rf_pk, $shortname, $fullname, $rfText, $url, $rfNotes, $readyformerge, $riskLvl)
   {
     $marydone = $this->dbManager->booleanToDb($readyformerge);
@@ -673,6 +684,10 @@ ORDER BY lft asc
         array($rf_pk, $shortname, $fullname, $rfText, $url, $rfNotes, $marydone, $riskLvl), __METHOD__);
   }
 
+  /**
+   * @param int $licenseId
+   * @param int $groupId
+   */
   public function getLicenseParentById($licenseId, $groupId=null)
   {
     return $this->getLicenseByCondition(" rf_pk=(SELECT rf_parent FROM license_map WHERE usage=$1 AND rf_fk=$2 AND rf_fk!=rf_parent)",
@@ -680,6 +695,7 @@ ORDER BY lft asc
   }
 
   /**
+   * @param array $licenseLists
    * @return array
    **/
   public function getLicenseObligations($licenseLists)

@@ -1,7 +1,6 @@
 <?php
 /*
- Copyright (C) 2014-2015, Siemens AG
- Author: Daniele Fognini
+ Copyright (C) 2014-2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -62,21 +61,18 @@ class LicenseIrrelevantGetter extends ClearedGetterCommon
       $comment = $statement['comment'];
       $licenseName = $statement['shortname'];
       if($this->irreleavntFilesOnly){
-        if (array_key_exists($dirName, $statements))
-        {
+        if (array_key_exists($dirName, $statements)){
           $currentFiles = &$statements[$dirName]['files'];
           if (!in_array($baseName, $currentFiles)){
             $currentFiles[] = $baseName;
           }
-        }
-        else{
+        }else{
           $statements[$dirName] = array(
              "content" => convertToUTF8($dirName, false),
              "files" => array($baseName)
           );
         }
-      }
-      else{
+      }else{
         if($comment){
           $statements[] = array(
             "content" => $licenseName,
