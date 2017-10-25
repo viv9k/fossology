@@ -684,7 +684,7 @@ class UnifiedReport extends Agent
     /* Display comments entered for report */
     $heading = "Notes";
     $subHeading = "Notes on individual files";
-    $sR->notes($section, $heading, $subHeading);
+    $reportStaticSection->notes($section, $heading, $subHeading);
     $titleSubHeadingNotes = "(License name, Comment Entered, File path)";
     $this->bulkLicenseTable($section, "", $contents['licenseComments']['statements'], $titleSubHeadingNotes);
 
