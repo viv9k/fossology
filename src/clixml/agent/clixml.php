@@ -267,6 +267,7 @@ class CliXml extends Agent
                       "copyrights" => $copyrights["statements"],
                       "countAcknowledgement" => $countAcknowledgement
                      );
+    $contents = $this->reArrangeMainLic($contents);
     $contents = $this->reArrangeContent($contents);        
     $message = $this->renderString($this->getTemplateFile('file'),array(
         'documentName'=>$this->packageName,
@@ -339,15 +340,14 @@ class CliXml extends Agent
               $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
             }
           } else {
-            $lenMainLics++;
-            $contents["licensesMain"][$lenMainLics] = $contents["licenses"][$i];
-          }   
-          unset($contents["licenses"][$i]);    
-        }   
-      }   
+            $contents["licensesMain"][$lenMainLics++] = $contents["licenses"][$i];
+          }
+          unset($contents["licenses"][$i]);
+        }
+      }
     }
 
-    $lenMainLicenses=count($contents["licensesMain"]);    
+    $lenMainLicenses=count($contents["licensesMain"]);
     for($i=0; $i<$lenMainLicenses; $i++){
       $contents["licensesMain"][$i]["contentMain"] = $contents["licensesMain"][$i]["content"];
       $contents["licensesMain"][$i]["textMain"] = $contents["licensesMain"][$i]["text"];
@@ -373,7 +373,6 @@ class CliXml extends Agent
       $contents["copyrights"][$i]["contentCopy"] = $contents["copyrights"][$i]["content"];
         unset($contents["copyrights"][$i]["content"]);
     }
-    $contents = $this->reArrangeMainLic($contents);
     return $contents;
   }
 
