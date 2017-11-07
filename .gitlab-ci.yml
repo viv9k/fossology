@@ -155,7 +155,7 @@ deploy-dev:
     - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo dpkg -i packages/*.deb"
     - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo apt-get -f install -y"
   only:
-    - master
+    - ng-master
 
 
 
