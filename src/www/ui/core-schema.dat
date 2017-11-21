@@ -574,6 +574,37 @@
   $Schema["TABLE"]["ip"]["is_enabled"]["ADD"] = "ALTER TABLE \"ip\" ADD COLUMN \"is_enabled\" bool DEFAULT true";
   $Schema["TABLE"]["ip"]["is_enabled"]["ALTER"] = "ALTER TABLE \"ip\" ALTER COLUMN \"is_enabled\" DROP NOT NULL, ALTER COLUMN \"is_enabled\" SET DEFAULT true";
 
+  $Schema["TABLE"]["ip_decision"]["copyright_decision_pk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["copyright_decision_pk"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"copyright_decision_pk\" int8 DEFAULT nextval('ip_decision_pk_seq'::regclass)";
+  $Schema["TABLE"]["ip_decision"]["copyright_decision_pk"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"copyright_decision_pk\" SET NOT NULL, ALTER COLUMN \"copyright_decision_pk\" SET DEFAULT nextval('ip_decision_pk_seq'::regclass)";
+
+  $Schema["TABLE"]["ip_decision"]["user_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["user_fk"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"user_fk\" int8";
+  $Schema["TABLE"]["ip_decision"]["user_fk"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"user_fk\" SET NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["pfile_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["pfile_fk"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"pfile_fk\" int8";
+  $Schema["TABLE"]["ip_decision"]["pfile_fk"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"pfile_fk\" SET NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["clearing_decision_type_fk"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["clearing_decision_type_fk"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"clearing_decision_type_fk\" int8";
+  $Schema["TABLE"]["ip_decision"]["clearing_decision_type_fk"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"clearing_decision_type_fk\" SET NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["description"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["description"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"description\" text";
+  $Schema["TABLE"]["ip_decision"]["description"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"description\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["textfinding"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["textfinding"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"textfinding\" text";
+  $Schema["TABLE"]["ip_decision"]["textfinding"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"textfinding\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["comment"]["DESC"] = "";
+  $Schema["TABLE"]["ip_decision"]["comment"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"comment\" text";
+  $Schema["TABLE"]["ip_decision"]["comment"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"comment\" DROP NOT NULL";
+
+  $Schema["TABLE"]["ip_decision"]["is_enabled"]["DESC"] = "COMMENT ON COLUMN \"ip_decision\".\"is_enabled\" IS 'true to enable, false to disable'";
+  $Schema["TABLE"]["ip_decision"]["is_enabled"]["ADD"] = "ALTER TABLE \"ip_decision\" ADD COLUMN \"is_enabled\" bool DEFAULT true";
+  $Schema["TABLE"]["ip_decision"]["is_enabled"]["ALTER"] = "ALTER TABLE \"ip_decision\" ALTER COLUMN \"is_enabled\" DROP NOT NULL, ALTER COLUMN \"is_enabled\" SET DEFAULT true";
 
   $Schema["TABLE"]["keyword"]["ct_pk"]["DESC"] = "";
   $Schema["TABLE"]["keyword"]["ct_pk"]["ADD"] = "ALTER TABLE \"keyword\" ADD COLUMN \"ct_pk\" int8 DEFAULT nextval('keyword_ct_pk_seq'::regclass)";
@@ -1900,6 +1931,9 @@
 
   $Schema["SEQUENCE"]["ecc_decision_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ecc_decision_pk_seq\"";
   $Schema["SEQUENCE"]["ecc_decision_pk_seq"]["UPDATE"] = "SELECT setval('ecc_decision_pk_seq',(SELECT greatest(1,max(copyright_decision_pk)) val FROM ecc_decision))";
+
+  $Schema["SEQUENCE"]["ip_decision_pk_seq"]["CREATE"] = "CREATE SEQUENCE \"ip_decision_pk_seq\"";
+  $Schema["SEQUENCE"]["ip_decision_pk_seq"]["UPDATE"] = "SELECT setval('ip_decision_pk_seq',(SELECT greatest(1,max(copyright_decision_pk)) val FROM ecc_decision))";
 
 
   $Schema["CONSTRAINT"]["FileLicense_pkey"] = "ALTER TABLE \"license_file\" ADD CONSTRAINT \"FileLicense_pkey\" PRIMARY KEY (\"fl_pk\");";

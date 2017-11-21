@@ -220,7 +220,6 @@ class SqliteE implements Driver
    */
   public function existsColumn($tableName, $columnName)
   {
-    // TODO: Implement existsColumn() method.
     throw new \Exception("Method not implemented yet!");
   }
 

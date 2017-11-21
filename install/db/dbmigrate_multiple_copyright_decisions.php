@@ -24,24 +24,27 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 function addBooleanColumnTo($dbManager, $tableName, $columnName = 'is_enabled')
 {
-  echo "Migrate: Add and setup column=$columnName to table=$tableName\n";
-  if (! $dbManager->existsColumn($tableName, $columnName))
+  if($dbManager->existsTable($tableName))
   {
-    $dbManager->queryOnce("ALTER TABLE $tableName
-                             ADD COLUMN $columnName BOOLEAN;");
-  }
+    echo "Migrate: Add and setup column=$columnName to table=$tableName\n";
+    if (! $dbManager->existsColumn($tableName, $columnName))
+    {
+      $dbManager->queryOnce("ALTER TABLE $tableName
+                               ADD COLUMN $columnName BOOLEAN;");
+    }
   
-  $dbManager->queryOnce("UPDATE $tableName
-                           SET $columnName = copyright_decision_pk IN
-                             (SELECT MAX(copyright_decision_pk) AS enabled_pk
+    $dbManager->queryOnce("UPDATE $tableName
+                             SET $columnName = copyright_decision_pk IN
+                               (SELECT MAX(copyright_decision_pk) AS enabled_pk
                                 FROM $tableName
                                 GROUP BY pfile_fk);");
-  $dbManager->queryOnce("ALTER TABLE $tableName
-                           ALTER COLUMN $columnName
-                             SET NOT NULL;");
-  $dbManager->queryOnce("ALTER TABLE $tableName
-                           ALTER COLUMN $columnName
-                             SET DEFAULT TRUE;");
+    $dbManager->queryOnce("ALTER TABLE $tableName
+                             ALTER COLUMN $columnName
+                               SET NOT NULL;");
+    $dbManager->queryOnce("ALTER TABLE $tableName
+                             ALTER COLUMN $columnName
+                               SET DEFAULT TRUE;");
+  }
 }
 
 foreach (array('copyright','ecc','ip') as $name)

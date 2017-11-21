@@ -7,6 +7,9 @@ TMP=$(mktemp)
 CHECKSUMFILE=$(mktemp)
 
 curl -s -o "$TMP" -L https://github.com/nlohmann/json/releases/download/v2.1.1/json.hpp
+if [[ "$?" != 0 ]]; then
+curl -s -o "$TMP" -L http://linux.siemens.de/pub/tools/FOSSologyNG/json.hpp
+fi
 echo "$SHASUM $TMP" > "$CHECKSUMFILE"
 sha256sum --quiet -c "$CHECKSUMFILE"
 SUCCESS=$?
