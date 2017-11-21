@@ -271,8 +271,10 @@ class ClearingDao extends Object
 
         $firstMatch = false;
         //prepare the new one
-        $previousClearingId = $clearingId;
-        if(!$forClearingHistory){
+        if($forClearingHistory){
+          $previousClearingId = $clearingId;
+        }
+        else{
           $previousItemId = $itemId;
         }
         $clearingEvents = array();
@@ -390,9 +392,9 @@ INSERT INTO clearing_decision (
    * @param int $groupId
    * @return ClearingEvent[] sorted by ts_added
    */
-  public function getRelevantClearingEvents($itemTreeBounds, $groupId)
+  public function getRelevantClearingEvents($itemTreeBounds, $groupId, $includeSubFolders=true)
   {
-    $decision = $this->getFileClearingsFolder($itemTreeBounds, $groupId, $onlyCurrent=true);
+    $decision = $this->getFileClearingsFolder($itemTreeBounds, $groupId, $includeSubFolders, $onlyCurrent=true);
     $events = array();
     $date = 0;
 
