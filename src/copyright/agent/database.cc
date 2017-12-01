@@ -194,7 +194,8 @@ const CopyrightDatabaseHandler::ColumnDef CopyrightDatabaseHandler::columnsDecis
   {"clearing_decision_type_fk", "bigint", "NOT NULL"},
   {"description", "text", ""},
   {"textFinding", "text", ""},
-  {"comment", "text", ""}
+  {"comment", "text", ""},
+  {"is_enabled", "bool", "DEFAULT true"}
 };
 
 bool CopyrightDatabaseHandler::createTableClearing() const

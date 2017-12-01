@@ -1,6 +1,6 @@
 <?php
 /*
- Author: Daniele Fognini, Shaheem Azmal, anupam.ghosh@siemens.com
+ Author: Shaheem Azmal, anupam.ghosh@siemens.com
  Copyright (C) 2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ use Fossology\Lib\Report\LicenseIrrelevantGetter;
 use Fossology\Lib\Report\BulkMatchesGetter;
 use Fossology\Lib\Report\XpClearedGetter;
 use Fossology\Lib\Report\LicenseMainGetter;
+use Fossology\Lib\Report\OtherGetter;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\IOFactory;
@@ -34,6 +35,7 @@ use PhpOffice\PhpWord\Shared\Html;
 
 include_once(__DIR__ . "/version.php");
 include_once(__DIR__ . "/reportStatic.php");
+include_once(__DIR__ . "/reportSummary.php");
 include_once(__DIR__ . "/obligations.php");
 
 class UnifiedReport extends Agent
@@ -62,6 +64,9 @@ class UnifiedReport extends Agent
 
   /** @var licenseIrrelevantCommentGetter  */
   private $licenseIrrelevantCommentGetter;
+
+  /** @var otherGetter  */
+  private $otherGetter;
 
   /** @var UploadDao */
   private $uploadDao;
@@ -112,6 +117,7 @@ class UnifiedReport extends Agent
     $this->bulkMatchesGetter = new BulkMatchesGetter();
     $this->licenseIrrelevantGetter = new LicenseIrrelevantGetter();
     $this->licenseIrrelevantCommentGetter = new LicenseIrrelevantGetter(false);
+    $this->otherGetter = new OtherGetter();
 
     parent::__construct(REPORT_AGENT_NAME, AGENT_VERSION, AGENT_REV);
 
@@ -349,173 +355,6 @@ class UnifiedReport extends Agent
 
 
   /**
-   * @brief accumulateLicenses() remove the duplicate licenses.
-   * @param array $licenses.
-   * @return comma seaparated license shortname.
-   */        
-  private function accumulateLicenses($licenses)
-  {
-    if(!empty($licenses)){
-      $licenses = array_unique(array_column($licenses, 'content'));
-      foreach($licenses as $otherLicenses){
-        $allOtherLicenses .= $otherLicenses.", ";
-      }
-      $allOtherLicenses = rtrim($allOtherLicenses, ", ");
-    }
-    return $allOtherLicenses;
-  }
-
-
-  /**
-   * @brief Design the summaryTable of the report
-   * @param Section $section
-   * @param string $uploadId 
-   * @param string $userName
-   * @param array mainLicenses
-   * @param int $timestamp
-   */        
-  private function summaryTable(Section $section, $uploadId, $userName, $mainLicenses, $licenses, $histLicenses, $timestamp)
-  {         
-    $cellRowContinue = array("vMerge" => "continue");
-    $firstRowStyle = array("size" => 14, "bold" => true);
-    $firstRowStyle1 = array("size" => 12, "bold" => true);
-    $firstRowStyle2 = array("size" => 12, "bold" => false);
-    $checkBoxStyle = array("size" => 10, "bold" => false);
-
-    $cellRowSpan = array("vMerge" => "restart", "valign" => "top");
-    $cellColSpan = array("gridSpan" => 3, "valign" => "center");
-
-    $rowWidth = 200;
-    $rowWidth2 = 400;
-    $cellFirstLen = 2500;
-    $cellSecondLen = 3800;
-    $cellThirdLen = 5500; 
-
-    $allMainLicenses = $this->accumulateLicenses($mainLicenses);
-    $allOtherLicenses = $this->accumulateLicenses($licenses);
-
-    if(!empty($histLicenses)){
-      foreach($histLicenses as $histLicense){
-        $allHistLicenses .= $histLicense["licenseShortname"].", ";
-      }
-      $allHistLicenses = rtrim($allHistLicenses, ", ");
-    }
-    
-    $newSw360Component = array();
-    $table = $section->addTable($this->tablestyle);
-    
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellColSpan)->addText(htmlspecialchars(" OSS Component Clearing report"), $firstRowStyle, "pStyle");
-    
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" Clearing Information"), $firstRowStyle, "pStyle");
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Department"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" FOSSologyNG Generation"), $firstRowStyle2, "pStyle");
-    
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Prepared by"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" ".date("Y/m/d", $timestamp)."  ".$userName." "), $firstRowStyle2, "pStyle");
-      
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Reviewed by (opt.)"),$firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" <date> emailaddress"), $firstRowStyle2, "pStyle");
-
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Report release date"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" <date>"), $firstRowStyle2, "pStyle");
-
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" Component Information"), $firstRowStyle, "pStyle");
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Community"), $firstRowStyle1, "pStyle");
-    if(!empty($newSw360Component["Community"])){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Community"]), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-    }
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component"), $firstRowStyle1, "pStyle");
-
-    if(!empty($newSw360Component["Component"])){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Component"]), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-    }
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Version"), $firstRowStyle1, "pStyle");
-    
-    if(!empty($newSw360Component["Version"])){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Version"]), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-    }
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Component hash (SHA-1)"), $firstRowStyle1, "pStyle");
-      
-    $componentHash = $this->uploadDao->getUploadHashes($uploadId);
-
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars($componentHash["sha1"]), null, "pStyle");
-     
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Release date"), $firstRowStyle1, "pStyle");
-    
-    if(!empty($newSw360Component["Release date"])){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars($newSw360Component["Release date"]), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("N.A"), null, "pStyle");
-    }
-    
-    $table->addRow($rowWidth);
-    $table->addCell($cellFirstLen, $cellRowContinue);
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars(" Main license(s)"), $firstRowStyle1, "pStyle");
-    if(!empty($allMainLicenses)){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allMainLicenses."), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("Main License(s) Not selected."), null, "pStyle");
-    }
-
-    $table->addRow($rowWidth2);
-    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars("Other license(s)"), $firstRowStyle1, "pStyle");
-    if(!empty($allOtherLicenses)){
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allOtherLicenses."), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("License(s) Not Identified."), null, "pStyle");
-    }
-
-    $table->addRow($rowWidth2);
-    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars("Mainline /SW360 Portal Link"), $firstRowStyle1, "pStyle");
-    $table->addCell($cellThirdLen)->addText(htmlspecialchars(" "), null, "pStyle");
-    
-    $table->addRow($rowWidth2);
-    $table->addCell($cellFirstLen, $cellRowSpan)->addText(htmlspecialchars(" "), $firstRowStyle, "pStyle");
-    $table->addCell($cellSecondLen)->addText(htmlspecialchars("Result of License Scan"), $firstRowStyle1, "pStyle");
-    if(!empty($allHistLicenses))
-    {
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("$allHistLicenses."), null, "pStyle");
-    }
-    else{
-      $table->addCell($cellThirdLen)->addText(htmlspecialchars("No License found by the Scanner"), null, "pStyle");
-    }
-
-    $section->addTextBreak();
-    $section->addTextBreak();
-  }
-
-  /**
    * @param Section $section 
    * @param array $mainLicenses 
    */ 
@@ -707,8 +546,9 @@ class UnifiedReport extends Agent
    */
   private function getRowsAndColumnsForIrre(Section $section, $title, $licensesIrre, $titleSubHeading)
   {
-    $firstColLen = 6500;
-    $secondColLen = 9000;
+    $firstColLen = 5000;
+    $secondColLen = 5000;
+    $thirdColLen = 5000;
 
     $section->addTitle(htmlspecialchars($title), 2);
     $section->addText($titleSubHeading, $this->subHeadingStyle);
@@ -717,18 +557,19 @@ class UnifiedReport extends Agent
     if(!empty($licensesIrre)){    
       foreach($licensesIrre as $statements){
         $table->addRow($rowWidth, "pStyle");
-        $cell1 = $table->addCell($firstColLen);
-        $cell1->addText(htmlspecialchars($statements['content']),null, "pStyle");
-        $cell2 = $table->addCell($secondColLen);
-        asort($statements["files"]);
-        foreach($statements['files'] as $fileName){
-          $cell2->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
+        $cell1 = $table->addCell($firstColLen)->addText(htmlspecialchars($statements['content']),null, "pStyle");
+        $cell2 = $table->addCell($secondColLen)->addText(htmlspecialchars($statements['fileName']),null, "pStyle");
+        $cell3 = $table->addCell($thirdColLen);
+        asort($statements["licenses"]);
+        foreach($statements['licenses'] as $licenseName){
+          $cell3->addText(htmlspecialchars($licenseName), $this->filePathColumn, "pStyle");
         }
       }
     }else{
       $table->addRow($this->rowHeight);
       $table->addCell($firstColLen, "pStyle")->addText("");
       $table->addCell($secondColLen, "pStyle")->addText("");
+      $table->addCell($thirdColLen, "pStyle")->addText("");
     }
     $section->addTextBreak();
   }
@@ -797,31 +638,30 @@ class UnifiedReport extends Agent
 
     /* Creating document layout */
     $section = $phpWord->addSection($docLayout);
-
-    $sR = new ReportStatic($timestamp);
     
+    $reportSummarySection = new ReportSummary();
+    $reportStaticSection = new ReportStatic($timestamp);
     $licenseObligation = new ObligationsToLicenses();
     
     list($obligations, $whiteLists) = $licenseObligation->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
 
     /* Header starts */
-    $sR->reportHeader($section);
+    $reportStaticSection->reportHeader($section);
 
     $contents = $this->identifiedGlobalLicenses($contents);
     
     /* Summery table */
-    $this->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'],$contents['licensesHist']['statements'], $timestamp);
+    $reportSummarySection->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'],$contents['licensesHist']['statements'], $contents['otherStatement'], $timestamp);
 
     
     /* Assessment summery table */
-    $sR->assessmentSummaryTable($section);
+    $reportStaticSection->assessmentSummaryTable($section, $contents['otherStatement']);
 
     /* Todoinfo table */
-    $sR->todoTable($section);
+    $reportStaticSection->todoTable($section);
 
     /* Todoobligation table */
-    $sR->todoObliTable($section, $obligations);
-
+    $reportStaticSection->todoObliTable($section, $obligations);
 
     /* Display acknowledgement */
     $heading = "Acknowledgements";
@@ -844,7 +684,7 @@ class UnifiedReport extends Agent
     /* Display comments entered for report */
     $heading = "Notes";
     $subHeading = "Notes on individual files";
-    $sR->notes($section, $heading, $subHeading);
+    $reportStaticSection->notes($section, $heading, $subHeading);
     $titleSubHeadingNotes = "(License name, Comment Entered, File path)";
     $this->bulkLicenseTable($section, "", $contents['licenseComments']['statements'], $titleSubHeadingNotes);
 
@@ -873,7 +713,7 @@ class UnifiedReport extends Agent
 
     $heading = "Overview of All Licenses with or without Obligations";
     $titleSubHeadingObli = "(License ShortName, Obligation)";
-    $sR->allLicensesWithAndWithoutObligations($section, $heading, $obligations, $whiteLists, $titleSubHeadingObli);
+    $reportStaticSection->allLicensesWithAndWithoutObligations($section, $heading, $obligations, $whiteLists, $titleSubHeadingObli);
 
     /* Display copyright statements and files */
     $heading = "Copyrights";
@@ -886,12 +726,12 @@ class UnifiedReport extends Agent
 
     /* Display NON Functional Licenses license files */
     $heading = "Non Functional Licenses";
-    $sR->getNonFunctionalLicenses($section, $heading);
+    $reportStaticSection->getNonFunctionalLicenses($section, $heading);
 
 
     /* Display irrelavant license files */
     $heading = "Irrelevant Files";
-    $titleSubHeadingIrre = "(Path, Files)";
+    $titleSubHeadingIrre = "(Path, Files, Licenses)";
     $this->getRowsAndColumnsForIrre($section, $heading, $contents['licensesIrre']['statements'], $titleSubHeadingIrre);
 
     /* Display irrelavant file license comment  */
@@ -901,10 +741,10 @@ class UnifiedReport extends Agent
     $this->bulkLicenseTable($section, "", $contents['licensesIrreComment']['statements'], $titleSubHeadingNotes);
 
     /* clearing protocol change log table */
-    $sR->clearingProtocolChangeLogTable($section);
+    $reportStaticSection->clearingProtocolChangeLogTable($section);
 
     /* Footer starts */
-    $sR->reportFooter($phpWord, $section);
+    $reportStaticSection->reportFooter($phpWord, $section, $contents['otherStatement']);
 
     $fileBase = $SysConf["FOSSOLOGY"]["path"]."/report/";
     if(!is_dir($fileBase)) {

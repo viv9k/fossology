@@ -27,11 +27,12 @@ DIRS = \
 	readmeoss \
 	report \
 	reportgen \
+	unifiedreport \
 	reuser \
 	scheduler \
 	spdx2 \
+	reportImport \
 	clixml \
-	unifiedreport \
 	ununpack \
 	wget_agent \
 	www

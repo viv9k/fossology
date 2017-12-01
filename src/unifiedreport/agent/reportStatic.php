@@ -1,7 +1,7 @@
 <?php
 /*
- Author: Daniele Fognini, Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2015, Siemens AG
+ Author: Shaheem Azmal, anupam.ghosh@siemens.com
+ Copyright (C) 2017, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -49,9 +49,11 @@ class ReportStatic
    */
   function reportHeader(Section $section)
   {
+    global $SysConf;
+    $text = $SysConf['SYSCONFIG']["ReportHeaderText"];
     $headerStyle = array("color" => "009999", "size" => 20, "bold" => true);
     $header = $section->addHeader();
-    $header->addText(htmlspecialchars("SIEMENS"), $headerStyle);
+    $header->addText(htmlspecialchars($text), $headerStyle);
   }
 
 
@@ -59,7 +61,7 @@ class ReportStatic
    * @param PhpWord $phpWord
    * @param Section $section 
    */
-  function reportFooter($phpWord, Section $section)
+  function reportFooter($phpWord, Section $section, $otherStatement)
   { 
     global $SysConf;
 
@@ -70,13 +72,13 @@ class ReportStatic
     $phpWord->addTableStyle('footerTableStyle', $styleTable, $styleFirstRow);
     $footerStyle = array("color" => "000000", "size" => 9, "bold" => true);
     $footerTime = "Gen Date: ".date("Y/m/d H:i:s T", $this->timeStamp);
-    $footerCopyright = "Copyright © 2015 Siemens AG - Restricted"; 
+    $footerCopyright = $otherStatement['ri_footer']; 
     $footerSpace = str_repeat("  ", 7);
     $footerPageNo = "Page {PAGE} of {NUMPAGES}";
     $footer = $section->addFooter(); 
     $table = $footer->addTable("footerTableStyle");
     $table->addRow(200, $styleFirstRow);
-    $table->addCell(15000,$styleFirstRow)->addPreserveText(htmlspecialchars("$footerCopyright $footerSpace $footerTime $footerSpace FOSSologyNG Ver:#$commitId-$commitDate $footerSpace $footerPageNo"), $footerStyle); 
+    $table->addCell(15000,$styleFirstRow)->addPreserveText(htmlspecialchars("$footerCopyright $footerSpace $footerTime $footerSpace FOSSology Ver:#$commitId-$commitDate $footerSpace $footerPageNo"), $footerStyle); 
   }
 
 
@@ -111,11 +113,30 @@ class ReportStatic
     $section->addTextBreak();
   }
 
+  /**
+   * @brief check checkbox Value(checked/unchecked) and append text
+   * @param $cell
+   * @param $value
+   * @param $text
+   * @return checkbox with text
+   */
+  function addCheckBoxText($cell, $value, $text)
+  {
+    $textrun = $cell->addTextRun();
+    if(!strcmp($value,'checked')){
+      $textrun->addFormField('checkbox')->setValue(true);
+    }
+    else{
+      $textrun->addFormField('checkbox');
+    }
+    $textrun->addText($text);
+    return $textrun;
+  }
 
   /**
    * @param Section $section 
    */ 
-  function assessmentSummaryTable(Section $section)
+  function assessmentSummaryTable(Section $section, $otherStatement)
   {          
     $heading = "Assessment Summary";
     $infoText = "The following table only contains significant obligations, restrictions & risks for a quick overview – all obligations, restrictions & risks according to Section 3 must be considered.";
@@ -142,6 +163,7 @@ class ReportStatic
     $cellFifthLen = 2300;
     $cellLen = 10000;
 
+    $getCheckboxList = explode(',', $otherStatement['ri_ga_checkbox_selection']);
     $section->addTitle(htmlspecialchars($heading), 2);
     $section->addText(htmlspecialchars($infoText), $infoTextStyle);
 
@@ -149,44 +171,53 @@ class ReportStatic
 
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" General assessment"), $leftColStyle, "pStyle");
-    $table->addCell($cellLen)->addText(htmlspecialchars(" "), $rightColStyleBlue, "pStyle");
+    $table->addCell($cellLen)->addText(htmlspecialchars($otherStatement['ri_general_assesment']), $rightColStyleBlue, "pStyle");
 
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" "), $leftColStyle, "pStyle");
     $table->addCell($cellLen)->addText(htmlspecialchars(" "), $rightColStyleBlue, "pStyle");
-    
+
+    $nocriticalfiles = " no critical files found, source code and binaries can be used as is";
+    $criticalfiles = " critical files found, source code needs to be adapted and binaries possibly re-built";
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" Source / binary integration notes"), $leftColStyle, "pStyle");
     $cell = $table->addCell($cellLen);
-    $cell->addCheckBox("nocriticalfiles", htmlspecialchars(" no critical files found, source code and binaries can be used as is"), $rightColStyleBlackWithItalic, "pStyle");
-    $cell->addCheckBox("criticalfiles", htmlspecialchars(" critical files found, source code needs to be adapted and binaries possibly re-built"), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[0], $nocriticalfiles), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addTex($this->addCheckBoxText($cell, $getCheckboxList[1], $criticalfiles), $rightColStyleBlackWithItalic, "pStyle");
 
+    $nodependenciesfound = " no dependencies found, neither in source code nor in binaries";
+    $dependenciesfoundinsourcecode = " dependencies found in source code (see obligations)";
+    $dependenciesfoundinbinaries = " dependencies found in binaries (see obligations)";
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" Dependency notes"), $leftColStyle, "pStyle");
     $cell = $table->addCell($cellLen);
-    $cell->addCheckBox("nodependenciesfound", htmlspecialchars(" no dependencies found, neither in source code nor in binaries"), $rightColStyleBlackWithItalic, "pStyle");
-    $cell->addCheckBox("dependenciesfoundinsourcecode", htmlspecialchars(" dependencies found in source code (see obligations)"), $rightColStyleBlackWithItalic, "pStyle");
-    $cell->addCheckBox("dependenciesfoundinbinaries", htmlspecialchars(" dependencies found in binaries (see obligations)"), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[2], $nodependenciesfound), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[3], $dependenciesfoundinsourcecode), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[4], $dependenciesfoundinbinaries), $rightColStyleBlackWithItalic, "pStyle");
 
+    $noexportrestrictionsfound = " no export restrictions found";
+    $exportrestrictionsfound = " export restrictions found (see obligations)";
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" Export restrictions by copyright owner"), $leftColStyle, "pStyle");
     $cell = $table->addCell($cellLen);
-    $cell->addCheckBox("noexportrestrictionsfound", htmlspecialchars(" no export restrictions found"), $rightColStyleBlackWithItalic, "pStyle");
-    $cell->addCheckBox("exportrestrictionsfound", htmlspecialchars(" export restrictions found (see obligations)"), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[5], $noexportrestrictionsfound), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[6], $exportrestrictionsfound), $rightColStyleBlackWithItalic, "pStyle");
 
+    $norestrictionsforusefound = " no restrictions for use found";
+    $restrictionsforusefound = " restrictions for use found (see obligations)";
     $table->addRow($rowWidth);
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" Restrictions for use (e.g. not for Nuclear Power) by copyright owner"), $leftColStyle, "pStyle");
     $cell = $table->addCell($cellLen);
-    $cell->addCheckBox("norestrictionsforusefound", htmlspecialchars(" no restrictions for use found"), $rightColStyleBlackWithItalic, "pStyle");
-    $cell->addCheckBox("restrictionsforusefound", htmlspecialchars(" restrictions for use found (see obligations)"), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[7], $norestrictionsforusefound), $rightColStyleBlackWithItalic, "pStyle");
+    $cell->addText($this->addCheckBoxText($cell, $getCheckboxList[8], $restrictionsforusefound), $rightColStyleBlackWithItalic, "pStyle");
 
     $table->addRow($rowWidth, "pStyle");
     $table->addCell($cellFirstLen)->addText(htmlspecialchars(" Additional notes"), $leftColStyle, "pStyle");
-    $cell = $table->addCell($cellLen)->addText(htmlspecialchars(" "), $rightColStyleBlue, "pStyle");
+    $cell = $table->addCell($cellLen)->addText(htmlspecialchars($otherStatement['ri_ga_additional']), $rightColStyleBlue, "pStyle");
 
     $table->addRow($rowWidth);
     $cell = $table->addCell($cellFirstLen)->addText(htmlspecialchars(" General Risks (optional)"), $leftColStyle, "pStyle");
-    $cell = $table->addCell($cellLen)->addText(htmlspecialchars(" "), $rightColStyleBlue, "pStyle");
+    $cell = $table->addCell($cellLen)->addText(htmlspecialchars($otherStatement['ri_ga_risk']), $rightColStyleBlue, "pStyle");
 
     $section->addTextBreak();
   }
@@ -196,16 +227,20 @@ class ReportStatic
    * @param Section $section 
    */ 
   function todoTable(Section $section)
-  {   
+  {
+    global $SysConf;
+    $text1 = $SysConf['SYSCONFIG']["CommonObligation"];
+    $text2 = $SysConf['SYSCONFIG']["AdditionalObligation"];
+
     $rowStyle = array("bgColor" => "E0E0E0", "spaceBefore" => 0, "spaceAfter" => 0, "spacing" => 0);
-    $secondRowColorStyle = array("bgColor" => "98c662"); 
+    $secondRowColorStyle = array("color" => "008000");
     $rowTextStyleLeft = array("size" => 10, "bold" => true);
     $rowTextStyleRight = array("size" => 10, "bold" => false);
     $rowTextStyleRightBold = array("size" => 10, "bold" => true);
 
     $heading = "Required license compliance tasks";
     $subHeading = "Common obligations, restrictions and risks:";
-    $subHeadingInfoText = "  There is a list of common rules which was defined to simplify the To-Dos for development and distribution. The following list contains rules for development, and      distribution which must always be followed!";
+    $subHeadingInfoText = "  There is a list of common rules which was defined to simplify the To-Dos for development and distribution. The following list contains rules for development, and distribution which must always be followed!";
     $rowWidth = 5;
     $firstColLen = 500;
     $secondColLen = 15000;

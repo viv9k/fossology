@@ -271,8 +271,10 @@ class ClearingDao extends Object
 
         $firstMatch = false;
         //prepare the new one
-        $previousClearingId = $clearingId;
-        if(!$forClearingHistory){
+        if($forClearingHistory){
+          $previousClearingId = $clearingId;
+        }
+        else{
           $previousItemId = $itemId;
         }
         $clearingEvents = array();
@@ -390,9 +392,9 @@ INSERT INTO clearing_decision (
    * @param int $groupId
    * @return ClearingEvent[] sorted by ts_added
    */
-  public function getRelevantClearingEvents($itemTreeBounds, $groupId)
+  public function getRelevantClearingEvents($itemTreeBounds, $groupId, $includeSubFolders=true)
   {
-    $decision = $this->getFileClearingsFolder($itemTreeBounds, $groupId, $onlyCurrent=true);
+    $decision = $this->getFileClearingsFolder($itemTreeBounds, $groupId, $includeSubFolders, $onlyCurrent=true);
     $events = array();
     $date = 0;
 
@@ -559,11 +561,14 @@ INSERT INTO clearing_decision (
   }
 
   /**
-   * @param $licenseId
-   * @param $licenseShortName
-   * @param $licenseName
+   * @param int $eventId
+   * @param int $userId
+   * @param int $groupId
+   * @param int $licenseRef
    * @param $licenseIsRemoved
-   * @param $clearingLicenses
+   * @param $type
+   * @param $reportInfo
+   * @param string $comment
    * @return ClearingEvent
    */
   protected function buildClearingEvent($eventId, $userId, $groupId, $licenseRef, $licenseIsRemoved, $type, $reportInfo, $comment, $acknowledgement)
@@ -809,6 +814,10 @@ INSERT INTO clearing_decision (
     $this->dbManager->freeResult($res);
   }
   
+  /**
+   * @param uploadId
+   * @param int $groupId
+   */
   public function getMainLicenseIds($uploadId, $groupId)
   {
     $stmt = __METHOD__;
@@ -823,12 +832,22 @@ INSERT INTO clearing_decision (
     return $ids;
   }
   
+  /**
+   * @param $uploadId
+   * @param int $groupId
+   * @param int $licenseId
+   */
   public function makeMainLicense($uploadId, $groupId, $licenseId)
   {
     $this->dbManager->insertTableRow('upload_clearing_license',
             array('upload_fk'=>$uploadId,'group_fk'=>$groupId,'rf_fk'=>$licenseId));
   }
-  
+
+  /**
+   * @param uploadId
+   * @param int $groupId
+   * @param int $licenseId
+   */  
   public function removeMainLicense($uploadId, $groupId, $licenseId)
   {
     $this->dbManager->getSingleRow('DELETE FROM upload_clearing_license WHERE upload_fk=$1 AND group_fk=$2 AND rf_fk=$3',

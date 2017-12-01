@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2016, Siemens AG
+ Copyright (C) 2016-2017, Siemens AG
  Author: Daniele Fognini, Shaheem Azmal M MD
 
  This program is free software; you can redistribute it and/or
@@ -60,7 +60,7 @@ class LicenseMainGetter extends ClearedGetterCommon
     return $allStatements;
   }
   
-  public function getCleared($uploadId, $groupId=null, $extended=true)
+  public function getCleared($uploadId, $groupId=null, $extended=true, $agentcall=null)
   {
     $uploadTreeTableName = $this->uploadDao->getUploadtreeTableName($uploadId);
     $statements = $this->getStatements($uploadId, $uploadTreeTableName, $groupId);
