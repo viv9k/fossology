@@ -250,6 +250,9 @@ class UnifiedReport extends Agent
 
     $ungrupedStatements = $this->ipClearedGetter->getUnCleared($uploadId, $groupId);
     $ip = $this->groupStatements($ungrupedStatements, true);
+    
+    $otherStatement = $this->otherGetter->getReportData($uploadId);
+    $this->heartbeat(count($otherStatement["statements"]));
 
     $contents = array("licenses" => $licenses,
                       "bulkLicenses" => $bulkLicenses,
@@ -261,7 +264,8 @@ class UnifiedReport extends Agent
                       "licensesIrre" => $licensesIrre,
                       "licensesIrreComment" => $licensesIrreComment,
                       "licensesMain" => $licensesMain,
-                      "licensesHist" => $licensesHist
+                      "licensesHist" => $licensesHist,
+                      "otherStatement" => $otherStatement
                      );
     $this->writeReport($contents, $uploadId, $groupId, $userId);
     return true;

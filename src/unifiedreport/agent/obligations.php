@@ -96,6 +96,7 @@ class ObligationsToLicenses
 
   function groupObligations($obligations)
   {
+    $groupedOb = array();
     foreach($obligations as $obligation ) {
       $obTopic = $obligation['ob_topic'];
       $obText = $obligation['ob_text'];

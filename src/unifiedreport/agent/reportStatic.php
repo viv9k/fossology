@@ -249,36 +249,12 @@ class ReportStatic
     $section->addTitle(htmlspecialchars($subHeading), 3);
     $section->addText(htmlspecialchars($subHeadingInfoText), $rowTextStyleRight);
 
-    $r1c1 = "1";
-    $r2c1 = "1.a";
-    $r3c1 = "1.b";
-    $r4c1 = "1.c";
-    $r5c1 = "2";
-    $r6c1 = "2.a";
-    $r7c1 = "2.b";
-    $r8c1 = "3";
-    $r9c1 = "3.a";
-    $r10c1 = "3.b";
-    $r11c1 = "3.c";
+    $r1c1 = "2.1.1";
+    $r2c1 = "2.1.2";
 
-    $r1c2 = "Documentation of license conditions and copyright notices in product documentation (ReadMe_OSS)";
-    $r2c21 = "All relevant licenses (global and others - see below) must be added to the legal approved Readme_OSS template.";
-    $r2c22 = "Remark:";
-    $r2c23 = "“Do Not Use” licenses must not be added to the ReadMe_OSS";
-    $r3c2 = "Add all copyrights to README_OSS";
-    $r4c2 = "Add all relevant acknowledgements to Readme_OSS";
-    $r5c21 = "Modifications in Source Code";
-    $r5c22 = "If modifications are permitted:";
-    $r6c2 = "Do not change or delete Copyright, patent, trademark, attribution notices or any further legal notices or license texts in any files - i.e. neither within any source file of the component package nor in any of its documentation files.";
-    $r7c21 = "Document all changes and modifications in source code files with copyright notices:";
-    $r7c22 = "Add copyright (including company and date), function, reason for modification in the header.";
-    $r7c23 = "Example:";
-    $r7c24 = "© Siemens AG, 2013";
-    $r7c25 = "March 18th, 2013 Modified helloworld() – fix memory leak";
-    $r8c2 = "Obligations and risk assessment regarding distribution";
-    $r9c2 = "Ensure that your distribution terms which are agreed with Siemens’ customers (e.g. standard terms, “AGB”, or individual agreements) define that the open source license conditions shall prevail over the Siemens’ license conditions with respect to the open source software (usually this is part of Readme OSS).";
-    $r10c2 = "Do not use any names, trademarks, service marks or product names of the author(s) and/or licensors to endorse or promote products derived from this software component without the prior written consent of the author(s) and/or the owner of such rights.";
-    $r11c2 = "Add a statement to the README_OSS that the OSS portions of this Product are provided royalty-free and can be used at no charge";
+    $r1c2 = "Documentation of license conditions and copyright notices in product documentation (License Notice File / README_OSS) is provided by this component clearing report:";
+    $r2c2 = "Additional Common Obligations:";
+    $r2c3 = "Need to be ensured by the distributing party:";
 
     $table = $section->addTable($this->tablestyle);
 
@@ -287,55 +263,36 @@ class ReportStatic
     $cell = $table->addCell($secondColLen, $rowStyle)->addText(htmlspecialchars($r1c2), $rowTextStyleRightBold, "pStyle");
 
     $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r2c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen,$secondRowColorStyle);
-    $cell->addText(htmlspecialchars($r2c21), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r2c22), $rowTextStyleRightBold, "pStyle");
-    $cell->addText(htmlspecialchars($r2c23),$rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r3c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen,$secondRowColorStyle)->addText(htmlspecialchars($r3c2), $rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r4c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen,$secondRowColorStyle)->addText(htmlspecialchars($r4c2), $rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $rowStyle)->addText(htmlspecialchars($r5c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen, $rowStyle);
-    $cell->addText(htmlspecialchars($r5c21), $rowTextStyleRightBold, "pStyle");
-    $cell->addText(htmlspecialchars($r5c22), $rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth, "pStyle");
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r6c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen)->addText(htmlspecialchars($r6c2), $rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r7c1), $rowTextStyleLeft, "pStyle");
+    $cell = $table->addCell($firstColLen);
     $cell = $table->addCell($secondColLen);
-    $cell->addText(htmlspecialchars($r7c21), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r7c22), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r7c23), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r7c24), $rowTextStyleRight, "pStyle");
-    $cell->addText(htmlspecialchars($r7c25), $rowTextStyleRight, "pStyle");
- 
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen, $rowStyle)->addText(htmlspecialchars($r8c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen, $rowStyle)->addText(htmlspecialchars($r8c2), $rowTextStyleRightBold, "pStyle");
+    if (!empty($text1) && strpos($text1, '\n')!==FALSE){
+      $texts = explode('\n', $text1);
+      foreach($texts as $text){
+        $cell->addText(htmlspecialchars($text), $secondRowColorStyle, "pStyle");
+      }
+    }
+    else{
+      $cell->addText(htmlspecialchars($text1),$secondRowColorStyle , "pStyle");
+    }
 
     $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r9c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen, $secondRowColorStyle)->addText(htmlspecialchars($r9c2), $rowTextStyleRight, "pStyle");
+    $cell = $table->addCell($firstColLen, $rowStyle)->addText(htmlspecialchars($r2c1), $rowTextStyleLeft, "pStyle");
+    $cell = $table->addCell($secondColLen, $rowStyle);
+    $cell->addText(htmlspecialchars($r2c2), $rowTextStyleRightBold, "pStyle");
+    $cell->addText(htmlspecialchars($r2c3), $rowTextStyleRightBold, "pStyle");
 
     $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r10c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen)->addText(htmlspecialchars($r10c2), $rowTextStyleRight, "pStyle");
-
-    $table->addRow($rowWidth);
-    $cell = $table->addCell($firstColLen)->addText(htmlspecialchars($r11c1), $rowTextStyleLeft, "pStyle");
-    $cell = $table->addCell($secondColLen, $secondRowColorStyle)->addText(htmlspecialchars($r11c2), $rowTextStyleRight, "pStyle");
-
+    $cell = $table->addCell($firstColLen);
+    $cell = $table->addCell($secondColLen);
+    if (!empty($text1) && strpos($text2, '\n')!==FALSE){
+      $texts = explode('\n', $text2);
+      foreach($texts as $text){
+        $cell->addText(htmlspecialchars($text), null, "pStyle");
+      }
+    }
+    else{
+      $cell->addText(htmlspecialchars($text2), null, "pStyle");
+    }
     $section->addTextBreak();
   }
 
