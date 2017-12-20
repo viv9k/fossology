@@ -47,7 +47,6 @@ class ReadmeOssAgent extends Agent
   function __construct()
   {
     $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
-
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
 
@@ -119,13 +118,14 @@ class ReadmeOssAgent extends Agent
         }
       }
       if(!empty($statement['textfinding']) && $agentCall == "copyright"){
-        $findings[$fileName] = array(
+        $findings[] = array(
           "content" => convertToUTF8($statement['textfinding'], false),
           "text" => convertToUTF8($text, false),
           "files" => array($fileName)
         );
         if ($extended) {
-          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+          $key = array_search($statement['textfinding'], array_column($findings, 'content'));
+          $findings[$key]["comments"] = convertToUTF8($comments, false);
         }
       }
       $countLoop += 1;
@@ -173,12 +173,11 @@ class ReadmeOssAgent extends Agent
       $moreLicenses = $this->groupStatements($ungrupedStatements, true, "license");
       $licenseStmts = array_merge($licenseStmts, $moreLicenses['statements']);
       $this->heartbeat(count($moreLicenses['statements']));
-
       $this->licenseClearedGetter->setOnlyAcknowledgements(true);
       $moreAcknowledgements = $this->licenseClearedGetter->getCleared($addUploadId, $groupId);
       $licenseAcknowledgements = array_merge($licenseAcknowledgements, $moreAcknowledgements['statements']);
       $this->heartbeat(count($moreAcknowledgements['statements']));
-      $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
+      $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId);
       $moreCopyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
       $copyrightStmts = array_merge($copyrightStmts, $moreCopyrights['statements']);
       $this->heartbeat(count($moreCopyrights['statements']));

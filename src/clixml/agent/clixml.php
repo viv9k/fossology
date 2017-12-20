@@ -202,13 +202,14 @@ class CliXml extends Agent
         }
       }
       if(!empty($statement['textfinding']) && $agentCall == "copyright"){
-        $findings[$fileName] = array(
+        $findings[] = array(
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
           );
         if ($extended) {
-          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+          $key = array_search($statement['textfinding'], array_column($findings, 'content'));
+          $findings[$key]["comments"] = convertToUTF8($comments, false);
         }
       }
       $countLoop += 1;
@@ -253,7 +254,7 @@ class CliXml extends Agent
     $licensesMain = $this->licenseMainGetter->getCleared($uploadId, $groupId);
 
     $this->heartbeat(count($licensesMain["statements"]));
-    $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
+    $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId);
     $copyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
     $this->heartbeat(count($copyrights["statements"]));
 
