@@ -172,13 +172,14 @@ abstract class ClearedGetterCommon
         }
       }
       if(!empty($statement['textfinding']) && !empty($agentcall)){
-        $findings[$fileName] = array(
+        $findings[] = array(
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
           );
         if ($extended) {
-          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+          $key = array_search($statement['textfinding'], array_column($findings, 'content'));
+          $findings[$key]["comments"] = convertToUTF8($comments, false);
         }
       }
     }
@@ -197,7 +198,7 @@ abstract class ClearedGetterCommon
    */
   abstract protected function getStatements($uploadId, $uploadTreeTableName, $groupId=null);
 
-  public function getUnCleared($uploadId, $groupId=null, $extended=true, $agentcall=null)
+  public function getUnCleared($uploadId, $groupId=null)
   {
     $uploadTreeTableName = $this->uploadDao->getUploadtreeTableName($uploadId);
     $ungrupedStatements = $this->getStatements($uploadId, $uploadTreeTableName, $groupId);

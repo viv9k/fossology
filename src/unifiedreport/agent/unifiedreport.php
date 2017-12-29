@@ -110,8 +110,8 @@ class UnifiedReport extends Agent
   function __construct()
   {
     $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
-    $this->ipClearedGetter = new XpClearedGetter("ip", "skipcontent", true);
-    $this->eccClearedGetter = new XpClearedGetter("ecc", "skipcontent", true);
+    $this->ipClearedGetter = new XpClearedGetter("ip", "ip");
+    $this->eccClearedGetter = new XpClearedGetter("ecc", "ecc");
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
     $this->bulkMatchesGetter = new BulkMatchesGetter();
@@ -189,15 +189,16 @@ class UnifiedReport extends Agent
           $statements[] = $singleStatement;
         }
       }
-      if(!empty($statement['textfinding']) && $agentCall == "copyright"){
-        $findings[$fileName] = array(
+      if(!empty($statement['textfinding']) && !empty($agentCall) && $agentCall != "license"){
+        $findings[] = array(
             "licenseId" => $licenseId,
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName)
           );
         if ($extended) {
-          $findings[$fileName]["comments"] = convertToUTF8($comments, false);
+          $key = array_search($statement['textfinding'], array_column($findings, 'content'));
+          $findings[$key]["comments"] = convertToUTF8($comments, false);
         }
       }
       //To keep the schedular alive for large files 
@@ -242,14 +243,14 @@ class UnifiedReport extends Agent
 
     $licensesIrreComment = $this->licenseIrrelevantCommentGetter->getCleared($uploadId, $groupId);
 
-    $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId, true, "copyright");
+    $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId);
     $copyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
 
     $ungrupedStatements = $this->eccClearedGetter->getUnCleared($uploadId, $groupId);
-    $ecc = $this->groupStatements($ungrupedStatements, true);
+    $ecc = $this->groupStatements($ungrupedStatements, true, "ecc");
 
     $ungrupedStatements = $this->ipClearedGetter->getUnCleared($uploadId, $groupId);
-    $ip = $this->groupStatements($ungrupedStatements, true);
+    $ip = $this->groupStatements($ungrupedStatements, true, "ip");
     
     $otherStatement = $this->otherGetter->getReportData($uploadId);
     $this->heartbeat(count($otherStatement["statements"]));
@@ -521,16 +522,18 @@ class UnifiedReport extends Agent
     $table = $section->addTable($this->tablestyle);
     if(!empty($statementsCEI)){
       foreach($statementsCEI as $statements){
-        $table->addRow($smallRowHeight);
-        $cell1 = $table->addCell($firstColLen); 
-        $text = html_entity_decode($statements['content']);	
-        $cell1->addText(htmlspecialchars($text, ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
-        $cell2 = $table->addCell($secondColLen);
-        $cell2->addText(htmlspecialchars($statements['comments'], ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
-        $cell3 = $table->addCell($thirdColLen);
-        asort($statements["files"]);
-        foreach($statements['files'] as $fileName){ 
-          $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
+        if(!empty($statements['content'])){
+          $table->addRow($smallRowHeight);
+          $cell1 = $table->addCell($firstColLen);
+          $text = html_entity_decode($statements['content']);
+          $cell1->addText(htmlspecialchars($text, ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
+          $cell2 = $table->addCell($secondColLen);
+          $cell2->addText(htmlspecialchars($statements['comments'], ENT_DISALLOWED), $this->licenseTextColumn, "pStyle");
+          $cell3 = $table->addCell($thirdColLen);
+          asort($statements["files"]);
+          foreach($statements['files'] as $fileName){
+            $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
+          }
         }
       }
     }else{
