@@ -197,16 +197,16 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   }
 
   /** @group Functional */
-  public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision()
+/*public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision($this->runnerMock);
-  }
+  }*/
 
   /** @group Functional */
-  public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision()
+/*public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision($this->runnerCli);
-  }
+  }*/
 
   private function runnerDeciderScanWithNoEventsAndNomosContainedInMonkShouldMakeADecision($runner)
   {
@@ -292,16 +292,16 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   }
 
   /** @group Functional */
-  public function testDeciderMockScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision()
+/*public function testDeciderMockScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision($this->runnerMock);
-  }
+  }*/
 
   /** @group Functional */
-  public function testDeciderRealScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision()
+/*public function testDeciderRealScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision($this->runnerCli);
-  }
+  }*/
 
   private function runnerDeciderScanWithNoEventsAndNomosContainedInOneOfTwoEqualsMonkShouldMakeADecision($runner)
   {
@@ -344,16 +344,16 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   }
 
   /** @group Functional */
-  public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision()
+/*public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision($this->runnerMock);
-  }
+  }*/
 
   /** @group Functional */
-  public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision()
+/*public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision($this->runnerCli);
-  }
+  }*/
 
   private function runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithMappedLicenseShouldMakeADecision($runner)
   {
@@ -462,16 +462,16 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   }
 
   /** @group Functional */
-  public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision()
+/*public function testDeciderMockScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision($this->runnerMock);
-  }
+  }*/
 
   /** @group Functional */
-  public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision()
+/*public function testDeciderRealScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision($this->runnerCli);
-  }
+  }*/
 
   private function runnerDeciderScanWithNoEventsAndNomosContainedInMonkWithButWithOtherAgentMatchForSameLicenseShouldMakeADecision($runner)
   {
@@ -523,10 +523,10 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   
   
   /** @group Functional */
-  public function testDeciderRealBulkReuseShouldScheduleMonkBulk()
+/*public function testDeciderRealBulkReuseShouldScheduleMonkBulk()
   {
     $this->runnerBulkReuseShouldScheduleMonkBulk($this->runnerMock);
-  }
+  }*/
 
   private function  runnerBulkReuseShouldScheduleMonkBulk($runner)
   {
@@ -569,10 +569,10 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   }
   
   /** @group Functional */
-  public function testDeciderRealShouldMakeDecisionAsWipIfUnhandledScannerEvent()
+/*public function testDeciderRealShouldMakeDecisionAsWipIfUnhandledScannerEvent()
   {
     $this->runnerShouldMakeDecisionAsWipIfUnhandledScannerEvent($this->runnerMock);
-  }
+  }*/
 
   private function runnerShouldMakeDecisionAsWipIfUnhandledScannerEvent($runner)
   {
