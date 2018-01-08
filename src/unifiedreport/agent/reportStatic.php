@@ -365,7 +365,7 @@ class ReportStatic
         $table->addCell($firstColLen,$firstColStyle)->addText(htmlspecialchars($obligation["topic"]), $firstRowTextStyle);
           $table->addCell($secondColLen,$secondColStyle)->addText(htmlspecialchars(implode(",",$obligation["license"])));
           $obligationText = str_replace("\n", "<w:br/>", htmlspecialchars($obligation["text"], ENT_DISALLOWED));
-          $table->addCell($thirdColLen)->addText(htmlspecialchars($obligationText));
+          $table->addCell($thirdColLen)->addText($obligationText);
       }
     }
     else{
