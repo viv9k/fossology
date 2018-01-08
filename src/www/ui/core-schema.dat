@@ -2073,6 +2073,20 @@
   $Schema["INDEX"]["ecc_decision"]["ecc_decision_pfile_fk_index"] = "CREATE INDEX ecc_decision_pfile_fk_index ON ecc_decision USING btree (pfile_fk);";
   $Schema["INDEX"]["ecc_decision"]["ecc_decision_user_fk_index"] = "CREATE INDEX ecc_decision_user_fk_index ON ecc_decision USING btree (user_fk);";
 
+  $Schema["INDEX"]["ip"]["ip_agent_fk_index"] = "CREATE INDEX ip_agent_fk_index ON ip USING btree (agent_fk);";
+  $Schema["INDEX"]["ip"]["ip_hash_index"] = "CREATE INDEX ip_hash_index ON ip USING btree (hash);";
+  $Schema["INDEX"]["ip"]["ip_pfile_fk_index"] = "CREATE INDEX ip_pfile_fk_index ON ip USING btree (pfile_fk);";
+  $Schema["INDEX"]["ip"]["ip_pfile_hash_idx"] = "CREATE INDEX ip_pfile_hash_idx ON ip using btree (hash, pfile_fk);";
+
+  $Schema["INDEX"]["ip_decision"]["ip_decision_clearing_decision_type_fk_index"] = "CREATE INDEX ip_decision_clearing_decision_type_fk_index ON ip_decision USING btree (clearing_decision_type_fk);";
+  $Schema["INDEX"]["ip_decision"]["ip_decision_pfile_fk_index"] = "CREATE INDEX ip_decision_pfile_fk_index ON ip_decision USING btree (pfile_fk);";
+  $Schema["INDEX"]["ip_decision"]["ip_decision_user_fk_index"] = "CREATE INDEX ip_decision_user_fk_index ON ip_decision USING btree (user_fk);";
+
+  $Schema["INDEX"]["keyword"]["keyword_agent_fk_index"] = "CREATE INDEX keyword_agent_fk_index ON keyword USING btree (agent_fk);";
+  $Schema["INDEX"]["keyword"]["keyword_hash_index"] = "CREATE INDEX keyword_hash_index ON keyword USING btree (hash);";
+  $Schema["INDEX"]["keyword"]["keyword_pfile_fk_index"] = "CREATE INDEX keyword_pfile_fk_index ON keyword USING btree (pfile_fk);";
+  $Schema["INDEX"]["keyword"]["keyword_pfile_hash_idx"] = "CREATE INDEX keyword_pfile_hash_idx ON keyword using btree (hash, pfile_fk);";
+
   $Schema["INDEX"]["highlight"]["highlight_fl_fk_idx"] = "CREATE INDEX highlight_fl_fk_idx ON highlight USING btree (fl_fk);";
 
   $Schema["INDEX"]["highlight_keyword"]["highlight_keyword_pfile_fk_idx"] = "CREATE INDEX highlight_keyword_pfile_fk_idx ON highlight_keyword USING btree (pfile_fk);";
