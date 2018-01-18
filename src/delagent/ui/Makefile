@@ -40,6 +40,7 @@ install:
 		rm -f $(DESTDIR)$(MODDIR)/$(MOD_NAME)/$(MOD_SUBDIR)/$$file; \
 		rm -f $$file; \
 	done
+	@mkdir -p $(DESTDIR)$(SYSCONFDIR)/mods-enabled/$(MOD_NAME)-page
 	@ln -sfn $(MODDIR)/$(MOD_NAME)/$(MOD_SUBDIR)/Page $(DESTDIR)$(SYSCONFDIR)/mods-enabled/$(MOD_NAME)-page
 
 uninstall:
