@@ -224,7 +224,9 @@ class core_auth extends FO_Plugin
         "redirectUri"             => $SysConf['SYSCONFIG']['RedirectOauthURL'],
         "domain"                  => $domainOauth
       ]);
-      $authorizationUrl = $provider->getAuthorizationUrl();
+      $authorizationUrl = $provider->getAuthorizationUrl([
+        "scope" => ['read_user']
+      ]);
       $_SESSION['oauth2state'] = $provider->getState();
       header('Location: ' . $authorizationUrl);
       exit;
