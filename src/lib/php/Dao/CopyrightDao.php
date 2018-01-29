@@ -175,6 +175,7 @@ class CopyrightDao extends Object
       $whereClause .= " AND C.type = $".count($params);
       $statementName .= ".withType";
     }
+
     if ($extrawhere !== null)
     {
       $whereClause .= "AND ". $extrawhere;
