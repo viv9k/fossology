@@ -47,7 +47,7 @@ function addBooleanColumnTo($dbManager, $tableName, $columnName = 'is_enabled')
   }
 }
 
-foreach (array('copyright','ecc','ip') as $name)
+foreach (array('copyright', 'ecc', 'ip', 'keyword') as $name)
 {
   /* @var $dbManager DbManager */
   addBooleanColumnTo($dbManager, $name.'_decision');
