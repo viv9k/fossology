@@ -259,10 +259,10 @@ class CliXml extends Agent
     $this->heartbeat(count($copyrights["statements"]));
 
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
-    $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
-    $countAcknowledgement = count($licenseAcknowledgements["statements"]);
+    $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+    $countAcknowledgement = count($licenseAcknowledgements);
     $this->heartbeat($countAcknowledgement);
-    $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements["statements"]);
+    $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements);
     $contents = array("licensesMain" => $licensesMain["statements"],
                       "licenses" => $licensesWithAcknowledgement,
                       "copyrights" => $copyrights["statements"],
@@ -286,19 +286,18 @@ class CliXml extends Agent
     if(!empty($acknowledgements)){
       for($i=0; $i<=count($acknowledgements); $i++){
         for($j=0; $j<=count($licenses); $j++){
-          if(!empty($acknowledgements[$i]['content']) && strcmp($acknowledgements[$i]['content'], $licenses[$j]['content']) == 0){
+          if(!empty($acknowledgements[$i]['text']) && strcmp($acknowledgements[$i]['text'], $licenses[$j]['text']) == 0){
             if(!array_key_exists('acknowledgement', $licenses[$j])){
-              $licenses[$j]['acknowledgement'] = $acknowledgements[$i]['text'];
-            }else{
-              $licenses[$j]['acknowledgement'] = $licenses[$j]['acknowledgement'].", ".$acknowledgements[$i]['text'];
+              $licenses[$j]['acknowledgement'] = $acknowledgements[$i]['ack'];
+            }
+            else {
+              $licenses[$j]['acknowledgement'] = $licenses[$j]['acknowledgement'].", ".$acknowledgements[$i]['ack'];
             }
           }
         }
       }
-      return $licenses;   
-    }else{
-      return $licenses;
     }
+    return $licenses;
   }
 
   protected function riskMapping($contents, $licenseG=false)

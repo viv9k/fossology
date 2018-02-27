@@ -234,7 +234,7 @@ class UnifiedReport extends Agent
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
 
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
-    $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
+    $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
 
     $this->licenseClearedGetter->setOnlyComments(true);
     $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
@@ -417,7 +417,7 @@ class UnifiedReport extends Agent
    * @param $licenses
    * @param $rowHead
    */ 
-  private function bulkLicenseTable(Section $section, $title, $licenses, $titleSubHeading)
+  private function bulkLicenseTable(Section $section, $title, $licenses, $titleSubHeading, $ack=false)
   {
     $firstColLen = 2000;
     $secondColLen = 9500;
@@ -433,14 +433,24 @@ class UnifiedReport extends Agent
         $table->addRow($this->rowHeight);
         $cell1 = $table->addCell($firstColLen, null, "pStyle"); 
         $cell1->addText(htmlspecialchars($licenseStatement["content"], ENT_DISALLOWED), $this->licenseColumn, "pStyle");
-        $cell2 = $table->addCell($secondColLen, "pStyle"); 
+        $cell2 = $table->addCell($secondColLen, "pStyle");
         // replace new line character
-        $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["text"], ENT_DISALLOWED));
+        if (!$ack) {
+          $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["text"], ENT_DISALLOWED));
+        }
+        else {
+          $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["ack"], ENT_DISALLOWED));
+        }
         $cell2->addText($licenseText, $this->licenseTextColumn, "pStyle");
         $cell3 = $table->addCell($thirdColLen, null, "pStyle");
-        asort($licenseStatement["files"]);
-        foreach($licenseStatement["files"] as $fileName){ 
-          $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
+        if (!$ack) {
+          asort($licenseStatement["files"]);
+          foreach($licenseStatement["files"] as $fileName) {
+            $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
+          }
+        }
+        else {
+          $cell3->addText(htmlspecialchars($licenseStatement["fileName"]), $this->filePathColumn, "pStyle");
         }
       }
     }else{
@@ -677,7 +687,7 @@ class UnifiedReport extends Agent
     /* Display acknowledgement */
     $heading = "Acknowledgements";
     $titleSubHeadingAcknowledgement = "(Reference to the license, Text of acknowledgements, File path)";
-    $this->bulkLicenseTable($section, $heading, $contents['licenseAcknowledgements']['statements'], $titleSubHeadingAcknowledgement);
+    $this->bulkLicenseTable($section, $heading, $contents['licenseAcknowledgements'], $titleSubHeadingAcknowledgement, true);
 
     /* Display Ecc statements and files */
     $heading = "Export Restrictions";

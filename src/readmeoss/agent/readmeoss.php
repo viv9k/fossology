@@ -174,8 +174,8 @@ class ReadmeOssAgent extends Agent
       $licenseStmts = array_merge($licenseStmts, $moreLicenses['statements']);
       $this->heartbeat(count($moreLicenses['statements']));
       $this->licenseClearedGetter->setOnlyAcknowledgements(true);
-      $moreAcknowledgements = $this->licenseClearedGetter->getCleared($addUploadId, $groupId);
-      $licenseAcknowledgements = array_merge($licenseAcknowledgements, $moreAcknowledgements['statements']);
+      $moreAcknowledgements = $this->licenseClearedGetter->getUnCleared($addUploadId, $groupId);
+      $licenseAcknowledgements = array_merge($licenseAcknowledgements, $moreAcknowledgements);
       $this->heartbeat(count($moreAcknowledgements['statements']));
       $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId);
       $moreCopyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
@@ -244,11 +244,11 @@ class ReadmeOssAgent extends Agent
   private function createReadMeOSSFormat($addSeparator, $dataForReadME, $extract='text', $break)
   {
     $outData = "";
-    foreach($dataForReadME as $statements){
-     $outData .= $statements[$extract] . $break;
-     if(!empty($addSeparator)){
-       $outData .= $addSeparator . $break;
-     }
+    foreach($dataForReadME as $statements) {
+      $outData .= $statements[$extract] . $break;
+      if(!empty($addSeparator)) {
+        $outData .= $addSeparator . $break;
+      }
     }
     return $outData;
   }
@@ -275,7 +275,7 @@ class ReadmeOssAgent extends Agent
     }
     if(!empty($contents['licenseAcknowledgements'])){
       $output .= $separator1 . $break . " ACKNOWLEDGEMENTS " . $break . $separator2 . $break;
-      $output .= $this->createReadMeOSSFormat($separator2, $contents['licenseAcknowledgements'], 'text', $break);
+      $output .= $this->createReadMeOSSFormat($separator2, $contents['licenseAcknowledgements'], 'ack', $break);
     }
     $copyrights = $this->createReadMeOSSFormat("", $contents['copyrights'], 'content', "\r\n");
     if(empty($copyrights)){
