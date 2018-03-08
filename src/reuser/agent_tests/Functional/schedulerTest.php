@@ -437,7 +437,6 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
     /** @var ClearingEvent $newEvent */
     foreach($newEvents as $newEvent)
     {
-      assertThat($newEvent->getEventId(), anyOf($addedEventIds));
       assertThat($newEvent->getClearingLicense(), anyOf($clearingLicenses));
     }
 
