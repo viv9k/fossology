@@ -35,7 +35,7 @@ before_script:
   # Install composer dependencies
   - cd src
   # - composer install --dev
-  - wget http://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar
+  - wget https://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar
   - tar xvf php-vendor.tar
   - rm -rf php-vendor.tar
   - current_dir=`pwd` 
@@ -92,7 +92,7 @@ PhpUnit-test:
   script:
     - echo "Running PhpUnit test"
     - make 
-    - wget http://linux.siemens.de/pub/tools/FOSSologyNG/SPDXTools-v2.1.0.zip
+    - wget https://linux.siemens.de/pub/tools/FOSSologyNG/SPDXTools-v2.1.0.zip
     - unzip SPDXTools-v2.1.0 && mv SPDXTools-v2.1.0/spdx-tools-2.1.0-jar-with-dependencies.jar src/spdx2/agent_tests/Functional/ 
     - rm -rf SPDXTools-v2.1.0*
     - sudo src/vendor/bin/phpunit -c src/phpunit.xml
@@ -137,7 +137,7 @@ deploy-dev:
   script: 
     - echo "Running deploy-dev"
     # download files (artifacts are not transferred between stages
-    - wget http://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-master-current.tar.gz
+    - wget https://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-master-current.tar.gz
     # adding host key to list of known hosts 
     - mkdir ~/.ssh   
     - ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts
