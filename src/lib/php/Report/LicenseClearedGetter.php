@@ -71,7 +71,7 @@ class LicenseClearedGetter extends ClearedGetterCommon
         if ($clearingLicense->isRemoved()){
           continue;
         }
-        
+
         if ($this->onlyComments && !($comment = $clearingLicense->getComment())) {
           continue;
         }
@@ -84,7 +84,9 @@ class LicenseClearedGetter extends ClearedGetterCommon
         $licenseId = $licenseMap->getProjectedId($originLicenseId);
 
         if($this->onlyAcknowledgements){
-          $text = $acknowledgement;
+          $reportInfo = $clearingLicense->getReportInfo();
+          $text = $reportInfo ? : $this->getCachedLicenseText($licenseId, "any");
+          $ack = $acknowledgement;
           $risk = "";
         }
         else if ($this->onlyComments)
@@ -104,7 +106,8 @@ class LicenseClearedGetter extends ClearedGetterCommon
           'risk' => $risk, 
           'content' => $licenseMap->getProjectedShortname($originLicenseId, $clearingLicense->getShortName()),
           'uploadtree_pk' => $clearingDecision->getUploadTreeId(),
-          'text' => $text
+          'text' => $text,
+          'ack' => $ack
         );
       }
     }
