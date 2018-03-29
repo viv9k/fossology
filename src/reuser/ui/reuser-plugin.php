@@ -1,6 +1,6 @@
 <?php
 /***********************************************************
- * Copyright (C) 2014-2015, Siemens AG
+ * Copyright (C) 2014-2018, Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,6 +15,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  ***********************************************************/
+
+namespace Fossology\Reuser;
 
 use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\Dao\FolderDao;

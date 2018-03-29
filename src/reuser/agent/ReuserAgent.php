@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2014-2015, Siemens AG
+ Copyright (C) 2014-2018, Siemens AG
  Author: Daniele Fognini, Andreas Würl
 
 This program is free software; you can redistribute it and/or
@@ -76,14 +76,41 @@ class ReuserAgent extends Agent
       {
         continue;
       }
-      if (empty($reuseMode)) {
-        $this->processUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId);
-      } else {
+      if($reuseMode & UploadDao::REUSE_ENHANCED){
         $this->processEnhancedUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId);
+      }
+      elseif($reuseMode & UploadDao::REUSE_MAIN){
+        $this->reuseMainLicense($uploadId, $this->groupId, $reusedUploadId, $reusedGroupId);
+        $this->processUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId);
+      }
+      elseif($reuseMode & UploadDao::REUSE_ENH_MAIN){
+        $this->reuseMainLicense($uploadId, $this->groupId, $reusedUploadId, $reusedGroupId);
+        $this->processEnhancedUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId);
+      }
+      else{
+        $this->processUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId);
       }
     }
     return true;
   }  
+
+  protected function reuseMainLicense($uploadId, $groupId, $reusedUploadId, $reusedGroupId)
+  {
+    $mainLicenseIds = $this->clearingDao->getMainLicenseIds($reusedUploadId, $reusedGroupId);
+    if(!empty($mainLicenseIds))
+    {
+      foreach($mainLicenseIds as $mainLicenseId)
+      {
+        if(in_array($mainLicenseId, $this->clearingDao->getMainLicenseIds($uploadId, $groupId))){
+          continue;
+        }
+        else{
+          $this->clearingDao->makeMainLicense($uploadId, $groupId, $mainLicenseId);
+        }
+      }
+    }
+    return true;
+  }
 
   protected function processUploadReuse($itemTreeBounds, $itemTreeBoundsReused, $reusedGroupId)
   {

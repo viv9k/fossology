@@ -118,7 +118,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
 
   private function setUpTables()
   {
-    $this->testDb->createPlainTables(array('upload','upload_reuse','uploadtree','uploadtree_a','license_ref','license_ref_bulk','clearing_decision','clearing_decision_event','clearing_event','license_file','highlight','highlight_bulk','agent','pfile','ars_master','users','group_user_member'),false);
+    $this->testDb->createPlainTables(array('upload','upload_reuse','uploadtree','uploadtree_a','license_ref','license_ref_bulk','clearing_decision','clearing_decision_event','clearing_event','license_file','highlight','highlight_bulk','agent','pfile','ars_master','users','group_user_member','upload_clearing_license'),false);
     $this->testDb->createSequences(array('agent_agent_pk_seq','pfile_pfile_pk_seq','upload_upload_pk_seq','nomos_ars_ars_pk_seq','license_file_fl_pk_seq','license_ref_rf_pk_seq','license_ref_bulk_lrb_pk_seq','clearing_decision_clearing_decision_pk_seq','clearing_event_clearing_event_pk_seq'),false);
     $this->testDb->createViews(array('license_file_ref'),false);
     $this->testDb->createConstraints(array('agent_pkey','pfile_pkey','upload_pkey_idx','FileLicense_pkey','clearing_event_pkey'),false);
@@ -243,16 +243,16 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   /** @group Functional */
   public function testReuserMockedScanWithALocalClearing()
   {
-    $this->runnerReuserScanWithALocalClearing($this->runnerMock);
+    $this->runnerReuserScanWithALocalClearing($this->runnerMock,1);
   }
 
   /** @group Functional */
   public function testReuserRealScanWithALocalClearing()
   {
-    $this->runnerReuserScanWithALocalClearing($this->runnerCli);
+    $this->runnerReuserScanWithALocalClearing($this->runnerCli,1);
   }
 
-  private function runnerReuserScanWithALocalClearing($runner)
+  private function runnerReuserScanWithALocalClearing($runner, $heartBeat=0)
   {
     $this->setUpTables();
     $this->setUpRepo();
@@ -269,8 +269,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
 
     $this->assertTrue($success, 'cannot run runner');
     $this->assertEquals($retCode, 0, 'reuser failed: '.$output);
-
-    assertThat($this->getHeartCount($output), equalTo(1));
+    assertThat($this->getHeartCount($output), equalTo($heartBeat));
 
     $newUploadClearings = $this->getFilteredClearings($uploadId, $this->groupId);
     $potentiallyReusableClearings = $this->getFilteredClearings($reusedUpload, $this->groupId);
@@ -391,7 +390,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
     $this->dbManager->queryOnce("UPDATE uploadtree_a SET pfile_fk=351 WHERE uploadtree_pk=$originallyClearedItemId+$reusingUploadItemShift",
             __METHOD__.'.minorChange');
 
-    $this->uploadDao->addReusedUpload($uploadId=3,$reusedUpload=2,$this->groupId,$this->groupId,$reuseMode=1);
+    $this->uploadDao->addReusedUpload($uploadId=3,$reusedUpload=2,$this->groupId,$this->groupId,$reuseMode=2);
 
     $repoPath = $this->testDb->getFossSysConf().'/repo/files/';
     $this->treeDao->shouldReceive('getRepoPathOfPfile')->with(4)->andReturn($repoPath.'04621571bcbabce75c4dd1c6445b87dec0995734.59cacdfce5051cd8a1d8a1f2dcce40a5.12320');
@@ -439,7 +438,14 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
     {
       assertThat($newEvent->getClearingLicense(), anyOf($clearingLicenses));
     }
-
+    /*reuse main license*/
+    $this->clearingDao->makeMainLicense($uploadId=2, $this->groupId, $mainLicenseId=402);
+    $mainLicenseIdForReuse = $this->clearingDao->getMainLicenseIds($reusedUploadId=2, $this->groupId);
+    $mainLicenseIdForReuseSingle = array_values($mainLicenseIdForReuse);
+    $this->clearingDao->makeMainLicense($uploadId=3, $this->groupId, $mainLicenseIdForReuseSingle[0]);
+    $mainLicense=$this->clearingDao->getMainLicenseIds($uploadId=3, $this->groupId);
+    $mainLicenseSingle = array_values($mainLicense);
+    $this->assertEquals($mainLicenseIdForReuseSingle, $mainLicenseSingle);
     $this->rmRepo();
   }
   
