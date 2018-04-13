@@ -139,7 +139,7 @@ deploy-dev:
     # download files (artifacts are not transferred between stages
     - wget https://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-master-current.tar.gz
     # adding host key to list of known hosts 
-    - mkdir ~/.ssh   
+    - mkdir -p ~/.ssh
     - ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts
     # super important: adding key to ssh agent, othewiese the private key file is not considered
     - echo $DEVDEPLOY_SERVER_KEY > key
