@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (C) 2014-2017, Siemens AG
+Copyright (C) 2014-2018, Siemens AG
 Author: Johannes Najjar
 
 This program is free software; you can redistribute it and/or
@@ -857,6 +857,7 @@ INSERT INTO clearing_decision (
   /**
    * @param uploadId
    * @param int $groupId
+   * @return array $ids
    */
   public function getMainLicenseIds($uploadId, $groupId)
   {

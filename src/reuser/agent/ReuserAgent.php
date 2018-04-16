@@ -30,7 +30,7 @@ use Fossology\Lib\Data\ClearingDecision;
 use Fossology\Lib\Data\DecisionTypes;
 use Fossology\Lib\Data\Tree\Item;
 use Fossology\Lib\Util\ArrayOperation;
-use Fossology\Lib\Data\Clearing\ClearingEventTypes; 
+use Fossology\Lib\Data\Clearing\ClearingEventTypes;
 
 include_once(__DIR__ . "/version.php");
 

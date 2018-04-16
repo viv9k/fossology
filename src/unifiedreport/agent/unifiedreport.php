@@ -1,7 +1,7 @@
 <?php
 /*
  Author: Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2017, Siemens AG
+ Copyright (C) 2017-2018, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -235,6 +235,10 @@ class UnifiedReport extends Agent
 
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
     $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+
+    $this->licenseClearedGetter->setOnlyAcknowledgements(true);
+    $licenseAcknowledgements = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
+    $this->heartbeat(count($licenseAcknowledgements["statements"]));
 
     $this->licenseClearedGetter->setOnlyComments(true);
     $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
