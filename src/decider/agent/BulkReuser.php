@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2015-2017, Siemens AG
+Copyright (C) 2015-2018, Siemens AG
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -64,8 +64,7 @@ class BulkReuser extends Object
     $errorMsg = '';
     $jqId = $deciderPlugin->AgentAdd($job_pk, $uploadId, $errorMsg, $dependecies);
 
-    if (!empty($errorMsg))
-    {
+    if (!empty($errorMsg)) {
       throw new Exception(str_replace('<br>', "\n", $errorMsg));
     }
     return $jqId;

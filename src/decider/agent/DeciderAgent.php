@@ -1,7 +1,6 @@
 <?php
 /*
- Author: Daniele Fognini
- Copyright (C) 2014-2017, Siemens AG
+ Copyright (C) 2014-2018, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -85,7 +84,7 @@ class DeciderAgent extends Agent
     $this->activeRules = array_key_exists('r', $args) ? intval($args['r']) : self::RULES_ALL;
     $this->licenseMap = new LicenseMap($this->dbManager, $this->groupId, $this->licenseMapUsage);
 
-    if (($this->activeRules&self::RULES_BULK_REUSE)== self::RULES_BULK_REUSE)
+    if (array_key_exists("r", $args) && (($this->activeRules&self::RULES_BULK_REUSE)== self::RULES_BULK_REUSE))
     {
       $bulkReuser = new BulkReuser();
       $bulkIds = $this->clearingDao->getPreviousBulkIds($uploadId, $this->groupId, $this->userId);
@@ -98,16 +97,16 @@ class DeciderAgent extends Agent
       foreach($bulkIds as $bulkId) {
         $jqId = $bulkReuser->rerunBulkAndDeciderOnUpload($uploadId, $this->groupId, $this->userId, $bulkId, $jqId);
         $this->heartbeat(1);
-        if(!empty($jqId)){
+        if(!empty($jqId)) {
           $jqIdRow = $this->showJobsDao->getDataForASingleJob($jqId);
-          while($this->showJobsDao->getJobStatus($jqId)){
+          while($this->showJobsDao->getJobStatus($jqId)) {
             $this->heartbeat(0);
             $timeInSec = $this->showJobsDao->getEstimatedTime($jqIdRow['jq_job_fk'],'',0,0,1);
-            if($timeInSec > $maxTime){
+            if($timeInSec > $maxTime) {
               sleep($maxTime);
-            }else if($timeInSec < $minTime){
+            } else if($timeInSec < $minTime) {
               sleep($minTime);
-            }else{
+            } else {
               sleep($timeInSec);
             }
           }

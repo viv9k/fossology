@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2015-2017, Siemens AG
+ Copyright (C) 2015-2018, Siemens AG
  Author: Shaheem Azmal<shaheem.azmal@siemens.com>, 
          Anupam Ghosh <anupam.ghosh@siemens.com>
 
@@ -265,10 +265,10 @@ class ShowJobsDao extends Object
       );
     }
 
-    if(!empty($itemCount['jq_itemsprocessed']) && $jq_Type !== 'decider'){
+    if(!empty($itemCount['jq_itemsprocessed']) && $jq_Type !== 'decider') {
 
       $selectCol = "jq_type, jq_endtime, jq_starttime, jq_itemsprocessed";
-      if(empty($jq_Type)){
+      if(empty($jq_Type)) {
         $removeType = "jq_type NOT LIKE 'ununpack' AND jq_type NOT LIKE 'reportgen' AND jq_type NOT LIKE 'decider' AND";
         /* get starttime endtime and jobtype form jobqueue for a jobid except $removeType */
         $statementName = __METHOD__."$selectCol.$removeType";
@@ -299,10 +299,9 @@ class ShowJobsDao extends Object
       }
       if(empty($estimatedArray)) {
         return "";
-      }
-      else {
+      } else {
         $estimatedTime = round(max($estimatedArray)); // collecting max agent time in seconds
-        if(!empty($timeInSec)){
+        if(!empty($timeInSec)) {
           return intval(!empty($estimatedTime) ? $estimatedTime : 0);
         }
         return intval($estimatedTime/3600).gmdate(":i:s", $estimatedTime);  // convert seconds to time and return
@@ -338,9 +337,9 @@ class ShowJobsDao extends Object
            array($jqPk),
            $statementName
     );
-    if($row['jq_end_bits'] == 1 || $row['jq_end_bits'] == 2){
+    if($row['jq_end_bits'] == 1 || $row['jq_end_bits'] == 2) {
       return false;
-    }else{
+    } else {
       return true;
     }
   }

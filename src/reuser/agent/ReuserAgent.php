@@ -236,7 +236,7 @@ class ReuserAgent extends Agent
       $reportInfo = $clearingEvent->getReportinfo();
       $comment = $clearingEvent->getComment();
       $acknowledgement = $clearingEvent->getAcknowledgement();
-      $jobId = $this->jobId; 
+      $jobId = $this->jobId;
       $clearingEventIdsToCopy[] = $this->clearingDao->insertClearingEvent($uploadTreeId, $userId, $groupId, $licenseId, $isRemoved, $type, $reportInfo, $comment, $acknowledgement, $jobId);
     }
 
