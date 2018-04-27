@@ -403,6 +403,7 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
         }
         const char* content = NULL;
         const char* text = NULL;
+        const char* acknowledgement = NULL;
         char* fileNames = NULL;
 
         json_object_object_foreach(val1, key2, val2) {
@@ -411,6 +412,9 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
           }
           else if (((strcmp(key2, "text")) == 0) && json_object_is_type(val2, json_type_string)) {
             text = json_object_get_string(val2);
+          }
+          else if (((strcmp(key2, "acknowledgement")) == 0) && json_object_is_type(val2, json_type_string)) {
+            acknowledgement = json_object_get_string(val2);
           }
           else if (((strcmp(key2, "files")) == 0) && json_object_is_type(val2, json_type_array)) {
             fileNames = implodeJsonArray(val2, ",\n");
@@ -421,7 +425,10 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
           }
         }
 
-        if (content && text && fileNames) {
+        if(content && text && acknowledgement && fileNames){
+          table_addRow(table, content, text, acknowledgement, fileNames);
+	}
+	else if (content && text && fileNames) {
           table_addRow(table, content, text, fileNames);
         }
         //else if (content && comments && fileNames){
@@ -800,19 +807,11 @@ int main(int argc, char** argv) {
 
     addparaheading(createnumsection(body, "0", "2"), NULL, "Acknowledgements", "0", "2");
 
-    rg_table* tableacknowledgements = table_new(body, 3, "2000", "3000", "2000");
-    table_addRow(tableacknowledgements, "Reference to the license", "Text of acknowledgements", "File path");
+    rg_table* tableacknowledgements = table_new(body, 4, "1500", "3000", "3000", "1500");
+    table_addRow(tableacknowledgements, "licesne", "licenseText","Acknowledgements", "File path");
     {
       char* jsonAcknowledgementLicense = getClearedAcknowledgement(uploadId, groupId);
-      json_object * jobj = json_tokener_parse(jsonAcknowledgementLicense);
-
-      if (!addRowsFromJson_ContentTextFiles(tableacknowledgements, jobj, "statements")) {
-        printf("cannot parse json string: %s\n", jsonAcknowledgementLicense);
-        fo_scheduler_disconnect(1);
-        exit(1);
-      }
-
-      json_object_put(jobj);
+      fillTableFromJson(tableacknowledgements, jsonAcknowledgementLicense);
       g_free(jsonAcknowledgementLicense);
     }
     // endrow
