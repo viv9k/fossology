@@ -1,7 +1,7 @@
 <?php
 /*
  Author: Shaheem Azmal, anupam.ghosh@siemens.com
- Copyright (C) 2017, Siemens AG
+ Copyright (C) 2017-2018, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -235,7 +235,7 @@ class UnifiedReport extends Agent
 
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
     $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
-
+    $this->heartbeat(count($licenseAcknowledgements["statements"]));
     $this->licenseClearedGetter->setOnlyComments(true);
     $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
 
@@ -342,16 +342,26 @@ class UnifiedReport extends Agent
     $lenTotalLics = count($contents["licenses"]["statements"]);
     // both of this variables have same value but used for different operations
     $lenMainLics = $lenLicsMain = count($contents["licensesMain"]["statements"]);
-    for($j=0; $j<$lenLicsMain; $j++){
-      for($i=0; $i<$lenTotalLics; $i++){
-        if(!strcmp($contents["licenses"]["statements"][$i]["content"], $contents["licensesMain"]["statements"][$j]["content"])){
-          if(!strcmp($contents["licenses"]["statements"][$i]["text"], $contents["licensesMain"]["statements"][$j]["text"])){
-            $contents["licensesMain"]["statements"][$j]["files"] = $contents["licenses"]["statements"][$i]["files"];
-          } else {
-            $lenMainLics++;
-            $contents["licensesMain"]["statements"][$lenMainLics] = $contents["licenses"]["statements"][$i];
+    if($lenLicsMain > 0 ) {
+      for($j=0; $j<$lenLicsMain; $j++) {
+        if($lenTotalLics > 0) {
+          $found = 0;
+          for($i=0; $i<$lenTotalLics; $i++) {
+            if(!strcmp($contents["licenses"]["statements"][$i]["content"], $contents["licensesMain"]["statements"][$j]["content"])) {
+              $found += 1;
+              $lenMainLics += 1;
+              $contents["licensesMain"]["statements"][$lenMainLics] = $contents["licenses"]["statements"][$i];
+              unset($contents["licenses"]["statements"][$i]);
+            }
           }
-          unset($contents["licenses"]["statements"][$i]);          
+          if ($found == 0 ) {
+            $lenMainLics += 1;
+            $contents["licensesMain"]["statements"][$lenMainLics] = $contents["licensesMain"]["statements"][$j];
+            unset($contents["licensesMain"]["statements"][$j]);
+          }
+          else {
+            unset($contents["licensesMain"]["statements"][$j]);
+          }
         }
       }
     }
@@ -652,7 +662,7 @@ class UnifiedReport extends Agent
     $timestamp = $jobInfo['ts'];
     $packageUri = "";
     if(!empty($jobInfo['jq_cmd_args'])){
-     $packageUri = trim($jobInfo['jq_cmd_args'])."?mod=showjobs&upload=".$uploadId;
+      $packageUri = trim($jobInfo['jq_cmd_args'])."?mod=showjobs&upload=".$uploadId;
     }
 
     /* Applying document properties and styling */

@@ -1,7 +1,7 @@
 <?php
 /*
+ * Copyright (C) 2016-2018, Siemens AG
  * Author: Daniele Fognini, Shaheem Azmal M MD
- * Copyright (C) 2016-2017, Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -282,14 +282,13 @@ class ReadmeOssAgent extends Agent
       $output .= "<Copyright notices>";
       $output .= $break;
       $output .= "<notices>";
-    }else{
+    } else {
       $output .= "Copyright notices";
       $output .= $break;
       $output .= $copyrights;
     }
     return $output;
   }
-
 }
 
 $agent = new ReadmeOssAgent();

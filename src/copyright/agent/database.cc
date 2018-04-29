@@ -195,7 +195,7 @@ const CopyrightDatabaseHandler::ColumnDef CopyrightDatabaseHandler::columnsDecis
   {"description", "text", ""},
   {"textFinding", "text", ""},
   {"comment", "text", ""},
-  {"is_enabled", "bool", "DEFAULT true"}
+  {"is_enabled", "boolean", "NOT NULL DEFAULT TRUE"}
 };
 
 bool CopyrightDatabaseHandler::createTableClearing() const
