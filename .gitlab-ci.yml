@@ -101,29 +101,31 @@ package:
   tags:
     - VLAN
   stage : build-package
-  script: 
+  script:
     - echo "Running package"
-    - make
     - dpkg-buildpackage -I
     - mkdir packages  
     - cp ../*.deb packages/
-    
+
+    # Publish only ng-master packages
+    - if [ "$CI_BUILD_REF_NAME" == "ng-master" ]; then
     # creating archive
-    - tar -czvf fossologyng-master-current.tar.gz packages/*.deb
-    
+    -   tar -czvf fossologyng-master-current.tar.gz packages/*.deb
+
     # adding host key to list of known hosts 
-    - mkdir -p ~/.ssh   
-    - ssh-keyscan -H $PACKAGE_SERVER_NAME > ~/.ssh/known_hosts
-    
+    -   mkdir -p ~/.ssh   
+    -   ssh-keyscan -H $PACKAGE_SERVER_NAME > ~/.ssh/known_hosts
+
     # super important: adding key to ssh agent, othewiese the private key file is not considered
-    - echo $PACKAGE_SERVER_KEY > key
-    - chmod 600 key
-    - eval $(ssh-agent -s)
-    - ssh-add  <(echo "$PACKAGE_SERVER_KEY")
-    - ssh-add -L
-    
+    -   echo $PACKAGE_SERVER_KEY > key
+    -   chmod 600 key
+    -   eval $(ssh-agent -s)
+    -   ssh-add  <(echo "$PACKAGE_SERVER_KEY")
+    -   ssh-add -L
+
     # finally copying the artifacts
-    - scp -i key fossologyng-master-current.tar.gz fossy@$PACKAGE_SERVER_NAME:$PACKAGE_SERVER_PATH
+    -   scp -i key fossologyng-master-current.tar.gz fossy@$PACKAGE_SERVER_NAME:$PACKAGE_SERVER_PATH
+    - fi
   artifacts:
     expire_in: 1 day
     paths:
