@@ -13,10 +13,10 @@ EXE = reportgen
 EXE_COPY = getCleared.php getClearedCopy.php getClearedIp.php getClearedEcc.php getBulkMatches.php getKeywords.php getIrrelevant.php getMainLicense.php getClearedComment.php getLicenseHistogram.php getClearedAcknowledgement.php
 WRAP = getCleared getClearedCopy getClearedIp getClearedEcc getBulkMatches getKeywords getIrrelevant getMainLicense getClearedComment getLicenseHistogram getClearedAcknowledgement
 
-CFLAGS_LOCAL  = -std=c99 $(FO_CFLAGS) -I. `pkg-config json --cflags` -DINSTALLDIR='"$(DESTDIR)$(MODDIR)/$(EXE)/agent"'
+CFLAGS_LOCAL  = -std=c99 $(FO_CFLAGS) -I. `pkg-config json-c --cflags` -DINSTALLDIR='"$(DESTDIR)$(MODDIR)/$(EXE)/agent"'
 DEF           = -DDATADIR='"$(MODDIR)"'
 CONFDIR       = $(DESTDIR)$(SYSCONFDIR)
-LDFLAGS_LOCAL = $(FO_LDFLAGS) -lmxml -L ./libmxml.a `pkg-config json --cflags --libs`
+LDFLAGS_LOCAL = $(FO_LDFLAGS) -lmxml -L ./libmxml.a `pkg-config json-c --cflags --libs`
 
 OBJECTS  = utils.o main.o table.o jsonDataRetriever.o
 COVERAGE = 
