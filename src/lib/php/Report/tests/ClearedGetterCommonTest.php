@@ -109,9 +109,19 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
          ->andReturn("a/1");
 
     $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(1)
+         ->andReturn(array('sha1'=> "9B12538E" ,'md5'=> "MD52538E"));
+
+    $this->treeDao
          ->shouldReceive('getFullPath')
          ->with(2, $uploadTreeTableName, $parentId)
          ->andReturn("a/2");
+
+    $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(2)
+         ->andReturn(array('sha1'=> "8C2275AE" ,'md5'=> "MD5275AE"));
 
     $this->treeDao
          ->shouldReceive('getFullPath')
@@ -119,9 +129,19 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
          ->andReturn("a/b/1");
 
     $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(3)
+         ->andReturn(array('sha1'=> "CA10238C" ,'md5'=> "MD50238C"));
+
+    $this->treeDao
          ->shouldReceive('getFullPath')
          ->with(4, $uploadTreeTableName, $parentId)
          ->andReturn("a/4");
+
+    $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(4)
+         ->andReturn(array('sha1'=> "AB12838A" ,'md5'=> "MD52838A"));
 
     $statements = $this->clearedGetterTest->getCleared($uploadId);
     $expected = array(
@@ -132,7 +152,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "1",
           "text" => "d1",
           "comments" => "c1",
-          "files" => array("a/1", "a/2")
+          "files" => array("a/1", "a/2"),
+          "hash" => array("9B12538E","8C2275AE")
         ),
         array(
           "licenseId" => "213",
@@ -140,7 +161,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "tf1",
           "text" => "d1",
           "comments" => "c1",
-          "files" => array("a/1")
+          "files" => array("a/1"),
+          "hash" => array("9B12538E")
         ),
         array(
           "licenseId" => "243",
@@ -148,7 +170,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "tf1",
           "text" => "d2",
           "comments" => "c4",
-          "files" => array("a/4")
+          "files" => array("a/4"),
+          "hash" => array("AB12838A")
         ),
         array(
           "licenseId" => "8",
@@ -156,7 +179,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "2",
           "text" => "t3",
           "comments" => "c3",
-          "files" => array("a/b/1")
+          "files" => array("a/b/1"),
+          "hash" => array("CA10238C")
         )
       )
     );
@@ -186,9 +210,20 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
          ->andReturn("a/1");
 
     $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(1)
+         ->andReturn(array('sha1'=> "9B12538E" ,'md5'=> "MD52538E"));
+
+
+    $this->treeDao
          ->shouldReceive('getFullPath')
          ->with(2, $uploadTreeTableName, $parentId)
          ->andReturn("a/2");
+
+    $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(2)
+         ->andReturn(array('sha1'=> "8C2275AE" ,'md5'=> "MD5275AE"));
 
     $this->treeDao
          ->shouldReceive('getFullPath')
@@ -196,9 +231,19 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
          ->andReturn("a/b/1");
 
     $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(3)
+         ->andReturn(array('sha1'=> "CA10238C" ,'md5'=> "MD50238C"));
+
+    $this->treeDao
          ->shouldReceive('getFullPath')
          ->with(4, $uploadTreeTableName, $parentId)
          ->andReturn("a/4");
+
+    $this->treeDao
+         ->shouldReceive('getItemHashes')
+         ->with(4)
+         ->andReturn(array('sha1'=> "AB12838A" ,'md5'=> "MD52838A"));
 
     $tester = new TestClearedGetter("text");
     $statements = $tester->getCleared($uploadId);
@@ -210,7 +255,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "tf1",
           "text" => "d1",
           "comments" => "c1",
-          "files" => array("a/1")
+          "files" => array("a/1"),
+          "hash" => array("9B12538E")
         ),
         array(
           "licenseId" => "243",
@@ -218,7 +264,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "1",
           "text" => "t2",
           "comments" => "c1",
-          "files" => array("a/2")
+          "files" => array("a/2"),
+          "hash" => array("8C2275AE")
         ),
         array(
          "licenseId" => "213",
@@ -226,7 +273,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "2",
           "text" => "t3",
           "comments" => "c3",
-          "files" => array("a/b/1")
+          "files" => array("a/b/1"),
+          "hash" => array("CA10238C")
         ),
         array(
           "licenseId" => "8",
@@ -234,7 +282,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "content" => "tf1",
           "text" => "d1",
           "comments" => "c1",
-          "files" => array("a/4")
+          "files" => array("a/4"),
+          "hash" => array("AB12838A")
         )
       )
     );

@@ -32,6 +32,7 @@ abstract class ClearedGetterCommon
 
   /** @var array */
   private $fileNameCache = array();
+  private $fileHahses = array();
 
   private $userId;
   private $groupId;
@@ -107,9 +108,12 @@ abstract class ClearedGetterCommon
 
       if (!array_key_exists($uploadTreeId, $this->fileNameCache)) {
         $this->fileNameCache[$uploadTreeId] = $this->treeDao->getFullPath($uploadTreeId, $uploadTreeTableName, $parentId);
+        $this->fileHashes[$uploadTreeId] = $this->treeDao->getItemHashes($uploadTreeId);
       }
 
       $statement['fileName'] = $this->fileNameCache[$uploadTreeId];
+      $statement['fileHash'] = strtolower($this->fileHashes[$uploadTreeId]["sha1"]);
+
     }
     unset($statement);
   }
@@ -123,6 +127,7 @@ abstract class ClearedGetterCommon
       $content = htmlspecialchars($content, ENT_DISALLOWED);
       $comments = convertToUTF8($statement['comments'], false);
       $fileName = $statement['fileName'];
+      $fileHash = $statement['fileHash'];
       $acknowledgement = $statement['ack'];
 
       if (!array_key_exists('text', $statement))
@@ -150,15 +155,18 @@ abstract class ClearedGetterCommon
       if(empty($comments) && array_key_exists($groupBy, $statements))
       {
         $currentFiles = &$statements[$groupBy]['files'];
+        $currentHash = &$statements[$groupBy]['hash'];
         if (!in_array($fileName, $currentFiles)){
           $currentFiles[] = $fileName;
+          $currentHash[] = $fileHash;
         }
       } else {
         $singleStatement = array(
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
             "acknowledgement" => convertToUTF8($acknowledgement, false),
-            "files" => array($fileName)
+            "files" => array($fileName),
+            "hash" => array($fileHash)
           );
         if ($extended) {
           $singleStatement["licenseId"] = $statement['licenseId'];
@@ -177,7 +185,8 @@ abstract class ClearedGetterCommon
         $findings[] = array(
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
-            "files" => array($fileName)
+            "files" => array($fileName),
+            "hash" => array($fileHash)
           );
         if ($extended) {
           $key = array_search($statement['textfinding'], array_column($findings, 'content'));

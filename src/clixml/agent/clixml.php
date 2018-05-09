@@ -150,6 +150,7 @@ class CliXml extends Agent
       $content = htmlspecialchars($content, ENT_DISALLOWED);
       $comments = convertToUTF8($statement['comments'], false);
       $fileName = $statement['fileName'];
+      $fileHash = $statement['fileHash'];
 
       if (!array_key_exists('text', $statement))
       {
@@ -180,14 +181,17 @@ class CliXml extends Agent
       if(empty($comments) && array_key_exists($groupBy, $statements))
       {
         $currentFiles = &$statements[$groupBy]['files'];
-        if (!in_array($fileName, $currentFiles)){
+        $currentHash = &$statements[$groupBy]['hash'];
+        if (!in_array($fileName, $currentFiles)) {
           $currentFiles[] = $fileName;
+          $currentHash[] = $fileHash;
         }
       } else {
         $singleStatement = array(
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
-            "files" => array($fileName)
+            "files" => array($fileName),
+            "hash" => array($fileHash)
           );
         if ($extended) {
           $singleStatement["comments"] = convertToUTF8($comments, false);
@@ -205,7 +209,8 @@ class CliXml extends Agent
         $findings[] = array(
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
-            "files" => array($fileName)
+            "files" => array($fileName),
+            "hash" => array($fileHash)
           );
         if ($extended) {
           $key = array_search($statement['textfinding'], array_column($findings, 'content'));
@@ -263,6 +268,7 @@ class CliXml extends Agent
     $countAcknowledgement = count($licenseAcknowledgements);
     $this->heartbeat($countAcknowledgement);
     $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements);
+    $componentHash = $this->uploadDao->getUploadHashes($uploadId);
     $contents = array("licensesMain" => $licensesMain["statements"],
                       "licenses" => $licensesWithAcknowledgement,
                       "copyrights" => $copyrights["statements"],
@@ -275,6 +281,7 @@ class CliXml extends Agent
         'uri'=>$this->uri,
         'userName'=>$this->container->get('dao.user')->getUserName($this->userId),
         'organisation'=>'',
+        'componentHash' => strtolower($componentHash['sha1']),
         'contents'=>$contents,
         'packageIds'=>$packageIds)
             );
@@ -336,6 +343,7 @@ class CliXml extends Agent
         if(!strcmp($contents["licenses"][$i]["content"], $contents["licensesMain"][$j]["content"])){
           if(!strcmp($contents["licenses"][$i]["text"], $contents["licensesMain"][$j]["text"])){
             $contents["licensesMain"][$j]["files"] = $contents["licenses"][$i]["files"];
+            $contents["licensesMain"][$j]["hash"] = $contents["licenses"][$i]["hash"];
             if(array_key_exists('acknowledgement', $contents["licenses"][$i])){
               $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
             }
