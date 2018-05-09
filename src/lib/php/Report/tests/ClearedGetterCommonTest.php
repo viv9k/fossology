@@ -51,8 +51,8 @@ class WeirdCharClearedGetter extends ClearedGetterCommon
   }
 
   protected function getStatements($uploadId, $uploadTreeTableName, $userId = null, $groupId=null){}
-  
-  public function getCleared($uploadId, $groupId=null)
+
+  public function getCleared($uploadId, $groupId=null, $extended = true, $agentcall = NULL)
   {
     return array(
       array("good" => "漢", "esc" => "escape", "uml" => ' ü ')
@@ -88,7 +88,7 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
   public function testGetFileNames()
   {
     $this->clearedGetterTest = new TestClearedGetter();
-        
+
     $uploadId = 1;
     $parentId = 112;
     $uploadTreeTableName = "ut";
@@ -221,7 +221,7 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
           "files" => array("a/2")
         ),
         array(
-         "licenseId" => "213",
+          "licenseId" => "243",
           "risk" => "4",
           "content" => "2",
           "text" => "t3",
@@ -240,7 +240,7 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
     );
     assertThat(arsort($expected), equalTo($statements));
   }
-  
+
   function testWeirdChars()
   {
     $weirdCharclearedGetter = new WeirdCharclearedGetter();
