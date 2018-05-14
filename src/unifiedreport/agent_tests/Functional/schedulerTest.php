@@ -31,7 +31,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   private $userId = 2;
   /** @var int */
   private $groupId = 2;
-  
+
   /** @var TestPgDb */
   private $testDb;
   /** @var DbManager */
@@ -82,23 +82,23 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
     $this->testDb->alterTables(array('agent','pfile','upload','ars_master','license_ref_bulk','clearing_event','clearing_decision','license_file','highlight'),false);
     
     $this->dbManager->queryOnce("CREATE TABLE ip(
-  ct_pk bigint NOT NULL DEFAULT 1234,
-  agent_fk bigint NOT NULL,
-  pfile_fk bigint NOT NULL,
-  content text,
-  hash text,
-  type text,
-  copy_startbyte integer,
-  copy_endbyte integer)");
+      ct_pk bigint NOT NULL DEFAULT 1234,
+      agent_fk bigint NOT NULL,
+      pfile_fk bigint NOT NULL,
+      content text,
+      hash text,
+      type text,
+      copy_startbyte integer,
+      copy_endbyte integer)");
     
     $this->dbManager->queryOnce("CREATE TABLE ip_decision(
-  copyright_decision_pk bigint NOT NULL DEFAULT 56789,
-  user_fk bigint NOT NULL,
-  pfile_fk bigint NOT NULL,
-  clearing_decision_type_fk bigint NOT NULL,
-  description text,
-  textfinding text,
-  comment text)");
+      copyright_decision_pk bigint NOT NULL DEFAULT 56789,
+      user_fk bigint NOT NULL,
+      pfile_fk bigint NOT NULL,
+      clearing_decision_type_fk bigint NOT NULL,
+      description text,
+      textfinding text,
+      comment text)");
     
     $this->testDb->insertData(array('mimetype_ars','pkgagent_ars','ununpack_ars','decider_ars'),true,__DIR__.'/fo_report.sql');
     // $this->testDb->insertData_license_ref();
@@ -128,7 +128,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
     assertThat('cannot run runner', $success, equalTo(true));
     assertThat( 'report failed: "'.$output.'"', $retCode, equalTo(0));
     assertThat($this->getHeartCount($output), greaterThan(0));
-    
+
     $row = $this->dbManager->getSingleRow("SELECT upload_fk,job_fk,filepath FROM reportgen WHERE job_fk = $1", array($jobId), "reportFileName");
     assertThat($row, hasKeyValuePair('upload_fk', $uploadId));
     assertThat($row, hasKeyValuePair('job_fk', $jobId));

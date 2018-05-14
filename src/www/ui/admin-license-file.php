@@ -357,9 +357,9 @@ class admin_license_file extends FO_Plugin
   /** @brief check if shortname is changed */
   private function isShortNameExists($rfId, $shortname)
   {
-    $sql = "SELECT rf_shortname FROM license_ref WHERE rf_pk=$1";
+    $sql = "SELECT LOWER(rf_shortname) AS rf_shortname FROM license_ref WHERE rf_pk=$1";
     $row = $this->dbManager->getSingleRow($sql,array($rfId),__METHOD__.'.DoNotChnageShortName');
-    if ($row['rf_shortname'] === $shortname) {
+    if ($row['rf_shortname'] === strtolower($shortname)) {
       return 1;
     } else {
       return 0;
