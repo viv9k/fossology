@@ -1,3 +1,6 @@
 #!/bin/bash
 
-wget -nc https://github.com/spdx/tools/releases/download/V2.0.2/spdx-tools-2.0.2-jar-with-dependencies.jar -P $(dirname $0)/../../src/spdx2/agent_tests/Functional/
+wget -nc https://linux.siemens.de/pub/tools/FOSSologyNG/SPDXTools-v2.1.0.zip
+unzip -j "SPDXTools-v2.1.0.zip" "SPDXTools-v2.1.0/spdx-tools-2.1.0-jar-with-dependencies.jar" \
+      -d "$(dirname $0)/../../src/spdx2/agent_tests/Functional/"
+rm -rf SPDXTools-v2.1.0.zip
