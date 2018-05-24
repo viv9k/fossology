@@ -74,20 +74,6 @@ pipeline {
             -isrc/testing/dataFiles/ --suppress=*:src/copyright/agent/json.hpp src/'
           }
         }
-        stage('PHPCPD-test') {
-          steps {
-            script {
-              try {
-                sh 'src/vendor/bin/phpcpd src/cli/ src/copyright/ src/decider*/ \
-                src/lib/ src/monk/ src/nomos/ src/readmeoss/ src/spdx2/ src/www/'
-              }
-              catch (exc) {
-                echo 'PHPCPD test failed!'
-                currentBuild.result = 'UNSTABLE'
-              }
-            }
-          }
-        }
         stage('PHPCS-test') {
           steps {
             sh 'src/vendor/bin/phpcs --standard=src/fossy-ruleset.xml \
@@ -259,29 +245,60 @@ pipeline {
       }
     }
     stage('Deploy') {
-      when {
-        branch 'ng-master'
-      }
-      steps {
-        echo 'Running deploy-dev'
-        // download files (artifacts are not transferred between stages)
-        // sh 'wget http://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-$GIT_COMMIT.tar.gz'
-        // adding host key to list of known hosts
-        // sh 'mkdir -p ~/.ssh'
-        // sh 'ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts'
-        // super important: adding key to ssh agent, othewiese the private key file is not considered
-        // sh 'echo $DEVDEPLOY_SERVER_KEY > key'
-        // sh 'chmod 600 key'
-        // sh 'eval $(ssh-agent -s)'
-        // sh 'ssh-add  <(echo "$DEVDEPLOY_SERVER_KEY")'
-        // sh 'ssh-add -L'
-        // copying the artifacts
-        // scp -i key ~/workspace/artifacts/fossologyng-$GIT_COMMIT.tar.gz ubuntu@$DEVDEPLOY_SERVER_NAME:/home/ubuntu
-        // logging in and artifacts install
-        // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "tar -x --overwrite -z -f fossologyng-$GIT_COMMIT.tar.gz"
-        // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "rm -f packages/fossology-ninka*"
-        // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo dpkg -i packages/*.deb"
-        // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo apt-get -f install -y"
+      parallel {
+        stage('Docker image') {
+          when {
+            branch 'ng-master'
+          }
+          environment {
+            DOCKER_CREDS = credentials('siemens_docker')
+            DOCKER_REGISTRY = 'docker.siemens.com'
+            CONTAINER_RELEASE_IMAGE = '${DOCKER_REGISTRY}/fossology/fossologyng:latest'
+          }
+          steps {
+            sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
+            sh 'docker build --pull -t ${CONTAINER_RELEASE_IMAGE} .'
+            sh 'docker push ${CONTAINER_RELEASE_IMAGE}'
+          }
+        }
+        stage('Tag image') {
+          when { buildingTag() }
+          environment {
+            DOCKER_CREDS = credentials('siemens_docker')
+            DOCKER_REGISTRY = 'docker.siemens.com'
+            CONTAINER_TAG_IMAGE = '${DOCKER_REGISTRY}/fossology/fossologyng:${TAG_NAME}'
+          }
+          steps {
+            sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
+            sh 'docker build --pull -t ${CONTAINER_TAG_IMAGE} .'
+            sh 'docker push ${CONTAINER_TAG_IMAGE}'
+          }
+        }
+        stage('Siemens repo') {
+          when {
+           branch 'ng-master'
+          }
+          steps {
+            echo 'Running deploy-dev'
+            // sh 'wget http://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-$GIT_COMMIT.tar.gz'
+            // adding host key to list of known hosts
+            // sh 'mkdir -p ~/.ssh'
+            // sh 'ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts'
+            // super important: adding key to ssh agent, othewiese the private key file is not considered
+            // sh 'echo $DEVDEPLOY_SERVER_KEY > key'
+            // sh 'chmod 600 key'
+            // sh 'eval $(ssh-agent -s)'
+            // sh 'ssh-add  <(echo "$DEVDEPLOY_SERVER_KEY")'
+            // sh 'ssh-add -L'
+            // copying the artifacts
+            // scp -i key ~/workspace/artifacts/fossologyng-$GIT_COMMIT.tar.gz ubuntu@$DEVDEPLOY_SERVER_NAME:/home/ubuntu
+            // logging in and artifacts install
+            // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "tar -x --overwrite -z -f fossologyng-$GIT_COMMIT.tar.gz"
+            // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "rm -f packages/fossology-ninka*"
+            // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo dpkg -i packages/*.deb"
+            // ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo apt-get -f install -y"
+          }
+        }
       }
     }
   }
