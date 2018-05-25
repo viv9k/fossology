@@ -9,7 +9,7 @@
 {% else %}
 {% set acknow = ' includesAcknowledgements="TRUE" ' %}
 {% endif %}
-<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('d.m.Y')}}" baseDoc="" toolUsed="FOSSologyNG" componentID=""{{acknow}}>
+<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('d.m.Y')}}" baseDoc="" toolUsed="FOSSologyNG" componentID=""{{acknow}}  componentSHA1="{{componentHash}}">
 {% for licensesMain in contents %}
 {% if licensesMain %}
 {% for ids in licensesMain %}
@@ -21,6 +21,10 @@
 {% endif %}
 {% endfor %}
 ]]></Files>
+<FileHash><![CDATA[{% for id in ids.hash %}{% if id %}{{id}}
+{% endif %}
+{% endfor %}
+]]></FileHash>
 {% if ids.acknowledgementMain is defined %}
 <Acknowledgements><![CDATA[{{ids.acknowledgementMain|e}}]]></Acknowledgements>
 {% endif %}
@@ -41,6 +45,10 @@
 {% endif %}
 {% endfor %}
 ]]></Files>
+<FileHash><![CDATA[{% for id in ids.hash %}{% if id %}{{id}}
+{% endif %}
+{% endfor %}
+]]></FileHash>
 {% if ids.acknowledgement is defined %}
 <Acknowledgements><![CDATA[{{ids.acknowledgement|e}}]]></Acknowledgements>
 {% endif %}
@@ -57,10 +65,14 @@
 <Copyright>
 <Content><![CDATA[{{idc.contentCopy}}
 ]]></Content>
-<Files><![CDATA[{% for fi in idc.files %}{% if fi %}{{fi}}
+<Files><![CDATA[{% for id in idc.files %}{% if id %}{{id}}
 {% endif %}
 {% endfor %}
 ]]></Files>
+<FileHash><![CDATA[{% for id in idc.hash %}{% if id %}{{id}}
+{% endif %}
+{% endfor %}
+]]></FileHash>
 </Copyright>
 {% endif %}
 {% endfor %}

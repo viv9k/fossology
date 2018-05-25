@@ -419,6 +419,9 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
           else if (((strcmp(key2, "files")) == 0) && json_object_is_type(val2, json_type_array)) {
             fileNames = implodeJsonArray(val2, ",\n");
           }
+          else if (((strcmp(key2, "hash")) == 0) && json_object_is_type(val2, json_type_array)) {
+            fileNames = implodeJsonArray(val2, ",\n");
+          }
           else {
             printf("unexpected key/typeof(value) pair for key '%s'\n", key2);
             return 0;
