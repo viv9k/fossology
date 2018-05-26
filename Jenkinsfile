@@ -253,7 +253,7 @@ pipeline {
           environment {
             DOCKER_CREDS = credentials('siemens_docker')
             DOCKER_REGISTRY = 'docker.siemens.com'
-            CONTAINER_RELEASE_IMAGE = '${DOCKER_REGISTRY}/fossology/fossologyng:latest'
+            CONTAINER_RELEASE_IMAGE = "${DOCKER_REGISTRY}/fossology/fossologyng:latest"
           }
           steps {
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
@@ -266,7 +266,7 @@ pipeline {
           environment {
             DOCKER_CREDS = credentials('siemens_docker')
             DOCKER_REGISTRY = 'docker.siemens.com'
-            CONTAINER_TAG_IMAGE = '${DOCKER_REGISTRY}/fossology/fossologyng:${TAG_NAME}'
+            CONTAINER_TAG_IMAGE = "${DOCKER_REGISTRY}/fossology/fossologyng:${TAG_NAME}"
           }
           steps {
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
@@ -303,3 +303,4 @@ pipeline {
     }
   }
 }
+
