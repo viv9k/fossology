@@ -22,8 +22,11 @@ deb http://linux.siemens.de/pub/debian-security jessie/updates main\n" > /etc/ap
 
 RUN apt-get update && \
     apt-get install -y lsb-release sudo postgresql php5-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl && \
-    /fossology/utils/fo-installdeps -e -y && \
+    /fossologyng/utils/fo-installdeps -e -y && \
     rm -rf /var/lib/apt/lists/*
+
+RUN echo "check_certificate=off" >> /etc/wgetrc
+RUN echo "--insecure" >> ~/.curlrc
 
 # Install composer dependencies
 RUN cd src && \
@@ -36,10 +39,10 @@ RUN /fossologyng/install/scripts/install-ninka.sh
 
 RUN make install
 
-RUN cp /fossology/install/src-install-apache-example.conf /etc/apache2/conf-available/fossology.conf && \
+RUN cp /fossologyng/install/src-install-apache-example.conf /etc/apache2/conf-available/fossology.conf && \
     ln -s /etc/apache2/conf-available/fossology.conf /etc/apache2/conf-enabled/fossology.conf
 
-RUN /fossology/install/scripts/php-conf-fix.sh --overwrite
+RUN /fossologyng/install/scripts/php-conf-fix.sh --overwrite
 
 EXPOSE 8081
 
