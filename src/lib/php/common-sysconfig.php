@@ -196,77 +196,76 @@ function Populate_sysconfig()
 {
   global $PG_CONN;
 
-  $Columns = "variablename, conf_value, ui_label, vartype, group_name, group_order, description, validation_function, option_value";
+  $Columns = array("variablename", "conf_value", "ui_label", "vartype", "group_name",
+    "group_order", "description", "validation_function", "option_value");
   $ValueArray = array();
 
   /*  Email */
   $Variable = "SupportEmailLabel";
   $SupportEmailLabelPrompt = _('Support Email Label');
   $SupportEmailLabelDesc = _('e.g. "Support"<br>Text that the user clicks on to create a new support email. This new email will be preaddressed to this support email address and subject.  HTML is ok.');
-  $ValueArray[$Variable] = "'$Variable', 'Support', '$SupportEmailLabelPrompt',"
-  . CONFIG_TYPE_TEXT .
-                    ",'Support', 1, '$SupportEmailLabelDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "'Support'", "'$SupportEmailLabelPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "1", "'$SupportEmailLabelDesc'", "null", "null");
 
   $Variable = "SupportEmailAddr";
   $SupportEmailAddrPrompt = _('Support Email Address');
   $SupportEmailAddrValid = "check_email_address";
   $SupportEmailAddrDesc = _('e.g. "support@mycompany.com"<br>Individual or group email address to those providing FOSSology support.');
-  $ValueArray[$Variable] = "'$Variable', null, '$SupportEmailAddrPrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'Support', 2, '$SupportEmailAddrDesc', '$SupportEmailAddrValid', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SupportEmailAddrPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "2", "'$SupportEmailAddrDesc'", "'$SupportEmailAddrValid'", "null");
 
   $Variable = "SupportEmailSubject";
   $SupportEmailSubjectPrompt = _('Support Email Subject line');
   $SupportEmailSubjectDesc = _('e.g. "fossology support"<br>Subject line to use on support email.');
-  $ValueArray[$Variable] = "'$Variable', 'FOSSology Support', '$SupportEmailSubjectPrompt',"
-  . CONFIG_TYPE_TEXT .
-                    ",'Support', 3, '$SupportEmailSubjectDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "'FOSSology Support'", "'$SupportEmailSubjectPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "3", "'$SupportEmailSubjectDesc'", "null", "null");
 
   /* oAuth2 Service */
   $Variable = "GitlabAppIdOauth";
   $GitlabAppIdOauthPrompt = _('Gitlab Application Id');
   $GitlabAppIdOauthDesc = _('e.g. "e0ec21b9f4b21adc76f185962b52bdfc13af134a"<br>Applicationid generated while registering your application.');
-  $ValueArray[$Variable] = "'$Variable', null, '$GitlabAppIdOauthPrompt', ". CONFIG_TYPE_TEXT .",'OauthSupport', 1, '$GitlabAppIdOauthDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabAppIdOauthPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "1", "'$GitlabAppIdOauthDesc'", "null", "null");
 
   $Variable = "GitlabSecretOauth";
   $GitlabSecretOauthPrompt = _('Gitlab Secret');
   $GitlabSecretOauthDesc = _('e.g. "cf13476f185b9f4b2e0ec962b52211adbdfc13aa"<br>Secret generated while registering your application.');
-  $ValueArray[$Variable] = "'$Variable', null, '$GitlabSecretOauthPrompt',". CONFIG_TYPE_PASSWORD .",'OauthSupport', 2, '$GitlabSecretOauthDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabSecretOauthPrompt'",
+    strval(CONFIG_TYPE_PASSWORD), "'OauthSupport'", "2", "'$GitlabSecretOauthDesc'", "null", "null");
 
   $Variable = "RedirectOauthURL";
   $RedirectOauthURLPrompt = _('Redirect URL');
   $RedirectOauthURLDesc = _('e.g. "http://fossology.application.url.com"<br> "URL of your fossology application."');
-  $ValueArray[$Variable] = "'$Variable', null, '$RedirectOauthURLPrompt',". CONFIG_TYPE_TEXT .",'OauthSupport', 3, '$RedirectOauthURLDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$RedirectOauthURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "3", "'$RedirectOauthURLDesc'", "null", "null");
 
   $Variable = "GitlabDomainURL";
   $GitlabDomainURLPrompt = _('Gitlab Domain URL');
   $GitlabDomainURLDesc = _('e.g. "http://gitlab.myhost.com"<br> "Base URL for self-hosted gitlab application(this feild is optional)."');
-  $ValueArray[$Variable] = "'$Variable', null, '$GitlabDomainURLPrompt',". CONFIG_TYPE_TEXT .",'OauthSupport', 4, '$GitlabDomainURLDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabDomainURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "4", "'$GitlabDomainURLDesc'", "null", "null");
 
   /*  Banner Message */
   $Variable = "BannerMsg";
   $BannerMsgPrompt = _('Banner message');
   $BannerMsgDesc = _('This is message will be displayed on every page with a banner.  HTML is ok.');
-  $ValueArray[$Variable] = "'$Variable', null, '$BannerMsgPrompt', "
-  . CONFIG_TYPE_TEXTAREA .
-                    ",'Banner', 1, '$BannerMsgDesc', '', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$BannerMsgPrompt'",
+    strval(CONFIG_TYPE_TEXTAREA), "'Banner'", "1", "'$BannerMsgDesc'", "null", "null");
 
   /*  Logo  */
   $Variable = "LogoImage";
   $LogoImagePrompt = _('Logo Image URL');
   $LogoImageValid = "check_logo_image_url";
   $LogoImageDesc = _('e.g. "http://mycompany.com/images/companylogo.png" or "images/mylogo.png"<br>This image replaces the fossology project logo. Image is constrained to 150px wide.  80-100px high is a good target.  If you change this URL, you MUST also enter a logo URL.');
-  $ValueArray[$Variable] = "'$Variable', null, '$LogoImagePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'Logo', 1, '$LogoImageDesc', '$LogoImageValid', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$LogoImagePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Logo'", "1", "'$LogoImageDesc'", "'$LogoImageValid'", "null");
 
   $Variable = "LogoLink";
   $LogoLinkPrompt = _('Logo URL');
   $LogoLinkDesc = _('e.g. "http://mycompany.com/fossology"<br>URL a person goes to when they click on the logo.  If you change the Logo URL, you MUST also enter a Logo Image.');
   $LogoLinkValid = "check_logo_url";
-  $ValueArray[$Variable] = "'$Variable', null, '$LogoLinkPrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'Logo', 2, '$LogoLinkDesc', '$LogoLinkValid', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$LogoLinkPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Logo'", "2", "'$LogoLinkDesc'", "'$LogoLinkValid'", "null");
 
   $Variable = "FOSSologyURL";
   $URLPrompt = _("FOSSology URL");
@@ -275,146 +274,135 @@ function Populate_sysconfig()
   $FOSSologyURL = $hostname."/repo/";
   $URLDesc = _("URL of this FOSSology server, e.g. $FOSSologyURL");
   $URLValid = "check_fossology_url";
-  $ValueArray[$Variable] = "'$Variable', '$FOSSologyURL', '$URLPrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'URL', 1, '$URLDesc', '$URLValid', null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$FOSSologyURL'", "'$URLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'URL'", "1", "'$URLDesc'", "'$URLValid'", "null");
 
   $Variable = "NomostListNum";
   $NomosNumPrompt = _("Maximum licenses to List");
   $NomostListNum = "2200";
   $NomosNumDesc = _("For License List and License List Download, you can set the maximum number of lines to list/download. Default 2200.");
-  $ValueArray[$Variable] = "'$Variable', '$NomostListNum', '$NomosNumPrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'Number', 4, '$NomosNumDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$NomostListNum'", "'$NomosNumPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Number'", "1", "'$NomosNumDesc'", "null", "null");
+
+  $Variable = "BlockSizeHex";
+  $hexPrompt = _("Chars per page in hex view");
+  $hexDesc = _("Number of characters per page in hex view");
+  $ValueArray[$Variable] = array("'$Variable'", "'8192'", "'$hexPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Number'", "2", "'$hexDesc'", "null", "null");
+
+  $Variable = "BlockSizeText";
+  $textPrompt = _("Chars per page in text view");
+  $textDesc = _("Number of characters per page in text view");
+  $ValueArray[$Variable] = array("'$Variable'", "'81920'", "'$textPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Number'", "3", "'$textDesc'", "null", "null");
 
   $Variable = "ShowJobsAutoRefresh";
   $contextNamePrompt = _("ShowJobs Auto Refresh Time");
   $contextValue = "10";
   $contextDesc = _("No of seconds to refresh ShowJobs");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'Number', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Number'", "4", "'$contextDesc'", "null", "null");
 
   $Variable = "Sw360ServerIpAddress";
   $contextNamePrompt = _("SW360 Server IP");
   $contextValue = "127.0.0.1";
   $contextDesc = _("Current SW360 Server IP Address");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'SW360IpPort', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "1", "'$contextDesc'", "null", "null");
 
   $Variable = "Sw360ServerPortAddress";
   $contextNamePrompt = _("SW360 Server Port");
   $contextValue = "4085";
   $contextDesc = _("Current SW360 Server Port Address");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'SW360IpPort', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "2", "'$contextDesc'", "null", "null");
 
   /* Report Header Text */
   $Variable = "ReportHeaderText";
   $contextNamePrompt = _("Report Header Text");
   $contextValue = "FOSSology";
   $contextDesc = _("Report Header Text at right side corner");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'ReportText', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'ReportText'", "1", "'$contextDesc'", "null", "null");
+
   $Variable = "CommonObligation";
   $contextNamePrompt = _("Common Obligation");
   $contextValue = "";
   $contextDesc = _("Common Obligation Text, add line break at the end of the line");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXTAREA .
-                    ",'ReportText', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "2", "'$contextDesc'", "null", "null");
+
   $Variable = "AdditionalObligation";
   $contextNamePrompt = _("Additional Obligation");
   $contextValue = "";
   $contextDesc = _("Additional Obligation Text, add line break at the end of the line");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXTAREA .
-                    ",'ReportText', null, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "3", "'$contextDesc'", "null", "null");
+
   $Variable = "ObligationAndRisk";
   $contextNamePrompt = _("Obligation And Risk Assessment");
   $contextValue = "";
   $contextDesc = _("Obligations and risk assessment, add line break at the end of the line");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXTAREA .
-                    ",'ReportText', null, '$contextDesc', null, null";
-  $Variable = "BlockSizeHex";
-  $hexPrompt = _("Chars per page in hex view");
-  $hexDesc = _("Number of characters per page in hex view");
-  $ValueArray[$Variable] = "'$Variable', '8192', '$hexPrompt', ". CONFIG_TYPE_TEXT . ",'Number', 5, '$hexDesc', null, null";
-
-  $Variable = "BlockSizeText";
-  $textPrompt = _("Chars per page in text view");
-  $textDesc = _("Number of characters per page in text view");
-  $ValueArray[$Variable] = "'$Variable', '81920', '$textPrompt', " . CONFIG_TYPE_TEXT . ",'Number', 5, '$textDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "4", "'$contextDesc'", "null", "null");
 
   /*  "Upload from server"-configuration  */
   $Variable = "UploadFromServerWhitelist";
   $contextNamePrompt = _("Whitelist for serverupload");
   $contextValue = "/tmp";
   $contextDesc = _("List of allowed prefixes for upload, separated by \":\" (colon)");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'UploadFromServer', 5, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'UploadFromServer'", "1", "'$contextDesc'", "null", "null");
+
   $Variable = "UploadFromServerAllowedHosts";
   $contextNamePrompt = _("List of allowed hosts for serverupload");
   $contextValue = "localhost";
   $contextDesc = _("List of allowed hosts for upload, separated by \":\" (colon)");
-  $ValueArray[$Variable] = "'$Variable', '$contextValue', '$contextNamePrompt', "
-  . CONFIG_TYPE_TEXT .
-                    ",'UploadFromServer', 5, '$contextDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'UploadFromServer'", "2", "'$contextDesc'", "null", "null");
 
   /*  SMTP config */
   $Variable = "SMTPHostName";
   $SMTPHostPrompt = _('SMTP Host Name');
   $SMTPHostDesc = _('e.g.: "smtp.domain.com"<br>The domain to be used to send emails.');
-  $ValueArray[$Variable] = "'$Variable', null, '$SMTPHostPrompt',"
-  . CONFIG_TYPE_TEXT .
-                    ",'SMTP', 1, '$SMTPHostDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPHostPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SMTP'", "1", "'$SMTPHostDesc'", "null", "null");
 
   $Variable = "SMTPPort";
   $SMTPPortPrompt = _('SMTP Port');
   $SMTPPortDesc = _('e.g.: "25"<br>SMTP port to be used.');
-  $ValueArray[$Variable] = "'$Variable', 25, '$SMTPPortPrompt', "
-  . CONFIG_TYPE_INT .
-                    ",'SMTP', 2, '$SMTPPortDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "25", "'$SMTPPortPrompt'",
+    strval(CONFIG_TYPE_INT), "'SMTP'", "2", "'$SMTPPortDesc'", "null", "null");
 
   $Variable = "SMTPAuth";
   $SMTPAuthPrompt = _('SMTP Auth Type');
   $SMTPAuthDesc = _('Algorithm to use for login.<br>Login => Encrypted<br>None => No authentication<br>Plain => Send as plain text');
-  $ValueArray[$Variable] = "'$Variable', 'L', '$SMTPAuthPrompt',"
-  . CONFIG_TYPE_DROP .
-                    ",'SMTP', 3, '$SMTPAuthDesc', null, 'Login{L}|None{N}|Plain{P}'";
+  $ValueArray[$Variable] = array("'$Variable'", "'L'", "'$SMTPAuthPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "3", "'$SMTPAuthDesc'", "null", "'Login{L}|None{N}|Plain{P}'");
 
   $Variable = "SMTPAuthUser";
   $SMTPAuthUserPrompt = _('SMTP User');
   $SMTPAuthUserDesc = _('e.g.: "user@domain.com"<br>Email to be used for login in SMTP and for from address.');
-  $ValueArray[$Variable] = "'$Variable', null, '$SMTPAuthUserPrompt',"
-  . CONFIG_TYPE_TEXT .
-                    ",'SMTP', 4, '$SMTPAuthUserDesc', 'check_email_address', null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPAuthUserPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SMTP'", "4", "'$SMTPAuthUserDesc'", "'check_email_address'", "null");
 
   $Variable = "SMTPAuthPasswd";
   $SMTPAuthPasswdPrompt = _('SMTP Login Password');
   $SMTPAuthPasswdDesc = _('Password used for SMTP login.');
-  $ValueArray[$Variable] = "'$Variable', null, '$SMTPAuthPasswdPrompt',"
-  . CONFIG_TYPE_PASSWORD .
-                    ",'SMTP', 5, '$SMTPAuthPasswdDesc', null, null";
+  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPAuthPasswdPrompt'",
+    strval(CONFIG_TYPE_PASSWORD), "'SMTP'", "5", "'$SMTPAuthPasswdDesc'", "null", "null");
 
   $Variable = "SMTPSslVerify";
   $SMTPSslPrompt = _('SMTP SSL Verify');
   $SMTPSslDesc = _('The SSL verification for connection is required?');
-  $ValueArray[$Variable] = "'$Variable', 'S', '$SMTPSslPrompt',"
-  . CONFIG_TYPE_DROP .
-                    ",'SMTP', 6, '$SMTPSslDesc', null, 'Ignore{I}|Strict{S}|Warn{W}'";
+  $ValueArray[$Variable] = array("'$Variable'", "'S'", "'$SMTPSslPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "6", "'$SMTPSslDesc'", "null", "'Ignore{I}|Strict{S}|Warn{W}'");
 
   $Variable = "SMTPStartTls";
   $SMTPTlsPrompt = _('Start TLS');
   $SMTPTlsDesc = _('Use TLS connection for SMTP?');
-  $ValueArray[$Variable] = "'$Variable', '1', '$SMTPTlsPrompt',"
-  . CONFIG_TYPE_DROP .
-                    ",'SMTP', 7, '$SMTPTlsDesc', null, 'Yes{1}|No{2}'";
+  $ValueArray[$Variable] = array("'$Variable'", "'1'", "'$SMTPTlsPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "7", "'$SMTPTlsDesc'", "null", "'Yes{1}|No{2}'");
 
 
   /* Doing all the rows as a single insert will fail if any row is a dupe.
@@ -429,20 +417,19 @@ function Populate_sysconfig()
     $VarRec = GetSingleRec("sysconfig", "where variablename='$Variable'");
     if (empty($VarRec))
     {
-      $sql = "insert into sysconfig ({$Columns}) values ($Values);";
+      $sql = "insert into sysconfig (" . implode(",", $Columns) . ") values ("
+        . implode(",", $Values) . ");";
       $result = pg_query($PG_CONN, $sql);
       DBCheckResult($result, $sql, __FILE__, __LINE__);
       pg_free_result($result);
     }
     else  // Values exist, update them
     {
-      $cols = array_map('trim', explode(",", $Columns));
-      $vals = array_map('trim', explode(",", $Values));
       $UpdateString = [];
-      foreach ($cols as $index => $Column)
+      foreach ($Columns as $index => $Column)
       {
         if ($index != 0 && $index != 1) // Skip variablename and conf_value
-          $UpdateString[] = $Column . "=" . $vals[$index];
+          $UpdateString[] = $Column . "=" . $Values[$index];
       }
       $sql = "UPDATE sysconfig SET ". implode(",", $UpdateString) ." WHERE variablename='$Variable';";
       $result = pg_query($PG_CONN, $sql);
