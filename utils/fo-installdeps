@@ -175,7 +175,7 @@ if [ $RUNTIME ]; then
             poppler-utils upx-ucl \
             unrar-free unzip p7zip-full p7zip wget \
             subversion git \
-            dpkg-dev
+            dpkg-dev heirloom-mailx
          POSTGRE=`dpkg --get-selections|grep postgresql-8.4`
          if [ -z "$POSTGRE" ]; then  ## if postgresql-server-dev is installed
            case "$CODENAME" in
@@ -258,6 +258,7 @@ if [ $RUNTIME ]; then
             smtpdaemon \
             file libxml2 libmxml1 json-c zip\
             binutils 
+
          echo "NOTE: cabextract, sleuthkit, upx, and unrar are not"
          echo "    available in RHEL please install from upstream sources.";;
       *) echo "ERROR: distro not recognised, please fix and send a patch"; exit 1;;

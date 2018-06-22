@@ -6,12 +6,12 @@
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
  version 2 as published by the Free Software Foundation.
- 
+
  This program is distributed in the hope that it will be useful,
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
- 
+
  You should have received a copy of the GNU General Public License along
  with this program; if not, write to the Free Software Foundation, Inc.,
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -46,7 +46,7 @@ class UnifiedReport extends Agent
   /** @var LicenseMainGetter  */
   private $licenseMainGetter;
   /** @var LicenseClearedGetter  */
-  
+
   /** @var cpClearedGetter */
   private $cpClearedGetter;
 
@@ -82,31 +82,31 @@ class UnifiedReport extends Agent
                               "name" => "Arial",
                               "borderColor" => "000000",
                               "cellSpacing" => 5
-                             );  
+                             );
 
   /** @var subHeadingStyle */
-  private $subHeadingStyle = array("size" => 9, 
+  private $subHeadingStyle = array("size" => 9,
                                    "align" => "center",
                                    "bold" => true
                                   );
 
   /** @var licenseColumn */
-  private $licenseColumn = array("size" => "9", 
+  private $licenseColumn = array("size" => "9",
                                  "bold" => true
                                 );
 
   /** @var licenseTextColumn */
-  private $licenseTextColumn = array("name" => "Courier New", 
-                                     "size" => 9, 
+  private $licenseTextColumn = array("name" => "Courier New",
+                                     "size" => 9,
                                      "bold" => false
                                     );
 
   /** @var filePathColumn */
-  private $filePathColumn = array("size" => "9", 
+  private $filePathColumn = array("size" => "9",
                                   "bold" => false
                                  );
   private $groupBy;
-  
+
   function __construct()
   {
     $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
@@ -221,7 +221,7 @@ class UnifiedReport extends Agent
   function processUploadId($uploadId)
   {
     $groupId = $this->groupId;
-    $userId = $this->userId; 
+    $userId = $this->userId;
 
     $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $licenses = $this->groupStatements($ungrupedStatements, true, "license");
@@ -229,6 +229,7 @@ class UnifiedReport extends Agent
     $licensesMain = $this->licenseMainGetter->getCleared($uploadId, $groupId);
 
     $licensesHist = $this->licenseClearedGetter->getLicenseHistogramForReport($uploadId, $groupId);
+    $this->heartbeat(count($licensesHist["statements"]));
 
     $ungrupedStatements = $this->bulkMatchesGetter->getUnCleared($uploadId, $groupId);
     $bulkLicenses = $this->groupStatements($ungrupedStatements, true);
@@ -236,6 +237,7 @@ class UnifiedReport extends Agent
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
     $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
     $this->heartbeat(count($licenseAcknowledgements["statements"]));
+
     $this->licenseClearedGetter->setOnlyComments(true);
     $licenseComments = $this->licenseClearedGetter->getCleared($uploadId, $groupId);
 
@@ -281,21 +283,21 @@ class UnifiedReport extends Agent
   private function documentSettingsAndStyles(PhpWord &$phpWord, $timestamp, $userName)
   {
 
-    $topHeading = array("size" => 22, 
-                        "bold" => true, 
+    $topHeading = array("size" => 22,
+                        "bold" => true,
                         "underline" => "single"
                        );
 
-    $mainHeading = array("size" => 20, 
-                         "bold" => true, 
+    $mainHeading = array("size" => 20,
+                         "bold" => true,
                          "color" => "000000"
                         );
 
-    $subHeading = array("size" => 16, 
+    $subHeading = array("size" => 16,
                         "italic" => true
                        );
 
-    $subSubHeading = array("size" => 14, 
+    $subSubHeading = array("size" => 14,
                            "bold" => true
                           );
 
@@ -303,7 +305,7 @@ class UnifiedReport extends Agent
                             "spaceBefore" => 0,
                             "spacing" => 0
                            );
-    
+
     $phpWord->addNumberingStyle('hNum',
         array('type' => 'multilevel', 'levels' => array(
             array('pStyle' => 'Heading01', 'format' => 'bullet', 'text' => ''),
@@ -313,7 +315,7 @@ class UnifiedReport extends Agent
             )
         )
     );
-    
+
     /* Adding styles for the document*/
     $phpWord->setDefaultFontName("Arial");
     $phpWord->addTitleStyle(1, $topHeading, array('numStyle' => 'hNum', 'numLevel' => 0));
@@ -334,9 +336,9 @@ class UnifiedReport extends Agent
 
   /**
    * @brief identifiedGlobalLicenses() copy identified global licenses
-   * @param array $contents 
+   * @param array $contents
    * @return array $contents with identified global license path
-   */        
+   */
   function identifiedGlobalLicenses($contents)
   {
     $lenTotalLics = count($contents["licenses"]["statements"]);
@@ -370,19 +372,19 @@ class UnifiedReport extends Agent
 
 
   /**
-   * @param Section $section 
-   * @param array $mainLicenses 
-   */ 
+   * @param Section $section
+   * @param array $mainLicenses
+   */
   private function globalLicenseTable(Section $section, $mainLicenses, $titleSubHeading)
   {
     $firstColLen = 2000;
     $secondColLen = 9500;
     $thirdColLen = 4000;
 
-    $section->addTitle(htmlspecialchars("Main Licenses"), 2); 
+    $section->addTitle(htmlspecialchars("Main Licenses"), 2);
     $section->addText($titleSubHeading, $this->subHeadingStyle);
 
-    $table = $section->addTable($this->tablestyle);    
+    $table = $section->addTable($this->tablestyle);
     if(!empty($mainLicenses)){
       foreach($mainLicenses as $licenseMain){
         if($licenseMain["risk"] == "4" || $licenseMain["risk"] == "5"){
@@ -416,7 +418,7 @@ class UnifiedReport extends Agent
       $table->addCell($secondColLen)->addText("");
       $table->addCell($thirdColLen)->addText("");
     }
-    $section->addTextBreak(); 
+    $section->addTextBreak();
   }
 
   /**
@@ -431,7 +433,7 @@ class UnifiedReport extends Agent
   {
     $firstColLen = 2000;
     $secondColLen = 9500;
-    $thirdColLen = 4000;  
+    $thirdColLen = 4000;
     if(!empty($title)){
       $section->addTitle(htmlspecialchars($title), 2);
     }
@@ -441,7 +443,7 @@ class UnifiedReport extends Agent
     if(!empty($licenses)){
       foreach($licenses as $licenseStatement){
         $table->addRow($this->rowHeight);
-        $cell1 = $table->addCell($firstColLen, null, "pStyle"); 
+        $cell1 = $table->addCell($firstColLen, null, "pStyle");
         $cell1->addText(htmlspecialchars($licenseStatement["content"], ENT_DISALLOWED), $this->licenseColumn, "pStyle");
         $cell2 = $table->addCell($secondColLen, "pStyle");
         // replace new line character
@@ -469,16 +471,16 @@ class UnifiedReport extends Agent
       $table->addCell($secondColLen)->addText("");
       $table->addCell($thirdColLen)->addText("");
     }
-    $section->addTextBreak(); 
+    $section->addTextBreak();
   }
-  
+
   /**
    * @brief This function lists out the red, white & yellow licenses
    * @param Section section
    * @param $title
    * @param $licenses
    * @param $riskarray
-   */ 
+   */
   private function licensesTable(Section $section, $title, $licenses, $riskarray, $titleSubHeading)
   {
     $firstColLen = 2000;
@@ -495,28 +497,28 @@ class UnifiedReport extends Agent
         if(in_array($licenseStatement['risk'], $riskarray['riskLevel'])){
           $emptyFlag = true;
           $table->addRow($this->rowHeight);
-          $cell1 = $table->addCell($firstColLen, $riskarray['color']); 
+          $cell1 = $table->addCell($firstColLen, $riskarray['color']);
           $cell1->addText(htmlspecialchars($licenseStatement["content"], ENT_DISALLOWED), $this->licenseColumn, "pStyle");
-          $cell2 = $table->addCell($secondColLen); 
+          $cell2 = $table->addCell($secondColLen);
           // replace new line character
           $licenseText = str_replace("\n", "<w:br/>", htmlspecialchars($licenseStatement["text"], ENT_DISALLOWED));
           $cell2->addText($licenseText, $this->licenseTextColumn, "pStyle");
           $cell3 = $table->addCell($thirdColLen, $riskarray['color']);
           asort($licenseStatement["files"]);
-          foreach($licenseStatement["files"] as $fileName){ 
+          foreach($licenseStatement["files"] as $fileName){
             $cell3->addText(htmlspecialchars($fileName), $this->filePathColumn, "pStyle");
           }
         }else{ continue; }
       }
     }
 
-    if(empty($emptyFlag)){ 
+    if(empty($emptyFlag)){
       $table->addRow($this->rowHeight);
       $table->addCell($firstColLen)->addText("");
       $table->addCell($secondColLen)->addText("");
       $table->addCell($thirdColLen)->addText("");
     }
-    $section->addTextBreak(); 
+    $section->addTextBreak();
   }
 
   /**
@@ -532,7 +534,7 @@ class UnifiedReport extends Agent
     $secondColLen = 5000;
     $thirdColLen = 4000;
     $textStyle = array("size" => 10, "bold" => true);
-    
+
     $section->addTitle(htmlspecialchars($title), 2);
     if(!empty($text)){
       $section->addText($text, $textStyle);
@@ -562,13 +564,13 @@ class UnifiedReport extends Agent
       $table->addCell($secondColLen)->addText("");
       $table->addCell($thirdColLen)->addText("");
     }
-    $section->addTextBreak(); 
+    $section->addTextBreak();
   }
 
   /**
    * @brief irrelavant files in report.
-   * @param Section $section 
-   * @param String $title 
+   * @param Section $section
+   * @param String $title
    * @param array $licensesIrre
    */
   private function getRowsAndColumnsForIrre(Section $section, $title, $licensesIrre, $titleSubHeading)
@@ -581,7 +583,7 @@ class UnifiedReport extends Agent
     $section->addText($titleSubHeading, $this->subHeadingStyle);
 
     $table = $section->addTable($this->tablestyle);
-    if(!empty($licensesIrre)){    
+    if(!empty($licensesIrre)){
       foreach($licensesIrre as $statements){
         $table->addRow($rowWidth, "pStyle");
         $cell1 = $table->addCell($firstColLen)->addText(htmlspecialchars($statements['content']),null, "pStyle");
@@ -603,8 +605,8 @@ class UnifiedReport extends Agent
 
   /**
    * @brief license histogram into report.
-   * @param Section $section 
-   * @param ItemTreeBounds $parentItem 
+   * @param Section $section
+   * @param ItemTreeBounds $parentItem
    * @param int $groupId
    */
   private function licenseHistogram(Section $section, $dataHistogram, $titleSubHeading)
@@ -647,10 +649,10 @@ class UnifiedReport extends Agent
     $packageName = str_replace(')','_',$packageName);
 
     $parentItem = $this->uploadDao->getParentItemBounds($uploadId);
-    $docLayout = array("orientation" => "landscape", 
-                       "marginLeft" => "950", 
-                       "marginRight" => "950", 
-                       "marginTop" => "950", 
+    $docLayout = array("orientation" => "landscape",
+                       "marginLeft" => "950",
+                       "marginRight" => "950",
+                       "marginTop" => "950",
                        "marginBottom" => "950"
                       );
 
@@ -670,21 +672,21 @@ class UnifiedReport extends Agent
 
     /* Creating document layout */
     $section = $phpWord->addSection($docLayout);
-    
+
     $reportSummarySection = new ReportSummary();
     $reportStaticSection = new ReportStatic($timestamp);
     $licenseObligation = new ObligationsToLicenses();
-    
+
     list($obligations, $whiteLists) = $licenseObligation->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
 
     /* Header starts */
     $reportStaticSection->reportHeader($section);
 
     $contents = $this->identifiedGlobalLicenses($contents);
-    
+
     /* Summery table */
     $reportSummarySection->summaryTable($section, $uploadId, $userName, $contents['licensesMain']['statements'], $contents['licenses']['statements'],$contents['licensesHist']['statements'], $contents['otherStatement'], $timestamp, $groupName, $packageUri);
-    
+
     /* Assessment summery table */
     $reportStaticSection->assessmentSummaryTable($section, $contents['otherStatement']);
 
@@ -703,7 +705,7 @@ class UnifiedReport extends Agent
     $heading = "Export Restrictions";
     $titleSubHeadingCEI = "(Statements, Comments, File path)";
     $section->addBookmark("eccInternalLink");
-    $textEcc ="The content of this paragraph is not the result of the evaluation of the export control experts (the ECCN). It contains information found by the scanner which shall be taken  in consideration by the export control experts during the evaluation process.  If the scanner identifies an ECCN it will be listed here. (note the ECCN is seen as an attribute of the component release and thus it shall be present in the component catalogue.";
+    $textEcc ="The content of this paragraph is not the result of the evaluation of the export control experts (the ECCN). It contains information found by the scanner which shall be taken in consideration by the export control experts during the evaluation process. If the scanner identifies an ECCN it will be listed here. (NOTE: The ECCN is seen as an attribute of the component release and thus it shall be present in the component catalogue.)";
     $this->getRowsAndColumnsForCEI($section, $heading, $contents['ecc']['statements'], $titleSubHeadingCEI, $textEcc);
 
     /* Display IP statements and files */
@@ -738,7 +740,7 @@ class UnifiedReport extends Agent
     $this->licensesTable($section, $heading, $contents['licenses']['statements'], $yellowLicense, $titleSubHeadingLicense);
 
     /* Display licenses(white) name,text and files */
-    $heading = "Other OSS Licenses (white) - only common rules";  
+    $heading = "Other OSS Licenses (white) - only common rules";
     $whiteLicense = array("color" => array("bgColor" => "FFFFFF"), "riskLevel" => array("", "0", "1"));
     $this->licensesTable($section, $heading, $contents['licenses']['statements'], $whiteLicense, $titleSubHeadingLicense);
 
@@ -782,7 +784,7 @@ class UnifiedReport extends Agent
       mkdir($fileBase, 0777, true);
     }
     umask(0022);
-    $fileName = $fileBase. "$packageName"."_clearing_report_".date("D_M_d_m_Y_h_i_s").".docx" ;  
+    $fileName = $fileBase. "$packageName"."_clearing_report_".date("D_M_d_m_Y_h_i_s").".docx" ;
     $objWriter = IOFactory::createWriter($phpWord, "Word2007");
     $objWriter->save($fileName);
 
@@ -793,7 +795,7 @@ class UnifiedReport extends Agent
   /**
    * @brief update database with generated report path.
    * @param $uploadId, $jobId, $filename
-   */ 
+   */
   private function updateReportTable($uploadId, $jobId, $filename)
   {
     $this->dbManager->getSingleRow("INSERT INTO reportgen(upload_fk, job_fk, filepath) VALUES($1,$2,$3)", array($uploadId, $jobId, $filename), __METHOD__);
