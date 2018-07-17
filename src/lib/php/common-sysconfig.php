@@ -220,29 +220,29 @@ function Populate_sysconfig()
     strval(CONFIG_TYPE_TEXT), "'Support'", "3", "'$supportEmailSubjectDesc'", "null", "null");
 
   /* oAuth2 Service */
-  $Variable = "GitlabAppIdOauth";
-  $GitlabAppIdOauthPrompt = _('Gitlab Application Id');
-  $GitlabAppIdOauthDesc = _('e.g. "e0ec21b9f4b21adc76f185962b52bdfc13af134a"<br>Applicationid generated while registering your application.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabAppIdOauthPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "1", "'$GitlabAppIdOauthDesc'", "null", "null");
+  $variable = "GitlabAppIdOauth";
+  $gitlabAppIdOauthPrompt = _('Gitlab Application Id');
+  $gitlabAppIdOauthDesc = _('e.g. "e0ec21b9f4b21adc76f185962b52bdfc13af134a"<br>Applicationid generated while registering your application.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabAppIdOauthPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "1", "'$gitlabAppIdOauthDesc'", "null", "null");
 
-  $Variable = "GitlabSecretOauth";
-  $GitlabSecretOauthPrompt = _('Gitlab Secret');
-  $GitlabSecretOauthDesc = _('e.g. "cf13476f185b9f4b2e0ec962b52211adbdfc13aa"<br>Secret generated while registering your application.');
-  $valueArray[$Variable] = array("'$Variable'", "null", "'$GitlabSecretOauthPrompt'",
-    strval(CONFIG_TYPE_PASSWORD), "'OauthSupport'", "2", "'$GitlabSecretOauthDesc'", "null", "null");
+  $variable = "GitlabSecretOauth";
+  $gitlabSecretOauthPrompt = _('Gitlab Secret');
+  $gitlabSecretOauthDesc = _('e.g. "cf13476f185b9f4b2e0ec962b52211adbdfc13aa"<br>Secret generated while registering your application.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabSecretOauthPrompt'",
+    strval(CONFIG_TYPE_PASSWORD), "'OauthSupport'", "2", "'$gitlabSecretOauthDesc'", "null", "null");
 
-  $Variable = "RedirectOauthURL";
-  $RedirectOauthURLPrompt = _('Redirect URL');
-  $RedirectOauthURLDesc = _('e.g. "http://fossology.application.url.com"<br> "URL of your fossology application."');
-  $valueArray[$Variable] = array("'$Variable'", "null", "'$RedirectOauthURLPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "3", "'$RedirectOauthURLDesc'", "null", "null");
+  $variable = "RedirectOauthURL";
+  $redirectOauthURLPrompt = _('Redirect URL');
+  $redirectOauthURLDesc = _('e.g. "http://fossology.application.url.com"<br> "URL of your fossology application."');
+  $valueArray[$variable] = array("'$variable'", "null", "'$redirectOauthURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "3", "'$redirectOauthURLDesc'", "null", "null");
 
-  $Variable = "GitlabDomainURL";
-  $GitlabDomainURLPrompt = _('Gitlab Domain URL');
-  $GitlabDomainURLDesc = _('e.g. "http://gitlab.myhost.com"<br> "Base URL for self-hosted gitlab application(this feild is optional)."');
-  $valueArray[$Variable] = array("'$Variable'", "null", "'$GitlabDomainURLPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "4", "'$GitlabDomainURLDesc'", "null", "null");
+  $variable = "GitlabDomainURL";
+  $gitlabDomainURLPrompt = _('Gitlab Domain URL');
+  $gitlabDomainURLDesc = _('e.g. "http://gitlab.myhost.com"<br> "Base URL for self-hosted gitlab application(this feild is optional)."');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabDomainURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "4", "'$gitlabDomainURLDesc'", "null", "null");
 
   /*  Banner Message */
   $variable = "BannerMsg";
@@ -302,18 +302,18 @@ function Populate_sysconfig()
   $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'Number'", "4", "'$contextDesc'", "null", "null");
 
-  $Variable = "Sw360ServerIpAddress";
+  $variable = "Sw360ServerIpAddress";
   $contextNamePrompt = _("SW360 Server IP");
   $contextValue = "127.0.0.1";
   $contextDesc = _("Current SW360 Server IP Address");
-  $valueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "1", "'$contextDesc'", "null", "null");
 
-  $Variable = "Sw360ServerPortAddress";
+  $variable = "Sw360ServerPortAddress";
   $contextNamePrompt = _("SW360 Server Port");
   $contextValue = "4085";
   $contextDesc = _("Current SW360 Server Port Address");
-  $valueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "2", "'$contextDesc'", "null", "null");
 
   /* Report Header Text */
