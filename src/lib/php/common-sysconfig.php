@@ -71,21 +71,21 @@ function ConfigInit($sysconfdir, &$SysConf)
   global $PG_CONN;
 
   /*************  Parse VERSION *******************/
-  $VersionFile = "{$sysconfdir}/VERSION";
-  $VersionConf = parse_ini_file($VersionFile, true);
+  $versionFile = "{$sysconfdir}/VERSION";
+  $versionConf = parse_ini_file($versionFile, true);
 
   /* Add this file contents to $SysConf, then destroy $VersionConf
    * This file can define its own groups and is eval'd.
    */
-  foreach($VersionConf as $GroupName=>$GroupArray)
-    foreach($GroupArray as $var=>$assign)
-    {
+  foreach($versionConf as $groupName => $groupArray) {
+    foreach($groupArray as $var => $assign) {
       $toeval = "\$$var = \"$assign\";";
       eval($toeval);
-      $SysConf[$GroupName][$var] = ${$var};
+      $SysConf[$groupName][$var] = ${$var};
       $GLOBALS[$var] = ${$var};
     }
-  unset($VersionConf);
+  }
+  unset($versionConf);
 
   /*************  Parse Db.conf *******************/
   $dbPath = "{$sysconfdir}/Db.conf";
@@ -94,7 +94,7 @@ function ConfigInit($sysconfdir, &$SysConf)
   /* Add this file contents to $SysConf, then destroy $dbConf
    * This file can define its own groups and is eval'd.
    */
-  foreach($dbConf as $var=>$val) $SysConf['DBCONF'][$var] = $val;
+  foreach($dbConf as $var => $val) $SysConf['DBCONF'][$var] = $val;
   unset($dbConf);
 
   /**
@@ -109,19 +109,18 @@ function ConfigInit($sysconfdir, &$SysConf)
 
   /**************** read/create/populate the sysconfig table *********/
   /* create if sysconfig table if it doesn't exist */
-  $NewTable  = Create_sysconfig();
-  $NewColumn = Create_option_value();
+  $newTable  = Create_sysconfig();
+  $newColumn = Create_option_value();
 
   /* populate it with core variables */
   Populate_sysconfig();
 
   /* populate the global $SysConf array with variable/value pairs */
-  $sql = "select variablename, conf_value from sysconfig;";
+  $sql = "SELECT variablename, conf_value FROM sysconfig;";
   $result = pg_query($PG_CONN, $sql);
   DBCheckResult($result, $sql, __FILE__, __LINE__);
 
-  while($row = pg_fetch_assoc($result))
-  {
+  while($row = pg_fetch_assoc($result)) {
     $SysConf['SYSCONFIG'][$row['variablename']] = $row['conf_value'];
   }
   pg_free_result($result);
@@ -141,7 +140,7 @@ function Create_sysconfig()
   global $PG_CONN;
 
   /* If sysconfig exists, then we are done */
-  $sql = "SELECT typlen  FROM pg_type where typname='sysconfig' limit 1;";
+  $sql = "SELECT typlen  FROM pg_type WHERE typname='sysconfig' limit 1;";
   $result = pg_query($PG_CONN, $sql);
   DBCheckResult($result, $sql, __FILE__, __LINE__);
   $numrows = pg_num_rows($result);
@@ -196,242 +195,236 @@ function Populate_sysconfig()
 {
   global $PG_CONN;
 
-  $Columns = array("variablename", "conf_value", "ui_label", "vartype", "group_name",
+  $columns = array("variablename", "conf_value", "ui_label", "vartype", "group_name",
     "group_order", "description", "validation_function", "option_value");
-  $ValueArray = array();
+  $valueArray = array();
 
   /*  Email */
-  $Variable = "SupportEmailLabel";
-  $SupportEmailLabelPrompt = _('Support Email Label');
-  $SupportEmailLabelDesc = _('e.g. "Support"<br>Text that the user clicks on to create a new support email. This new email will be preaddressed to this support email address and subject.  HTML is ok.');
-  $ValueArray[$Variable] = array("'$Variable'", "'Support'", "'$SupportEmailLabelPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'Support'", "1", "'$SupportEmailLabelDesc'", "null", "null");
+  $variable = "SupportEmailLabel";
+  $supportEmailLabelPrompt = _('Support Email Label');
+  $supportEmailLabelDesc = _('e.g. "Support"<br>Text that the user clicks on to create a new support email. This new email will be preaddressed to this support email address and subject.  HTML is ok.');
+  $valueArray[$variable] = array("'$variable'", "'Support'", "'$supportEmailLabelPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "1", "'$supportEmailLabelDesc'", "null", "null");
 
-  $Variable = "SupportEmailAddr";
-  $SupportEmailAddrPrompt = _('Support Email Address');
-  $SupportEmailAddrValid = "check_email_address";
-  $SupportEmailAddrDesc = _('e.g. "support@mycompany.com"<br>Individual or group email address to those providing FOSSology support.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SupportEmailAddrPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'Support'", "2", "'$SupportEmailAddrDesc'", "'$SupportEmailAddrValid'", "null");
+  $variable = "SupportEmailAddr";
+  $supportEmailAddrPrompt = _('Support Email Address');
+  $supportEmailAddrValid = "check_email_address";
+  $supportEmailAddrDesc = _('e.g. "support@mycompany.com"<br>Individual or group email address to those providing FOSSology support.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$supportEmailAddrPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "2", "'$supportEmailAddrDesc'", "'$supportEmailAddrValid'", "null");
 
-  $Variable = "SupportEmailSubject";
-  $SupportEmailSubjectPrompt = _('Support Email Subject line');
-  $SupportEmailSubjectDesc = _('e.g. "fossology support"<br>Subject line to use on support email.');
-  $ValueArray[$Variable] = array("'$Variable'", "'FOSSology Support'", "'$SupportEmailSubjectPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'Support'", "3", "'$SupportEmailSubjectDesc'", "null", "null");
+  $variable = "SupportEmailSubject";
+  $supportEmailSubjectPrompt = _('Support Email Subject line');
+  $supportEmailSubjectDesc = _('e.g. "fossology support"<br>Subject line to use on support email.');
+  $valueArray[$variable] = array("'$variable'", "'FOSSology Support'", "'$supportEmailSubjectPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Support'", "3", "'$supportEmailSubjectDesc'", "null", "null");
 
   /* oAuth2 Service */
-  $Variable = "GitlabAppIdOauth";
-  $GitlabAppIdOauthPrompt = _('Gitlab Application Id');
-  $GitlabAppIdOauthDesc = _('e.g. "e0ec21b9f4b21adc76f185962b52bdfc13af134a"<br>Applicationid generated while registering your application.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabAppIdOauthPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "1", "'$GitlabAppIdOauthDesc'", "null", "null");
+  $variable = "GitlabAppIdOauth";
+  $gitlabAppIdOauthPrompt = _('Gitlab Application Id');
+  $gitlabAppIdOauthDesc = _('e.g. "e0ec21b9f4b21adc76f185962b52bdfc13af134a"<br>Applicationid generated while registering your application.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabAppIdOauthPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "1", "'$gitlabAppIdOauthDesc'", "null", "null");
 
-  $Variable = "GitlabSecretOauth";
-  $GitlabSecretOauthPrompt = _('Gitlab Secret');
-  $GitlabSecretOauthDesc = _('e.g. "cf13476f185b9f4b2e0ec962b52211adbdfc13aa"<br>Secret generated while registering your application.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabSecretOauthPrompt'",
-    strval(CONFIG_TYPE_PASSWORD), "'OauthSupport'", "2", "'$GitlabSecretOauthDesc'", "null", "null");
+  $variable = "GitlabSecretOauth";
+  $gitlabSecretOauthPrompt = _('Gitlab Secret');
+  $gitlabSecretOauthDesc = _('e.g. "cf13476f185b9f4b2e0ec962b52211adbdfc13aa"<br>Secret generated while registering your application.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabSecretOauthPrompt'",
+    strval(CONFIG_TYPE_PASSWORD), "'OauthSupport'", "2", "'$gitlabSecretOauthDesc'", "null", "null");
 
-  $Variable = "RedirectOauthURL";
-  $RedirectOauthURLPrompt = _('Redirect URL');
-  $RedirectOauthURLDesc = _('e.g. "http://fossology.application.url.com"<br> "URL of your fossology application."');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$RedirectOauthURLPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "3", "'$RedirectOauthURLDesc'", "null", "null");
+  $variable = "RedirectOauthURL";
+  $redirectOauthURLPrompt = _('Redirect URL');
+  $redirectOauthURLDesc = _('e.g. "http://fossology.application.url.com"<br> "URL of your fossology application."');
+  $valueArray[$variable] = array("'$variable'", "null", "'$redirectOauthURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "3", "'$redirectOauthURLDesc'", "null", "null");
 
-  $Variable = "GitlabDomainURL";
-  $GitlabDomainURLPrompt = _('Gitlab Domain URL');
-  $GitlabDomainURLDesc = _('e.g. "http://gitlab.myhost.com"<br> "Base URL for self-hosted gitlab application(this feild is optional)."');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$GitlabDomainURLPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "4", "'$GitlabDomainURLDesc'", "null", "null");
+  $variable = "GitlabDomainURL";
+  $gitlabDomainURLPrompt = _('Gitlab Domain URL');
+  $gitlabDomainURLDesc = _('e.g. "http://gitlab.myhost.com"<br> "Base URL for self-hosted gitlab application(this feild is optional)."');
+  $valueArray[$variable] = array("'$variable'", "null", "'$gitlabDomainURLPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'OauthSupport'", "4", "'$gitlabDomainURLDesc'", "null", "null");
 
   /*  Banner Message */
-  $Variable = "BannerMsg";
-  $BannerMsgPrompt = _('Banner message');
-  $BannerMsgDesc = _('This is message will be displayed on every page with a banner.  HTML is ok.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$BannerMsgPrompt'",
-    strval(CONFIG_TYPE_TEXTAREA), "'Banner'", "1", "'$BannerMsgDesc'", "null", "null");
+  $variable = "BannerMsg";
+  $bannerMsgPrompt = _('Banner message');
+  $bannerMsgDesc = _('This is message will be displayed on every page with a banner.  HTML is ok.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$bannerMsgPrompt'",
+    strval(CONFIG_TYPE_TEXTAREA), "'Banner'", "1", "'$bannerMsgDesc'", "null", "null");
 
   /*  Logo  */
-  $Variable = "LogoImage";
-  $LogoImagePrompt = _('Logo Image URL');
-  $LogoImageValid = "check_logo_image_url";
-  $LogoImageDesc = _('e.g. "http://mycompany.com/images/companylogo.png" or "images/mylogo.png"<br>This image replaces the fossology project logo. Image is constrained to 150px wide.  80-100px high is a good target.  If you change this URL, you MUST also enter a logo URL.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$LogoImagePrompt'",
-    strval(CONFIG_TYPE_TEXT), "'Logo'", "1", "'$LogoImageDesc'", "'$LogoImageValid'", "null");
+  $variable = "LogoImage";
+  $logoImagePrompt = _('Logo Image URL');
+  $logoImageValid = "check_logo_image_url";
+  $logoImageDesc = _('e.g. "http://mycompany.com/images/companylogo.png" or "images/mylogo.png"<br>This image replaces the fossology project logo. Image is constrained to 150px wide.  80-100px high is a good target.  If you change this URL, you MUST also enter a logo URL.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$logoImagePrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Logo'", "1", "'$logoImageDesc'", "'$logoImageValid'", "null");
 
-  $Variable = "LogoLink";
-  $LogoLinkPrompt = _('Logo URL');
-  $LogoLinkDesc = _('e.g. "http://mycompany.com/fossology"<br>URL a person goes to when they click on the logo.  If you change the Logo URL, you MUST also enter a Logo Image.');
-  $LogoLinkValid = "check_logo_url";
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$LogoLinkPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'Logo'", "2", "'$LogoLinkDesc'", "'$LogoLinkValid'", "null");
+  $variable = "LogoLink";
+  $logoLinkPrompt = _('Logo URL');
+  $logoLinkDesc = _('e.g. "http://mycompany.com/fossology"<br>URL a person goes to when they click on the logo.  If you change the Logo URL, you MUST also enter a Logo Image.');
+  $logoLinkValid = "check_logo_url";
+  $valueArray[$variable] = array("'$variable'", "null", "'$logoLinkPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'Logo'", "2", "'$logoLinkDesc'", "'$logoLinkValid'", "null");
 
-  $Variable = "FOSSologyURL";
-  $URLPrompt = _("FOSSology URL");
+  $variable = "FOSSologyURL";
+  $urlPrompt = _("FOSSology URL");
   $hostname = exec("hostname -f");
   if (empty($hostname)) $hostname = "localhost";
-  $FOSSologyURL = $hostname."/repo/";
-  $URLDesc = _("URL of this FOSSology server, e.g. $FOSSologyURL");
-  $URLValid = "check_fossology_url";
-  $ValueArray[$Variable] = array("'$Variable'", "'$FOSSologyURL'", "'$URLPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'URL'", "1", "'$URLDesc'", "'$URLValid'", "null");
+  $fossologyURL = $hostname."/repo/";
+  $urlDesc = _("URL of this FOSSology server, e.g. $fossologyURL");
+  $urlValid = "check_fossology_url";
+  $valueArray[$variable] = array("'$variable'", "'$fossologyURL'", "'$urlPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'URL'", "1", "'$urlDesc'", "'$urlValid'", "null");
 
-  $Variable = "NomostListNum";
-  $NomosNumPrompt = _("Maximum licenses to List");
-  $NomostListNum = "2200";
+  $variable = "NomostListNum";
+  $nomosNumPrompt = _("Maximum licenses to List");
+  $nomostListNum = "2200";
   $NomosNumDesc = _("For License List and License List Download, you can set the maximum number of lines to list/download. Default 2200.");
-  $ValueArray[$Variable] = array("'$Variable'", "'$NomostListNum'", "'$NomosNumPrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$nomostListNum'", "'$nomosNumPrompt'",
     strval(CONFIG_TYPE_TEXT), "'Number'", "1", "'$NomosNumDesc'", "null", "null");
 
-  $Variable = "BlockSizeHex";
+  $variable = "BlockSizeHex";
   $hexPrompt = _("Chars per page in hex view");
   $hexDesc = _("Number of characters per page in hex view");
-  $ValueArray[$Variable] = array("'$Variable'", "'8192'", "'$hexPrompt'",
+  $valueArray[$variable] = array("'$variable'", "'8192'", "'$hexPrompt'",
     strval(CONFIG_TYPE_TEXT), "'Number'", "2", "'$hexDesc'", "null", "null");
 
-  $Variable = "BlockSizeText";
+  $variable = "BlockSizeText";
   $textPrompt = _("Chars per page in text view");
   $textDesc = _("Number of characters per page in text view");
-  $ValueArray[$Variable] = array("'$Variable'", "'81920'", "'$textPrompt'",
+  $valueArray[$variable] = array("'$variable'", "'81920'", "'$textPrompt'",
     strval(CONFIG_TYPE_TEXT), "'Number'", "3", "'$textDesc'", "null", "null");
 
-  $Variable = "ShowJobsAutoRefresh";
+  $variable = "ShowJobsAutoRefresh";
   $contextNamePrompt = _("ShowJobs Auto Refresh Time");
   $contextValue = "10";
   $contextDesc = _("No of seconds to refresh ShowJobs");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'Number'", "4", "'$contextDesc'", "null", "null");
 
-  $Variable = "Sw360ServerIpAddress";
+  $variable = "Sw360ServerIpAddress";
   $contextNamePrompt = _("SW360 Server IP");
   $contextValue = "127.0.0.1";
   $contextDesc = _("Current SW360 Server IP Address");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "1", "'$contextDesc'", "null", "null");
 
-  $Variable = "Sw360ServerPortAddress";
+  $variable = "Sw360ServerPortAddress";
   $contextNamePrompt = _("SW360 Server Port");
   $contextValue = "4085";
   $contextDesc = _("Current SW360 Server Port Address");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'SW360IpPort'", "2", "'$contextDesc'", "null", "null");
 
   /* Report Header Text */
-  $Variable = "ReportHeaderText";
+  $variable = "ReportHeaderText";
   $contextNamePrompt = _("Report Header Text");
   $contextValue = "FOSSology";
   $contextDesc = _("Report Header Text at right side corner");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'ReportText'", "1", "'$contextDesc'", "null", "null");
 
-  $Variable = "CommonObligation";
+  $variable = "CommonObligation";
   $contextNamePrompt = _("Common Obligation");
   $contextValue = "";
   $contextDesc = _("Common Obligation Text, add line break at the end of the line");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "2", "'$contextDesc'", "null", "null");
 
-  $Variable = "AdditionalObligation";
+  $variable = "AdditionalObligation";
   $contextNamePrompt = _("Additional Obligation");
   $contextValue = "";
   $contextDesc = _("Additional Obligation Text, add line break at the end of the line");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "3", "'$contextDesc'", "null", "null");
 
-  $Variable = "ObligationAndRisk";
+  $variable = "ObligationAndRisk";
   $contextNamePrompt = _("Obligation And Risk Assessment");
   $contextValue = "";
   $contextDesc = _("Obligations and risk assessment, add line break at the end of the line");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXTAREA), "'ReportText'", "4", "'$contextDesc'", "null", "null");
 
   /*  "Upload from server"-configuration  */
-  $Variable = "UploadFromServerWhitelist";
+  $variable = "UploadFromServerWhitelist";
   $contextNamePrompt = _("Whitelist for serverupload");
   $contextValue = "/tmp";
   $contextDesc = _("List of allowed prefixes for upload, separated by \":\" (colon)");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'UploadFromServer'", "1", "'$contextDesc'", "null", "null");
 
-  $Variable = "UploadFromServerAllowedHosts";
+  $variable = "UploadFromServerAllowedHosts";
   $contextNamePrompt = _("List of allowed hosts for serverupload");
   $contextValue = "localhost";
   $contextDesc = _("List of allowed hosts for upload, separated by \":\" (colon)");
-  $ValueArray[$Variable] = array("'$Variable'", "'$contextValue'", "'$contextNamePrompt'",
+  $valueArray[$variable] = array("'$variable'", "'$contextValue'", "'$contextNamePrompt'",
     strval(CONFIG_TYPE_TEXT), "'UploadFromServer'", "2", "'$contextDesc'", "null", "null");
 
   /*  SMTP config */
-  $Variable = "SMTPHostName";
-  $SMTPHostPrompt = _('SMTP Host Name');
-  $SMTPHostDesc = _('e.g.: "smtp.domain.com"<br>The domain to be used to send emails.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPHostPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'SMTP'", "1", "'$SMTPHostDesc'", "null", "null");
+  $variable = "SMTPHostName";
+  $smtpHostPrompt = _('SMTP Host Name');
+  $smtpHostDesc = _('e.g.: "smtp.domain.com"<br>The domain to be used to send emails.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$smtpHostPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SMTP'", "1", "'$smtpHostDesc'", "null", "null");
 
-  $Variable = "SMTPPort";
-  $SMTPPortPrompt = _('SMTP Port');
-  $SMTPPortDesc = _('e.g.: "25"<br>SMTP port to be used.');
-  $ValueArray[$Variable] = array("'$Variable'", "25", "'$SMTPPortPrompt'",
-    strval(CONFIG_TYPE_INT), "'SMTP'", "2", "'$SMTPPortDesc'", "null", "null");
+  $variable = "SMTPPort";
+  $smtpPortPrompt = _('SMTP Port');
+  $smtpPortDesc = _('e.g.: "25"<br>SMTP port to be used.');
+  $valueArray[$variable] = array("'$variable'", "25", "'$smtpPortPrompt'",
+    strval(CONFIG_TYPE_INT), "'SMTP'", "2", "'$smtpPortDesc'", "null", "null");
 
-  $Variable = "SMTPAuth";
-  $SMTPAuthPrompt = _('SMTP Auth Type');
-  $SMTPAuthDesc = _('Algorithm to use for login.<br>Login => Encrypted<br>None => No authentication<br>Plain => Send as plain text');
-  $ValueArray[$Variable] = array("'$Variable'", "'L'", "'$SMTPAuthPrompt'",
-    strval(CONFIG_TYPE_DROP), "'SMTP'", "3", "'$SMTPAuthDesc'", "null", "'Login{L}|None{N}|Plain{P}'");
+  $variable = "SMTPAuth";
+  $smtpAuthPrompt = _('SMTP Auth Type');
+  $smtpAuthDesc = _('Algorithm to use for login.<br>Login => Encrypted<br>None => No authentication<br>Plain => Send as plain text');
+  $valueArray[$variable] = array("'$variable'", "'L'", "'$smtpAuthPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "3", "'$smtpAuthDesc'", "null", "'Login{L}|None{N}|Plain{P}'");
 
-  $Variable = "SMTPAuthUser";
-  $SMTPAuthUserPrompt = _('SMTP User');
-  $SMTPAuthUserDesc = _('e.g.: "user@domain.com"<br>Email to be used for login in SMTP and for from address.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPAuthUserPrompt'",
-    strval(CONFIG_TYPE_TEXT), "'SMTP'", "4", "'$SMTPAuthUserDesc'", "'check_email_address'", "null");
+  $variable = "SMTPAuthUser";
+  $smtpAuthUserPrompt = _('SMTP User');
+  $smtpAuthUserDesc = _('e.g.: "user@domain.com"<br>Email to be used for login in SMTP and for from address.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$smtpAuthUserPrompt'",
+    strval(CONFIG_TYPE_TEXT), "'SMTP'", "4", "'$smtpAuthUserDesc'", "'check_email_address'", "null");
 
-  $Variable = "SMTPAuthPasswd";
-  $SMTPAuthPasswdPrompt = _('SMTP Login Password');
-  $SMTPAuthPasswdDesc = _('Password used for SMTP login.');
-  $ValueArray[$Variable] = array("'$Variable'", "null", "'$SMTPAuthPasswdPrompt'",
-    strval(CONFIG_TYPE_PASSWORD), "'SMTP'", "5", "'$SMTPAuthPasswdDesc'", "null", "null");
+  $variable = "SMTPAuthPasswd";
+  $smtpAuthPasswdPrompt = _('SMTP Login Password');
+  $smtpAuthPasswdDesc = _('Password used for SMTP login.');
+  $valueArray[$variable] = array("'$variable'", "null", "'$smtpAuthPasswdPrompt'",
+    strval(CONFIG_TYPE_PASSWORD), "'SMTP'", "5", "'$smtpAuthPasswdDesc'", "null", "null");
 
-  $Variable = "SMTPSslVerify";
-  $SMTPSslPrompt = _('SMTP SSL Verify');
-  $SMTPSslDesc = _('The SSL verification for connection is required?');
-  $ValueArray[$Variable] = array("'$Variable'", "'S'", "'$SMTPSslPrompt'",
-    strval(CONFIG_TYPE_DROP), "'SMTP'", "6", "'$SMTPSslDesc'", "null", "'Ignore{I}|Strict{S}|Warn{W}'");
+  $variable = "SMTPSslVerify";
+  $smtpSslPrompt = _('SMTP SSL Verify');
+  $smtpSslDesc = _('The SSL verification for connection is required?');
+  $valueArray[$variable] = array("'$variable'", "'S'", "'$smtpSslPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "6", "'$smtpSslDesc'", "null", "'Ignore{I}|Strict{S}|Warn{W}'");
 
-  $Variable = "SMTPStartTls";
-  $SMTPTlsPrompt = _('Start TLS');
-  $SMTPTlsDesc = _('Use TLS connection for SMTP?');
-  $ValueArray[$Variable] = array("'$Variable'", "'1'", "'$SMTPTlsPrompt'",
-    strval(CONFIG_TYPE_DROP), "'SMTP'", "7", "'$SMTPTlsDesc'", "null", "'Yes{1}|No{2}'");
-
+  $variable = "SMTPStartTls";
+  $smtpTlsPrompt = _('Start TLS');
+  $smtpTlsDesc = _('Use TLS connection for SMTP?');
+  $valueArray[$variable] = array("'$variable'", "'1'", "'$smtpTlsPrompt'",
+    strval(CONFIG_TYPE_DROP), "'SMTP'", "7", "'$smtpTlsDesc'", "null", "'Yes{1}|No{2}'");
 
   /* Doing all the rows as a single insert will fail if any row is a dupe.
    So insert each one individually so that new variables get added.
   */
-  foreach ($ValueArray as $Variable => $Values)
-  {
+  foreach ($valueArray as $variable => $values) {
     /* Check if the variable already exists.  Insert it if it does not.
      * This is better than an insert ignoring duplicates, because that
     * generates a postresql log message.
     */
-    $VarRec = GetSingleRec("sysconfig", "where variablename='$Variable'");
-    if (empty($VarRec))
-    {
-      $sql = "insert into sysconfig (" . implode(",", $Columns) . ") values ("
-        . implode(",", $Values) . ");";
+    $VarRec = GetSingleRec("sysconfig", "WHERE variablename='$variable'");
+    if (empty($VarRec)) {
+      $sql = "INSERT INTO sysconfig (" . implode(",", $columns) . ") VALUES ("
+        . implode(",", $values) . ");";
       $result = pg_query($PG_CONN, $sql);
       DBCheckResult($result, $sql, __FILE__, __LINE__);
       pg_free_result($result);
-    }
-    else  // Values exist, update them
-    {
-      $UpdateString = [];
-      foreach ($Columns as $index => $Column)
-      {
+    } else { // Values exist, update them
+      $updateString = [];
+      foreach ($columns as $index => $column) {
         if ($index != 0 && $index != 1) // Skip variablename and conf_value
-          $UpdateString[] = $Column . "=" . $Values[$index];
+          $updateString[] = $column . "=" . $values[$index];
       }
-      $sql = "UPDATE sysconfig SET ". implode(",", $UpdateString) ." WHERE variablename='$Variable';";
+      $sql = "UPDATE sysconfig SET ". implode(",", $updateString) ." WHERE variablename='$variable';";
       $result = pg_query($PG_CONN, $sql);
       DBCheckResult($result, $sql, __FILE__, __LINE__);
       pg_free_result($result);
@@ -487,12 +480,9 @@ function Create_option_value()
  */
 function check_boolean($value)
 {
-  if (!strcmp($value, 'true') || !strcmp($value, 'false'))
-  {
+  if (!strcmp($value, 'true') || !strcmp($value, 'false')) {
     return 1;
-  }
-  else
-  {
+  } else {
     return 0;
   }
 }
@@ -509,24 +499,20 @@ function check_fossology_url($url)
 {
   $url_array = explode("/", $url, 2);
   $name = $url_array[0];
-  if (!empty($name))
-  {
+  if (!empty($name)) {
     $hostname = exec("hostname -f");
     if (empty($hostname)) $hostname = "localhost";
-    if(check_IP($name))
-    {
+    if(check_IP($name)) {
       $hostname1 = gethostbyaddr($name);
       if (strcmp($hostname, $hostname1) == 0)  return 0;  // host is not reachable
     }
     $server_name = $_SERVER['SERVER_NAME'];
 
     /* intput $name must match either the hostname or the server name */
-    if (strcmp($name, $hostname) && strcmp($name, $server_name))
-    {
+    if (strcmp($name, $hostname) && strcmp($name, $server_name)) {
       return 0;
     }
-  }
-  else return 0;
+  } else return 0;
   return 1;
 }
 
@@ -544,8 +530,7 @@ function check_logo_url($url)
 
   //$res = check_url($url);
   $res = is_available($url);
-  if (1 == $res)
-  {
+  if (1 == $res) {
     return 1;
   }
   else return 0;
@@ -565,10 +550,9 @@ function check_logo_image_url($url)
 
   if (empty($url)) return 1; /* logo url can be null, with the default */
 
-  $LogoLink = @$SysConf["LogoLink"];
-  $new_url = $LogoLink.$url;
-  if (is_available($url) || is_available($new_url))
-  {
+  $logoLink = @$SysConf["LogoLink"];
+  $new_url = $logoLink.$url;
+  if (is_available($url) || is_available($new_url)) {
     return 1;
   }
   else return 0;
@@ -602,18 +586,19 @@ function is_available($url, $timeout = 2, $tries = 2)
 {
   global $SysConf;
 
-  $ProxyStmts = "";
-  if (array_key_exists('http_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['http_proxy']) $ProxyStmts .= "export http_proxy={$SysConf['FOSSOLOGY']['http_proxy']};";
-  if (array_key_exists('https_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['https_proxy']) $ProxyStmts .= "export https_proxy={$SysConf['FOSSOLOGY']['https_proxy']};";
-  if (array_key_exists('ftp_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['ftp_proxy']) $ProxyStmts .= "export ftp_proxy={$SysConf['FOSSOLOGY']['ftp_proxy']};";
+  $proxyStmts = "";
+  if (array_key_exists('http_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['http_proxy'])
+    $proxyStmts .= "export http_proxy={$SysConf['FOSSOLOGY']['http_proxy']};";
+  if (array_key_exists('https_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['https_proxy'])
+    $proxyStmts .= "export https_proxy={$SysConf['FOSSOLOGY']['https_proxy']};";
+  if (array_key_exists('ftp_proxy', $SysConf['FOSSOLOGY']) && $SysConf['FOSSOLOGY']['ftp_proxy'])
+    $proxyStmts .= "export ftp_proxy={$SysConf['FOSSOLOGY']['ftp_proxy']};";
 
-  $commands = "$ProxyStmts wget --spider '$url' --tries=$tries --timeout=$timeout";
+  $commands = "$proxyStmts wget --spider '$url' --tries=$tries --timeout=$timeout";
   system($commands, $return_var);
-  if (0 == $return_var)
-  {
+  if (0 == $return_var) {
     return 1;
-  }
-  else return 0;
+  } else return 0;
 }
 
 /**
@@ -623,8 +608,7 @@ function is_available($url, $timeout = 2, $tries = 2)
  */
 function check_url($url)
 {
-  if (empty($url) || preg_match("@^((http)|(https)|(ftp))://([[:alnum:]]+)@i", $url) != 1 || preg_match("@[[:space:]]@", $url) != 0)
-  {
+  if (empty($url) || preg_match("@^((http)|(https)|(ftp))://([[:alnum:]]+)@i", $url) != 1 || preg_match("@[[:space:]]@", $url) != 0) {
     return 0;
   }
   else return 1;
@@ -638,5 +622,5 @@ function check_url($url)
 function check_IP($ip)
 {
   $e="([0-9]|1[0-9]{2}|[1-9][0-9]|2[0-4][0-9]|25[0-5])";
-  return preg_match("/^$e\.$e\.$e\.$e$/",$ip);
+  return preg_match("/^$e\.$e\.$e\.$e$/", $ip);
 }
