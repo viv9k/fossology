@@ -266,8 +266,6 @@ pipeline {
           steps {
             // Fetch latest tags
             sh 'git fetch --tags'
-            // Get image from local registry
-            sh 'sed -i -e "s/FROM debian/FROM localhost:5000\\/debian/I" Dockerfile'
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
             sh 'docker build --pull -t ${CONTAINER_RELEASE_IMAGE} .'
             sh 'docker push ${CONTAINER_RELEASE_IMAGE}'
@@ -283,8 +281,6 @@ pipeline {
           steps {
             // Fetch latest tags
             sh 'git fetch --tags'
-            // Get image from local registry
-            sh 'sed -i -e "s/FROM debian/FROM localhost:5000\\/debian/I" Dockerfile'
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
             sh 'docker build --pull -t ${CONTAINER_TAG_IMAGE} .'
             sh 'docker push ${CONTAINER_TAG_IMAGE}'
