@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2017, Siemens AG
+ * Copyright (C) 2017-2018, Siemens AG
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -264,10 +264,11 @@ class CliXml extends Agent
     $this->heartbeat(count($copyrights["statements"]));
 
     $this->licenseClearedGetter->setOnlyAcknowledgements(true);
-    $licenseAcknowledgements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
-    $countAcknowledgement = count($licenseAcknowledgements);
-    $this->heartbeat($countAcknowledgement);
-    $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements);
+    $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+    $licenseAcknowledgements = $this->groupStatements($ungrupedStatements, true, "license");
+    $this->heartbeat(count($licenseAcknowledgements["statements"]));
+    $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements["statements"]);
+
     $componentHash = $this->uploadDao->getUploadHashes($uploadId);
     $contents = array("licensesMain" => $licensesMain["statements"],
                       "licenses" => $licensesWithAcknowledgement,
@@ -290,17 +291,18 @@ class CliXml extends Agent
 
   protected function addAcknowledgementsToLicenses($licenses, $acknowledgements)
   {
-    if(!empty($acknowledgements)){
-      for($i=0; $i<=count($acknowledgements); $i++){
-        for($j=0; $j<=count($licenses); $j++){
-          if(!empty($acknowledgements[$i]['text']) && strcmp($acknowledgements[$i]['text'], $licenses[$j]['text']) == 0){
-            if(!array_key_exists('acknowledgement', $licenses[$j])){
-              $licenses[$j]['acknowledgement'] = $acknowledgements[$i]['ack'];
-            }
-            else {
-              $licenses[$j]['acknowledgement'] = $licenses[$j]['acknowledgement'].", ".$acknowledgements[$i]['ack'];
-            }
-          }
+    if(empty($acknowledgements)) {
+      return $licenses;
+    }
+
+    for($i = 0; $i <= count($acknowledgements); $i++) {
+      for($j = 0; $j <= count($licenses); $j++) {
+        $allHash = $acknowledgements[$i]['hash'];
+        $randHash =  $allHash[array_rand($allHash, 1)];
+        if(!empty($acknowledgements[$i]['content']) &&
+          strcmp($acknowledgements[$i]['content'], $licenses[$j]['content']) == 0 &&
+          in_array($randHash, $licenses[$j]['hash'])) {
+          $licenses[$j]['acknowledgement'] = $acknowledgements[$i]['text'];
         }
       }
     }
