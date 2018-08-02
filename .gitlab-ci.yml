@@ -127,37 +127,38 @@ package:
     -   scp -i key fossologyng-master-current.tar.gz fossy@$PACKAGE_SERVER_NAME:$PACKAGE_SERVER_PATH
     - fi
   artifacts:
-    expire_in: 1 day
+    expire_in: 2 weeks
     paths:
       - packages
-      
-deploy-dev:
+
+deploy-test:
   tags:
     - VLAN
   allow_failure: true
   stage : deploy
-  script: 
-    - echo "Running deploy-dev"
-    # download files (artifacts are not transferred between stages
-    - wget https://linux.siemens.de/pub/tools/FOSSologyNG/fossologyng-master-current.tar.gz
-    # adding host key to list of known hosts 
+  environment:
+    name: BLR-test
+    url: "http://${TEST_SERVER_NAME}/repo"
+  when: manual
+  dependencies:
+    - package
+  before_script:
+    - echo "Running deploy-test"
+  script:
+    # adding host key to list of known hosts
     - mkdir -p ~/.ssh
-    - ssh-keyscan -H $DEVDEPLOY_SERVER_NAME > ~/.ssh/known_hosts
+    - ssh-keyscan -H ${TEST_SERVER_NAME} > ~/.ssh/known_hosts
     # super important: adding key to ssh agent, othewiese the private key file is not considered
-    - echo $DEVDEPLOY_SERVER_KEY > key
+    - echo ${DEVDEPLOY_SERVER_KEY} > key
     - chmod 600 key
     - eval $(ssh-agent -s)
-    - ssh-add  <(echo "$DEVDEPLOY_SERVER_KEY")
+    - ssh-add  <(echo "${DEVDEPLOY_SERVER_KEY}")
     - ssh-add -L
     # copying the artifacts
-    - scp -i key fossologyng-master-current.tar.gz ubuntu@$DEVDEPLOY_SERVER_NAME:/home/ubuntu
+    - sudo apt-get -qq update && sudo apt-get install -y -qq rsync
+    - rsync -hrtz -v -e "ssh" --include '*.deb' --exclude '*' ./packages/ ${TEST_SERVER_USER}@${TEST_SERVER_NAME}:${TEST_SERVER_FPATH}/
     # logging in and artifacts install
-    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "tar -x --overwrite -z -f fossologyng-master-current.tar.gz"
-    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "rm -f packages/fossology-ninka*"
-    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo dpkg -i packages/*.deb"
-    - ssh -i key ubuntu@$DEVDEPLOY_SERVER_NAME "sudo apt-get -f install -y"
-  only:
-    - ng-master
-
-
+    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "rm -f ${TEST_SERVER_FPATH}/fossology-ninka*"
+    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo dpkg -i ${TEST_SERVER_FPATH}/*.deb"
+    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo apt-get -f install -y"
 
