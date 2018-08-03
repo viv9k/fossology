@@ -128,7 +128,6 @@ abstract class ClearedGetterCommon
       $comments = convertToUTF8($statement['comments'], false);
       $fileName = $statement['fileName'];
       $fileHash = $statement['fileHash'];
-      $acknowledgement = $statement['ack'];
 
       if (!array_key_exists('text', $statement))
       {
@@ -164,7 +163,6 @@ abstract class ClearedGetterCommon
         $singleStatement = array(
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
-            "acknowledgement" => convertToUTF8($acknowledgement, false),
             "files" => array($fileName),
             "hash" => array($fileHash)
           );
