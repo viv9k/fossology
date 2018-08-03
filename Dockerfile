@@ -8,24 +8,24 @@
 # without any warranty.
 #
 # Description: Docker container image recipe
-# Using Siemens CCP V5, based on Debian 8
+# Using Siemens CCP V6, based on Debian 8
 
-FROM docker.siemens.com/ccp/vm:v5
+FROM docker.siemens.com/ccp/vm:v6 as builder
 
 LABEL maintainer="Fossology <Fossology.Support.oss@internal.siemens.com>"
 
 WORKDIR fossologyng
 
-RUN sudo chown $(whoami):$(whoami) -R .
-
 # Remove proxy (if any)
 RUN echo "Acquire::http::Proxy \"false\";" | sudo tee -a /etc/apt/apt.conf.d/95proxy
+RUN echo "check_certificate=off" | sudo tee -a /etc/wgetrc
+RUN echo "--insecure" | tee -a ~/.curlrc
 
 RUN DEBIAN_FRONTEND=noninteractive sudo apt-get update \
  && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
       git \
       lsb-release \
-      php5-cli \
+      php-cli \
       sudo \
  && sudo rm -rf /var/lib/apt/lists/*
 
@@ -38,37 +38,40 @@ COPY ./src/scheduler/mod_deps ./src/scheduler/
 COPY ./src/ununpack/mod_deps ./src/ununpack/
 COPY ./src/wget_agent/mod_deps ./src/wget_agent/
 
-RUN mkdir -p ~/fossologyng/dependencies-for-runtime \
- && cp -R ~/fossologyng/src ~/fossologyng/utils ~/fossologyng/dependencies-for-runtime/
+RUN sudo mkdir -p ~/fossologyng/dependencies-for-runtime \
+ && sudo cp -R ~/fossologyng/src ~/fossologyng/utils ~/fossologyng/dependencies-for-runtime/
 
 RUN DEBIAN_FRONTEND=noninteractive sudo apt-get update \
- && DEBIAN_FRONTEND=noninteractive sudo ~/fossologyng/utils/fo-installdeps --build -y \
+ && DEBIAN_FRONTEND=noninteractive sudo ~/fossologyng/utils/fo-installdeps --build --offline -y \
  && sudo rm -rf /var/lib/apt/lists/* 
 
 COPY . .
 
-RUN echo "check_certificate=off" | sudo tee -a /etc/wgetrc
-RUN echo "--insecure" | tee -a ~/.curlrc
+RUN sudo chown $(whoami):$(whoami) -R .
 
 # Install composer dependencies
-RUN cd src && \
-    wget https://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar && \
-    tar xvf php-vendor.tar && rm -rf php-vendor.tar && cd ..
+RUN cd src \
+ && wget https://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar \
+ && tar xvf php-vendor.tar && rm -rf php-vendor.tar && cd ..
 
 RUN ~/fossologyng/install/scripts/install-spdx-tools.sh
 RUN ~/fossologyng/install/scripts/install-ninka.sh
 
-RUN sudo make install_offline clean
+RUN sudo make clean install_offline \
+ && sudo make clean
 
+# Since we are doing install_offline, vendor has to be copied manually
+RUN sudo cp -r ~/fossologyng/src/vendor /usr/local/share/fossology/ \
+ && sudo cp ~/fossologyng/Word2007.php /usr/local/share/fossology/vendor/phpoffice/phpword/src/PhpWord/Writer/
 
-FROM docker.siemens.com/ccp/vm:v5
+FROM docker.siemens.com/ccp/vm:v6
 
 LABEL maintainer="Fossology <Fossology.Support.oss@internal.siemens.com>"
 
 WORKDIR fossologyng
 
 ### install dependencies
-COPY --from=builder ~/fossologyng/dependencies-for-runtime ~/fossologyng
+COPY --from=builder /home/one/fossologyng/dependencies-for-runtime /home/one/fossologyng
 
 RUN DEBIAN_FRONTEND=noninteractive sudo apt-get update \
  && DEBIAN_FRONTEND=noninteractive sudo apt-get install -y --no-install-recommends \
@@ -93,9 +96,11 @@ RUN sudo a2enconf fossology.conf \
 
 EXPOSE 80
 
-COPY ./docker-entrypoint.sh ~/fossology/docker-entrypoint.sh
-RUN chmod +x ~/fossologyng/docker-entrypoint.sh
-ENTRYPOINT ["~/fossologyng/docker-entrypoint.sh"]
+COPY ./docker-entrypoint.sh /home/one/fossologyng/docker-entrypoint.sh
+
+RUN sudo chown $(whoami):$(whoami) -R .
+RUN chmod +x /home/one/fossologyng/docker-entrypoint.sh
+ENTRYPOINT ["/home/one/fossologyng/docker-entrypoint.sh"]
 
 COPY --from=builder /etc/cron.d/fossology /etc/cron.d/fossology
 COPY --from=builder /etc/init.d/fossology /etc/init.d/fossology
