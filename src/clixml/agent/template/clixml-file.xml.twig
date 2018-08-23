@@ -9,7 +9,7 @@
 {% else %}
 {% set acknow = ' includesAcknowledgements="TRUE" ' %}
 {% endif %}
-<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('d.m.Y')}}" baseDoc="" toolUsed="FOSSologyNG" componentID=""{{acknow}}  componentSHA1="{{componentHash}}">
+<ComponentLicenseInformation component="{{ documentName }}" creator="{{ userName }}" date="{{ 'now'|date('Y-m-d')}}" baseDoc="" toolUsed="FOSSologyNG" componentID=""{{acknow}}  componentSHA1="{{componentHash}}" Version="{{version}}">
 {% for licensesMain in contents %}
 {% if licensesMain %}
 {% for ids in licensesMain %}
@@ -53,6 +53,30 @@
 <Acknowledgements><![CDATA[{{ids.acknowledgement|e}}]]></Acknowledgements>
 {% endif %}
 </License>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{% for obligations in contents %}
+{% if obligations %}
+{% for ido in obligations %}
+{% if ido.topic %}
+<Obligation>
+<topic><![CDATA[{{ido.topic}}
+]]></topic>
+<text><![CDATA[{{ido.obliText}}
+]]></text>
+<licenses>
+{% for id in ido.license %}
+{% if id %}
+<license>
+<![CDATA[{{id}}]]>
+</license>
+{% endif %}
+{% endfor %}
+</licenses>
+</Obligation>
 {% endif %}
 {% endfor %}
 {% endif %}

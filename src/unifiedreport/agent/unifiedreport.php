@@ -27,6 +27,7 @@ use Fossology\Lib\Report\LicenseIrrelevantGetter;
 use Fossology\Lib\Report\BulkMatchesGetter;
 use Fossology\Lib\Report\XpClearedGetter;
 use Fossology\Lib\Report\LicenseMainGetter;
+use Fossology\Lib\Report\ObligationsGetter;
 use Fossology\Lib\Report\OtherGetter;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\Element\Section;
@@ -36,7 +37,6 @@ use PhpOffice\PhpWord\Shared\Html;
 include_once(__DIR__ . "/version.php");
 include_once(__DIR__ . "/reportStatic.php");
 include_once(__DIR__ . "/reportSummary.php");
-include_once(__DIR__ . "/obligations.php");
 
 class UnifiedReport extends Agent
 {
@@ -64,6 +64,9 @@ class UnifiedReport extends Agent
 
   /** @var licenseIrrelevantCommentGetter  */
   private $licenseIrrelevantCommentGetter;
+
+  /** @var obligationsGetter  */
+  private $obligationsGetter;
 
   /** @var otherGetter  */
   private $otherGetter;
@@ -118,6 +121,7 @@ class UnifiedReport extends Agent
     $this->licenseIrrelevantGetter = new LicenseIrrelevantGetter();
     $this->licenseIrrelevantCommentGetter = new LicenseIrrelevantGetter(false);
     $this->otherGetter = new OtherGetter();
+    $this->obligationsGetter = new ObligationsGetter();
 
     parent::__construct(REPORT_AGENT_NAME, AGENT_VERSION, AGENT_REV);
 
@@ -666,9 +670,8 @@ class UnifiedReport extends Agent
 
     $reportSummarySection = new ReportSummary();
     $reportStaticSection = new ReportStatic($timestamp);
-    $licenseObligation = new ObligationsToLicenses();
 
-    list($obligations, $whiteLists) = $licenseObligation->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
+    list($obligations, $whiteLists) = $this->obligationsGetter->getObligations($contents['licenses']['statements'], $contents['licensesMain']['statements'], $uploadId, $groupId);
 
     /* Header starts */
     $reportStaticSection->reportHeader($section);
