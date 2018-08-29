@@ -60,7 +60,7 @@ class WeirdCharClearedGetter extends ClearedGetterCommon
   }
 }
 
-class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
+class ClearedComonReportTest extends \PHPUnit\Framework\TestCase
 {
   /** @var UploadDao|MockInterface */
   private $uploadDao;
@@ -69,8 +69,8 @@ class ClearedCommonReportTest extends \PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
-    $this->uploadDao = M::mock(UploadDao::classname());
-    $this->treeDao = M::mock(TreeDao::classname());
+    $this->uploadDao = M::mock(UploadDao::class);
+    $this->treeDao = M::mock(TreeDao::class);
 
     $container = M::mock('ContainerBuilder');
     $GLOBALS['container'] = $container;

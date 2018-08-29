@@ -35,7 +35,6 @@ OBJECTS_IP = copyrightUtils_ip.o copyrightState_ip.o database_ip.o
 OBJECTS_ECC = copyrightUtils_ecc.o copyrightState_ecc.o database_ecc.o
 OBJECTS_KW = copyrightUtils_kw.o copyrightState_kw.o database_kw.o
 
-
 HEADERS = $(OBJECTS:%.o=%.hpp) $(OBJECTS_COP:%_cop.o=%.hpp)
 
 COVERAGE = $(OBJECTS:.o=_cov.o)
@@ -89,6 +88,7 @@ $(OBJECTS_IP): %_ip.o: %.cc $(HEADERS)
 
 $(OBJECTS_ECC): %_ecc.o: %.cc $(HEADERS)
 	$(CXX) -c $(CXXFLAGS_LOCAL) $(DEF_ID_ECC) $(DEF) -o $@ $<
+
 $(OBJECTS_KW): %_kw.o: %.cc %.hpp
 	$(CXX) -c $(CXXFLAGS_LOCAL) $(DEF_ID_KW) $(DEF) -o $@ $<
 

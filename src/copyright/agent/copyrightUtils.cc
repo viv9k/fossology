@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, Siemens AG
+ * Copyright (C) 2014-2018, Siemens AG
  * Author: Daniele Fognini, Johannes Najjar
  *
  * This program is free software; you can redistribute it and/or modify
@@ -304,7 +304,7 @@ bool processUploadId(const CopyrightState& state, int uploadId, CopyrightDatabas
 
 #pragma omp parallel num_threads(THREADS)
   {
-    CopyrightDatabaseHandler threadLocalDatabaseHandler(std::move(databaseHandler.spawn()));
+    CopyrightDatabaseHandler threadLocalDatabaseHandler(databaseHandler.spawn());
 
     size_t pFileCount = fileIds.size();
 #pragma omp for
