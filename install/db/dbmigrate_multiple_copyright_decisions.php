@@ -26,16 +26,12 @@ function addBooleanColumnTo($dbManager, $tableName, $columnName = 'is_enabled')
 {
   if($dbManager->existsTable($tableName))
   {
-    echo "Migrate: Add and setup column=$columnName to table=$tableName\n";
-    if (! $dbManager->existsColumn($tableName, $columnName))
-    {
-      $dbManager->queryOnce("ALTER TABLE $tableName
-                               ADD COLUMN $columnName BOOLEAN;");
-    }
-  
+    $dbManager->queryOnce("ALTER TABLE $tableName
+                             ADD COLUMN $columnName BOOLEAN;");
+
     $dbManager->queryOnce("UPDATE $tableName
-                             SET $columnName = copyright_decision_pk IN
-                               (SELECT MAX(copyright_decision_pk) AS enabled_pk
+                           SET $columnName = " . $tableName . "_pk IN
+                             (SELECT MAX(" . $tableName . "_pk) AS enabled_pk
                                 FROM $tableName
                                 GROUP BY pfile_fk);");
     $dbManager->queryOnce("ALTER TABLE $tableName

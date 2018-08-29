@@ -22,10 +22,9 @@ namespace Fossology\Lib\Dao;
 use Fossology\Lib\Data\Highlight;
 use Fossology\Lib\Data\Tree\ItemTreeBounds;
 use Fossology\Lib\Db\DbManager;
-use Fossology\Lib\Util\Object;
 use Monolog\Logger;
 
-class CopyrightDao extends Object
+class CopyrightDao
 {
   /** @var DbManager */
   private $dbManager;
@@ -38,9 +37,9 @@ class CopyrightDao extends Object
   {
     $this->dbManager = $dbManager;
     $this->uploadDao = $uploadDao;
-    $this->logger = new Logger(self::className());
+    $this->logger = new Logger(self::class);
   }
-  
+
   /**
    * @param int $uploadTreeId
    * @param string $tableName
@@ -119,7 +118,8 @@ class CopyrightDao extends Object
         'description'=>$description, 'textfinding'=>$textFinding, 'comment'=>$comment );
     if ($decision_pk <= 0)
     {
-      return $this->dbManager->insertTableRow($tableName, $assocParams, __METHOD__.'Insert.'.$tableName, 'copyright_decision_pk');
+      $primaryColumn = $tableName . '_pk';
+      return $this->dbManager->insertTableRow($tableName, $assocParams, __METHOD__.'Insert.'.$tableName, $primaryColumn);
     }
     else
     {
@@ -402,7 +402,7 @@ class CopyrightDao extends Object
       $sql .= " AND ut.upload_fk=$".count($params);
       $stmt .= '.upload';
     }
-    
+
     $this->dbManager->prepare($stmt, "$sql");
     $resource = $this->dbManager->execute($stmt, $params);
     $this->dbManager->freeResult($resource);
