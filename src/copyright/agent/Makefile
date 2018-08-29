@@ -88,8 +88,6 @@ $(OBJECTS_IP): %_ip.o: %.cc $(HEADERS)
 
 $(OBJECTS_ECC): %_ecc.o: %.cc $(HEADERS)
 	$(CXX) -c $(CXXFLAGS_LOCAL) $(DEF_ID_ECC) $(DEF) -o $@ $<
-$(OBJECTS_KW): %_kw.o: %.cc %.hpp
-	$(CXX) -c $(CXXFLAGS_LOCAL) $(DEF_ID_KW) $(DEF) -o $@ $<
 
 $(OBJECTS_KW): %_kw.o: %.cc %.hpp
 	$(CXX) -c $(CXXFLAGS_LOCAL) $(DEF_ID_KW) $(DEF) -o $@ $<
