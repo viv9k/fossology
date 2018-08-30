@@ -26,8 +26,11 @@ function addBooleanColumnTo($dbManager, $tableName, $columnName = 'is_enabled')
 {
   if($dbManager->existsTable($tableName))
   {
-    $dbManager->queryOnce("ALTER TABLE $tableName
-                             ADD COLUMN $columnName BOOLEAN;");
+    if (! $dbManager->existsColumn($tableName, $columnName))
+    {
+      $dbManager->queryOnce("ALTER TABLE $tableName
+                               ADD COLUMN $columnName BOOLEAN;");
+    }
 
     $dbManager->queryOnce("UPDATE $tableName
                            SET $columnName = " . $tableName . "_pk IN
