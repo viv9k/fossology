@@ -100,6 +100,8 @@ pipeline {
                 label 'trustyImage'
               }
               steps {
+                // Fetch latest tags
+                sh 'git fetch --tags'
                 sh '''
                    sudo apt-get update -qq
                    sudo apt-get upgrade -qq -y
@@ -140,6 +142,8 @@ pipeline {
                 label 'xenialImage'
               }
               steps {
+                // Fetch latest tags
+                sh 'git fetch --tags'
                 sh '''
                    sudo apt-get update -qq
                    sudo apt-get upgrade -qq -y
@@ -175,6 +179,8 @@ pipeline {
                 label 'jessieImage'
               }
               steps {
+                // Fetch latest tags
+                sh 'git fetch --tags'
                 sh '''
                    sudo apt-get update -qq
                    sudo apt-get upgrade -qq -y
@@ -215,6 +221,8 @@ pipeline {
                 label 'master'
               }
               steps {
+                // Fetch latest tags
+                sh 'git fetch --tags'
                 sh '''
                    sudo apt-get update -qq
                    sudo apt-get install -qq -y lsb-release sudo php-curl libpq-dev libdbd-sqlite3-perl libspreadsheet-writeexcel-perl debhelper
@@ -256,6 +264,8 @@ pipeline {
             CONTAINER_RELEASE_IMAGE = "${DOCKER_REGISTRY}/fossology/fossologyng:latest"
           }
           steps {
+            // Fetch latest tags
+            sh 'git fetch --tags'
             // Get image from local registry
             sh 'sed -i -e "s/FROM debian/FROM localhost:5000\\/debian/I" Dockerfile'
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
@@ -271,6 +281,8 @@ pipeline {
             CONTAINER_TAG_IMAGE = "${DOCKER_REGISTRY}/fossology/fossologyng:${TAG_NAME}"
           }
           steps {
+            // Fetch latest tags
+            sh 'git fetch --tags'
             // Get image from local registry
             sh 'sed -i -e "s/FROM debian/FROM localhost:5000\\/debian/I" Dockerfile'
             sh 'docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW} ${DOCKER_REGISTRY}'
