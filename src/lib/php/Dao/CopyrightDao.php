@@ -109,7 +109,7 @@ class CopyrightDao
    * @param $textFinding
    * @param $comment
    * @param int $decision_pk
-   * @return int copyright_decision_pk of decision
+   * @return int decision_pk of decision
    */
   public function saveDecision($tableName, $pfileId, $userId , $clearingType,
                                $description, $textFinding, $comment, $decision_pk=-1)
@@ -124,27 +124,30 @@ class CopyrightDao
     else
     {
       $assocParams['is_enabled'] = True;
-      $this->dbManager->updateTableRow($tableName, $assocParams, "copyright_decision_pk", $decision_pk, __METHOD__.'Update.'.$tableName);
+      $primaryColumn = $tableName . '_pk';
+      $this->dbManager->updateTableRow($tableName, $assocParams, $primaryColumn, $decision_pk, __METHOD__.'Update.'.$tableName);
       return $decision_pk;
     }
   }
 
   public function removeDecision($tableName,$pfileId, $decisionId)
   {
+    $primaryColumn = $tableName . '_pk';
     $this->dbManager->prepare(__METHOD__,
       "UPDATE $tableName
         SET is_enabled = 'f'
-      WHERE copyright_decision_pk = $1
+      WHERE $primaryColumn = $1
         AND pfile_fk = $2");
     $this->dbManager->execute(__METHOD__, array($decisionId, $pfileId));
   }
 
   public function undoDecision($tableName,$pfileId, $decisionId)
   {
+    $primaryColumn = $tableName . '_pk';
     $this->dbManager->prepare(__METHOD__,
       "UPDATE $tableName
         SET is_enabled = 't'
-      WHERE copyright_decision_pk = $1
+      WHERE $primaryColumn = $1
         AND pfile_fk = $2");
     $this->dbManager->execute(__METHOD__, array($decisionId, $pfileId));
   }
@@ -317,6 +320,7 @@ class CopyrightDao
       $whereClause .= "AND ". $extrawhere;
       $statementName .= "._".$extrawhere."_";
     }
+    $decisionTableKey = $tableNameDecision . "_pk";
 
     $latestInfo = "SELECT DISTINCT ON(CD.pfile_fk, UT.uploadtree_pk, C.content, CD.textfinding)
              CD.description as description, CD.textfinding as textfinding,
@@ -332,7 +336,7 @@ class CopyrightDao
               AND C.content!=''
               AND C.is_enabled='true'
               $whereClause
-            ORDER BY CD.pfile_fk, UT.uploadtree_pk, C.content, CD.textfinding, CD.copyright_decision_pk DESC";
+            ORDER BY CD.pfile_fk, UT.uploadtree_pk, C.content, CD.textfinding, CD.$decisionTableKey DESC";
 
     if ($clearingTypeClause !== null)
     {
