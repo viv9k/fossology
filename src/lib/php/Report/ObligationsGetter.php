@@ -16,11 +16,13 @@
  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+namespace Fossology\Lib\Report;
+
 use Fossology\Lib\Dao\LicenseDao;
 use Fossology\Lib\Dao\ClearingDao;
 use Fossology\Lib\Dao\UploadDao;
 
-class ObligationsToLicenses
+class ObligationsGetter
 {
   /** @var licenseDao */
   private $licenseDao;
@@ -46,7 +48,10 @@ class ObligationsToLicenses
   **/
   function getObligations($licenseStatements, $mainLicenseStatements, $uploadId, $groupId)
   {
-    $licenseIds = $this->contentOnly($licenseStatements) ?: array();
+    $licenseIds = array();
+    if(!empty($licenseStatements)){
+      $licenseIds = $this->contentOnly($licenseStatements);
+    }
     $mainLicenseIds = $this->contentOnly($mainLicenseStatements);
 
     if(!empty($mainLicenseIds)){
@@ -55,7 +60,6 @@ class ObligationsToLicenses
     else{
       $allLicenseIds = array_unique($licenseIds);
     }
-
     $bulkAddIds = $this->getBulkAddLicenseList($uploadId, $groupId);
     $obligations = $this->licenseDao->getLicenseObligations($allLicenseIds) ?: array();
     $onlyLicenseIdsWithObligation = array_column($obligations, 'rf_fk');

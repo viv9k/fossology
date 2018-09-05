@@ -24,6 +24,7 @@ use Fossology\Lib\Db\DbManager;
 use Fossology\Lib\Report\XpClearedGetter;
 use Fossology\Lib\Report\LicenseMainGetter;
 use Fossology\Lib\Report\LicenseClearedGetter;
+use Fossology\Lib\Report\ObligationsGetter;
 
 
 include_once(__DIR__ . "/version.php");
@@ -64,6 +65,7 @@ class CliXml extends Agent
     $this->cpClearedGetter = new XpClearedGetter("copyright", "statement");
     $this->licenseClearedGetter = new LicenseClearedGetter();
     $this->licenseMainGetter = new LicenseMainGetter();
+    $this->obligationsGetter = new ObligationsGetter();
 
     $this->agentSpecifLongOptions[] = self::UPLOAD_ADDS.':';
     $this->agentSpecifLongOptions[] = self::OUTPUT_FORMAT_KEY.':';
@@ -146,6 +148,7 @@ class CliXml extends Agent
     $countLoop = 0;
     $thousandLoop = 0;
     foreach($ungrupedStatements as $statement) {
+      $licenseId = $statement['licenseId'];
       $content = convertToUTF8($statement['content'], false);
       $content = htmlspecialchars($content, ENT_DISALLOWED);
       $comments = convertToUTF8($statement['comments'], false);
@@ -188,6 +191,7 @@ class CliXml extends Agent
         }
       } else {
         $singleStatement = array(
+	    "licenseId" => $licenseId,
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName),
@@ -207,6 +211,7 @@ class CliXml extends Agent
       }
       if(!empty($statement['textfinding']) && $agentCall == "copyright"){
         $findings[] = array(
+	    "licenseId" => $licenseId,
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName),
@@ -268,10 +273,12 @@ class CliXml extends Agent
     $licenseAcknowledgements = $this->groupStatements($ungrupedStatements, true, "license");
     $this->heartbeat(count($licenseAcknowledgements["statements"]));
     $licensesWithAcknowledgement = $this->addAcknowledgementsToLicenses($licenses["statements"], $licenseAcknowledgements["statements"]);
-
+    list($obligations, $whiteLists) = $this->obligationsGetter->getObligations($licenses['statements'], $licensesMain['statements'], $uploadId, $groupId);
+    $obligations = array_values($obligations);
     $componentHash = $this->uploadDao->getUploadHashes($uploadId);
     $contents = array("licensesMain" => $licensesMain["statements"],
                       "licenses" => $licensesWithAcknowledgement,
+		      "obligations" => $obligations,
                       "copyrights" => $copyrights["statements"],
                       "countAcknowledgement" => $countAcknowledgement
                      );
@@ -279,6 +286,7 @@ class CliXml extends Agent
     $contents = $this->reArrangeContent($contents);        
     $message = $this->renderString($this->getTemplateFile('file'),array(
         'documentName'=>$this->packageName,
+	'version'=>"1.0",
         'uri'=>$this->uri,
         'userName'=>$this->container->get('dao.user')->getUserName($this->userId),
         'organisation'=>'',
@@ -378,6 +386,11 @@ class CliXml extends Agent
     $contents = $this->riskMapping($contents);
     $contents = $this->riskMapping($contents,$licenseG=true );
 
+    $lenObligations=count($contents["obligations"]);    
+    for($i=0; $i<$lenObligations; $i++){
+      $contents["obligations"][$i]["obliText"] = $contents["obligations"][$i]["text"];
+        unset($contents["obligations"][$i]["text"]);
+    }
     $lenCopyrights=count($contents["copyrights"]);    
     for($i=0; $i<$lenCopyrights; $i++){
       $contents["copyrights"][$i]["contentCopy"] = $contents["copyrights"][$i]["content"];
