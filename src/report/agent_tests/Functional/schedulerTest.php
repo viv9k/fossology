@@ -92,7 +92,7 @@ class SchedulerTest extends \PHPUnit_Framework_TestCase
   copy_endbyte integer)");
     
     $this->dbManager->queryOnce("CREATE TABLE ip_decision(
-  copyright_decision_pk bigint NOT NULL DEFAULT 56789,
+  ip_decision_pk bigint NOT NULL DEFAULT 56789,
   user_fk bigint NOT NULL,
   pfile_fk bigint NOT NULL,
   clearing_decision_type_fk bigint NOT NULL,
