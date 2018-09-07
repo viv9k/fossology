@@ -330,13 +330,13 @@ class CliXml extends Agent
 
     for($i = 0; $i < $lenTotalLics; $i++){
       if($mapRisk[$i]["risk"] == "0" || $mapRisk[$i]["risk"] == "1" || $mapRisk[$i]["risk"] == null){
-        $mapRisk[$i]["risk"] = 'other';  
+        $mapRisk[$i]["risk"] = 'otherwhite';  
       }
       else if($mapRisk[$i]["risk"] == "2" || $mapRisk[$i]["risk"] == "3"){
         $mapRisk[$i]["risk"] = 'otheryellow';  
       }
       else if($mapRisk[$i]["risk"] == "4" || $mapRisk[$i]["risk"] == "5"){
-        $mapRisk[$i]["risk"] = "red";  
+        $mapRisk[$i]["risk"] = "otherred";
       }
     }
     return $contents; 
