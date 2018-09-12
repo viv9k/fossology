@@ -230,12 +230,14 @@ class CopyrightDao
     }
     $columns = "CD.description as description, CD.textfinding as textfinding, CD.comment as comments, UT.uploadtree_pk as uploadtree_pk";
 
+    $primaryColumn = $tableName . '_pk';
     $sql = "SELECT $columns
               FROM $tableName CD
              INNER JOIN $uploadTreeTableName UT ON CD.pfile_fk = UT.pfile_fk
              WHERE CD.is_enabled = 'true'
-               $whereClause
-             ORDER BY CD.pfile_fk, UT.uploadtree_pk, CD.textfinding DESC";
+               AND UT.upload_fk = $1
+               AND clearing_decision_type_fk = $2
+             ORDER BY CD.pfile_fk, UT.uploadtree_pk, CD.textfinding, CD.$primaryColumn DESC";
     $this->dbManager->prepare($statementName, $sql);
     $sqlResult = $this->dbManager->execute($statementName, $params);
     $result = $this->dbManager->fetchAll($sqlResult);
