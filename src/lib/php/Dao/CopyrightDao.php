@@ -235,8 +235,7 @@ class CopyrightDao
               FROM $tableName CD
              INNER JOIN $uploadTreeTableName UT ON CD.pfile_fk = UT.pfile_fk
              WHERE CD.is_enabled = 'true'
-               AND UT.upload_fk = $1
-               AND clearing_decision_type_fk = $2
+               $whereClause
              ORDER BY CD.pfile_fk, UT.uploadtree_pk, CD.textfinding, CD.$primaryColumn DESC";
     $this->dbManager->prepare($statementName, $sql);
     $sqlResult = $this->dbManager->execute($statementName, $params);
