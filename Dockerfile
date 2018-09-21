@@ -9,7 +9,7 @@
 #
 # Description: Docker container image recipe
 
-FROM debian:jessie
+FROM debian:jessie as builder
 
 LABEL maintainer="Fossology <Fossology.Support.oss@internal.siemens.com>"
 
@@ -24,7 +24,11 @@ deb http://linux.siemens.de/pub/debian jessie-updates main\n\
 deb http://linux.siemens.de/pub/debian-security jessie/updates main\n" > /etc/apt/sources.list
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends lsb-release sudo \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      git \
+      lsb-release \
+      php5-cli \
+      sudo \
  && rm -rf /var/lib/apt/lists/*
 
 COPY ./utils/fo-installdeps ./utils/fo-installdeps
@@ -35,14 +39,13 @@ COPY ./src/pkgagent/mod_deps ./src/pkgagent/
 COPY ./src/scheduler/mod_deps ./src/scheduler/
 COPY ./src/ununpack/mod_deps ./src/ununpack/
 COPY ./src/wget_agent/mod_deps ./src/wget_agent/
-COPY ./install/scripts/php-conf-fix.sh ./install/scripts/php-conf-fix.sh
-COPY ./utils/install_composer.sh ./utils/install_composer.sh
+
+RUN mkdir -p /fossology/dependencies-for-runtime \
+ && cp -R /fossology/src /fossology/utils /fossology/dependencies-for-runtime/
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
- && DEBIAN_FRONTEND=noninteractive /fossologyng/utils/fo-installdeps --everything -y \
- && rm -rf /var/lib/apt/lists/* \
- && /fossologyng/install/scripts/php-conf-fix.sh --overwrite \
- && /fossologyng/utils/install_composer.sh
+ && DEBIAN_FRONTEND=noninteractive /fossologyng/utils/fo-installdeps --build -y \
+ && rm -rf /var/lib/apt/lists/* 
 
 COPY . .
 
@@ -51,23 +54,54 @@ RUN cd src && \
     wget https://linux.siemens.de/pub/tools/FOSSologyNG/php-vendor.tar && \
     tar xvf php-vendor.tar && rm -rf php-vendor.tar && cd ..
 
+RUN /fossologyng/utils/install_composer.sh
+
 RUN /fossologyng/install/scripts/install-spdx-tools.sh
 
 RUN /fossologyng/install/scripts/install-ninka.sh
 
-RUN make install && make clean
+RUN make install clean
 
-# the database is filled in the entrypoint
-RUN /usr/local/lib/fossology/fo-postinstall --agent --common --scheduler-only --web-only --no-running-database
+
+FROM debian:jessie
+
+LABEL maintainer="Fossology <fossology@fossology.org>"
+
+### install dependencies
+COPY --from=builder /fossologyng/dependencies-for-runtime /fossologyng
+
+WORKDIR /fossologyng
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      curl \
+      lsb-release \
+      sudo \
+ && DEBIAN_FRONTEND=noninteractive /fossologyng/utils/fo-installdeps --offline --runtime -y \
+ && DEBIAN_FRONTEND=noninteractive apt-get purge -y lsb-release \
+ && DEBIAN_FRONTEND=noninteractive apt-get autoremove -y \
+ && rm -rf /var/lib/apt/lists/*
+
+# configure php
+COPY ./install/scripts/php-conf-fix.sh ./install/scripts/php-conf-fix.sh
+RUN /fossologyng/install/scripts/php-conf-fix.sh --overwrite
 
 # configure apache
-RUN cp /fossologyng/install/src-install-apache-example.conf /etc/apache2/conf-available/fossology.conf \
- && ln -s /etc/apache2/conf-available/fossology.conf /etc/apache2/conf-enabled/fossology.conf \
+COPY ./install/src-install-apache-example.conf /etc/apache2/conf-available/fossology.conf
+RUN a2enconf fossology.conf \
  && mkdir -p /var/log/apache2/ \
  && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
  && ln -sf /proc/self/fd/1 /var/log/apache2/error.log
 
 EXPOSE 80
 
+COPY ./docker-entrypoint.sh /fossology/docker-entrypoint.sh
 RUN chmod +x /fossologyng/docker-entrypoint.sh
 ENTRYPOINT ["/fossologyng/docker-entrypoint.sh"]
+
+COPY --from=builder /etc/cron.d/fossology /etc/cron.d/fossology
+COPY --from=builder /etc/init.d/fossology /etc/init.d/fossology
+COPY --from=builder /usr/local/ /usr/local/
+
+# the database is filled in the entrypoint
+RUN /usr/local/lib/fossology/fo-postinstall --agent --common --scheduler-only --web-only --no-running-database

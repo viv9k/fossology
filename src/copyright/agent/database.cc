@@ -113,8 +113,9 @@ bool CopyrightDatabaseHandler::createTables() const
 
 const CopyrightDatabaseHandler::ColumnDef CopyrightDatabaseHandler::columns[] =
   {
-#define SEQUENCE_NAME IDENTITY"_ct_pk_seq"
-    {"ct_pk", "bigint", "PRIMARY KEY DEFAULT nextval('" SEQUENCE_NAME "'::regclass)"},
+#define SEQUENCE_NAME IDENTITY"_pk_seq"
+#define COLUMN_NAME_PK IDENTITY"_pk"
+    { COLUMN_NAME_PK, "bigint", "PRIMARY KEY DEFAULT nextval('" SEQUENCE_NAME "'::regclass)"},
     {"agent_fk", "bigint", "NOT NULL"},
     {"pfile_fk", "bigint", "NOT NULL"},
     {"content", "text", ""},
@@ -264,32 +265,28 @@ std::vector<unsigned long> CopyrightDatabaseHandler::queryFileIdsForUpload(int a
 {
   std::string uploadTreeTableName = queryUploadTreeTableName(uploadId);
 
-  QueryResult queryResult = dbManager.queryPrintf(
-      "SELECT pfile_pk"
+  fo_dbManager_PreparedStatement* preparedStatement =
+      fo_dbManager_PrepareStamement(dbManager.getStruct_dbManager(),
+          ("queryFileIdsForUpload:" IDENTITY "Agent" + uploadTreeTableName).c_str(),
+          ("SELECT pfile_pk"
             " FROM ("
             "  SELECT distinct(pfile_fk) AS PF"
-            "  FROM %s"
-            "  WHERE upload_fk = %d and (ufile_mode&x'3C000000'::int)=0"
+            "  FROM " + uploadTreeTableName +
+            "  WHERE upload_fk = $1 and (ufile_mode&x'3C000000'::int)=0"
             " ) AS SS "
-            "LEFT OUTER JOIN %s on (PF = pfile_fk AND agent_fk = %d) "
+          "LEFT OUTER JOIN " IDENTITY " ON (PF = pfile_fk AND agent_fk = $2) "
 #ifdef IDENTITY_COPYRIGHT
-            "LEFT OUTER JOIN author AS au ON (PF = au.pfile_fk AND au.agent_fk = %d) "
+          "LEFT OUTER JOIN author AS au ON (PF = au.pfile_fk AND au.agent_fk = $2) "
 #endif
-            "INNER JOIN pfile on (PF = pfile_pk) "
+          "INNER JOIN pfile ON (PF = pfile_pk) "
 #ifdef IDENTITY_COPYRIGHT
-            "WHERE copyright.ct_pk IS NULL AND au.ct_pk IS NULL",
+          "WHERE copyright.copyright_pk IS NULL AND au.author_pk IS NULL;").c_str(),
 #else
-            "WHERE ct_pk IS NULL OR agent_fk <> %d",
+          "WHERE " IDENTITY "_pk IS NULL OR agent_fk <> $2;").c_str(),
 #endif
-    uploadTreeTableName.c_str(),
-    uploadId,
-    IDENTITY,
-    agentId
-#ifdef IDENTITY_COPYRIGHT
-    , agentId, agentId
-#endif
-    , agentId
-  );
+          int, int);
+  QueryResult queryResult = dbManager.execPrepared(preparedStatement,
+      uploadId, agentId);
 
   return queryResult.getSimpleResults<unsigned long>(0, fo::stringToUnsignedLong);
 }
