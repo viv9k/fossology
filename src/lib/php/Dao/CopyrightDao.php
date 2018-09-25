@@ -164,25 +164,25 @@ class CopyrightDao
   {
     $statementName = __METHOD__.$tableName.$uploadTreeTableName;
     $params = array();
-    $whereClause = null;
+    $extendWClause = null;
 
     if ($uploadTreeTableName === "uploadtree_a")
     {
       $params[]= $uploadId;
-      $whereClause .= " AND UT.upload_fk = $".count($params);
+      $extendWClause .= " AND UT.upload_fk = $".count($params);
       $statementName .= ".withUI";
     }
 
     if($type !== null && $type != "skipcontent")
     {
       $params[]= $type;
-      $whereClause .= " AND C.type = $".count($params);
+      $extendWClause .= " AND C.type = $".count($params);
       $statementName .= ".withType";
     }
 
     if ($extrawhere !== null)
     {
-      $whereClause .= "AND ". $extrawhere;
+      $extendWClause .= " AND ". $extrawhere;
       $statementName .= "._".$extrawhere."_";
     }
 
@@ -192,7 +192,7 @@ class CopyrightDao
              WHERE C.content IS NOT NULL
                AND C.content!=''
                AND C.is_enabled='true'
-               $whereClause
+               $extendWClause
              ORDER BY UT.uploadtree_pk, C.content DESC";
     $this->dbManager->prepare($statementName, $sql);
     $sqlResult = $this->dbManager->execute($statementName, $params);
@@ -213,19 +213,19 @@ class CopyrightDao
   {
     $statementName = __METHOD__.$tableName.$uploadTreeTableName;
     $params = array();
-    $whereClause = null;
+    $extendWClause = null;
 
     if ($uploadTreeTableName === "uploadtree_a")
     {
       $params[]= $uploadId;
-      $whereClause .= " AND UT.upload_fk = $".count($params);
+      $extendWClause .= " AND UT.upload_fk = $".count($params);
       $statementName .= ".withUI";
     }
 
     if(!empty($decisionType))
     {
       $params[]= $decisionType;
-      $whereClause .= " AND clearing_decision_type_fk = $".count($params);
+      $extendWClause .= " AND clearing_decision_type_fk = $".count($params);
       $statementName .= ".withDecisionType";
     }
     $columns = "CD.description as description, CD.textfinding as textfinding, CD.comment as comments, UT.uploadtree_pk as uploadtree_pk";
@@ -235,7 +235,7 @@ class CopyrightDao
               FROM $tableName CD
              INNER JOIN $uploadTreeTableName UT ON CD.pfile_fk = UT.pfile_fk
              WHERE CD.is_enabled = 'true'
-               $whereClause
+              $extendWClause
              ORDER BY CD.pfile_fk, UT.uploadtree_pk, CD.textfinding, CD.$primaryColumn DESC";
     $this->dbManager->prepare($statementName, $sql);
     $sqlResult = $this->dbManager->execute($statementName, $params);

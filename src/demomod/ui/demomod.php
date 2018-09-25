@@ -27,13 +27,17 @@ use Fossology\Lib\Dao\UploadDao;
 
 define("TITLE_ui_demomod", _("Demomod View"));
 
+/**
+ * @class ui_demomod
+ * @brief browse an upload and display the demomod data (first bytes of the file)
+ */
 class ui_demomod extends FO_Plugin
 {
-  var $Name       = "demomod";
-  var $Title      = TITLE_ui_demomod;
-  var $Dependency = array("browse");
-  var $DBaccess   = PLUGIN_DB_READ;
-  var $uploadtree_tablename;
+  var $Name       = "demomod";        ///< Mod name
+  var $Title      = TITLE_ui_demomod; ///< Page title
+  var $Dependency = array("browse");  ///< Dependecy for plugin
+  var $DBaccess   = PLUGIN_DB_READ;   ///< DB access required
+  var $uploadtree_tablename;          ///< Upload tree table to use
 
   /**
    * \brief  Only used during installation.
@@ -72,6 +76,7 @@ class ui_demomod extends FO_Plugin
 
   /**
    * \brief This is called before the plugin is used.
+   *
    * It should assume that Install() was already run one time
    * (possibly years ago and not during this object's creation).
    *
@@ -90,7 +95,7 @@ class ui_demomod extends FO_Plugin
 
   /**
    * \brief Display the demomod data
-   * 
+   *
    * \param $upload_pk
    * \param $uploadtree_pk
    */
@@ -131,7 +136,7 @@ class ui_demomod extends FO_Plugin
     $text = _("The first bytes of this file are: ");
     return ($text . $firstbytes);
   }
-  
+
 
   /**
    * \brief This function returns the scheduler status.

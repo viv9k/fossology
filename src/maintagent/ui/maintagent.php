@@ -22,7 +22,7 @@ use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\Db\DbManager;
 
 /**
- * \class maintagent extend from FO_Plugin
+ * \class maintagent
  * \brief Queue the maintenance agent with the requested parameters
  */
 class maintagent extends FO_Plugin {
@@ -42,13 +42,11 @@ class maintagent extends FO_Plugin {
 
     parent::__construct();
   }
-  
+
   /**
-   * \brief queue the job
-   *
-   * \param
-   * \returns status string
-   **/
+   * \brief Queue the job
+   * \returns string Status string
+   */
   function QueueJob()
   {
     global $SysConf;
@@ -82,9 +80,8 @@ class maintagent extends FO_Plugin {
 
   /**
    * \brief Display the input form
-   * \param
-   * \returns HTML in string
-   **/
+   * \returns string HTML in string
+   */
   function DisplayForm()
   {
     /* Array of maintagent options and description */
@@ -137,6 +134,10 @@ class maintagent extends FO_Plugin {
   }
 
 
+  /**
+   * @copydoc FO_Plugin::Output()
+   * @see FO_Plugin::Output()
+   */
   public function Output()
   {
     $V = "";
