@@ -494,9 +494,9 @@ ORDER BY lft asc
 
     $noLicenseFoundStmt = empty($filterLicenses) ? "" : " AND rf_shortname NOT IN ("
         . implode(", ", array_map(function ($name)
-                {
-                  return "'" . $name . "'";
-                }, $filterLicenses)) . ")";
+        {
+          return "'" . $name . "'";
+        }, $filterLicenses)) . ")";
 
     $statementName = __METHOD__ . '.' . $uploadTreeTableName;
 

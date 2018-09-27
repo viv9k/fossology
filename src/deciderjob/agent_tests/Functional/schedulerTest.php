@@ -184,7 +184,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   }
 
   /**
-   * @test
    * -# Insert few clearing events
    * -# Run DeciderJobAgent
    * -# Check for decisions (should exist)
@@ -245,7 +244,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   }
 
   /**
-   * @test
    * -# Create findings with nomos
    * -# Run DeciderJobAgent
    * -# Check for decisions (should not be empty)
@@ -282,7 +280,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   }
 
   /**
-   * @test
    * -# Insert two clearing events
    * -# Run DeciderJobAgent
    */
@@ -374,7 +371,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   }
 
   /**
-   * @test
    * -# Insert two clearing events
    * -# Run DeciderJobAgent with force rule
    * -# Check for decisions (should exist)

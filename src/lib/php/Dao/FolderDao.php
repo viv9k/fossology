@@ -273,9 +273,7 @@ WHERE fc.parent_fk = $1 AND fc.foldercontents_mode = " .self::MODE_UPLOAD. " AND
   public function isWithoutReusableFolders($folderStructure) {
     foreach($folderStructure as $folder)
     {
-      $posibilities = array_reduce($folder[self::REUSE_KEY],
-                                 function($sum,$groupInfo){ return $sum+$groupInfo['count'];},
-                                 0);
+      $posibilities = array_reduce($folder[self::REUSE_KEY], function($sum,$groupInfo){ return $sum+$groupInfo['count'];},0);
       if($posibilities > 0) {
         return false;
       }

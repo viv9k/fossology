@@ -250,7 +250,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   /**
    * @brief Test on an upload with no clearing decisions
    * @param SchedulerTestRunner $runner
-   * @test
    * -# Setup an upload with no clearing decisions
    * -# Run reuser on the empty upload
    * -# Check that no clearing decisions added by reuser
@@ -326,7 +325,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   /**
    * @brief Run reuser agent with no upload to copy decisions from
    * @param SchedulerTestRunner $runner
-   * @test
    * -# Run reuser on the empty upload
    * -# Check that no clearing decisions added by reuser
    */
@@ -372,7 +370,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
    * @brief Check reuser with local clearing decisions (file level)
    * @param SchedulerTestRunner $runner
    * @param int $heartBeat
-   * @test
    * -# Create an upload with clearing decisions on files
    * -# Run reuser on the upload new upload
    * -# Check if clearing decisions are added
@@ -445,7 +442,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   /**
    * @brief Run reuser on upload with clearing
    * @param SchedulerTestRunner $runner
-   * @test
    * -# Create an upload with license clearing done
    * -# Run reuser
    * -# Check if new upload has clearings
@@ -529,7 +525,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   /**
    * @brief Run reuser with enhanced flag on upload with clearing
    * @param SchedulerTestRunner $runner
-   * @test
    * -# Create an upload with license clearing done
    * -# Create an upload with files with small difference
    * -# Run reuser
@@ -596,6 +591,7 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
     /** @var ClearingEvent $newEvent */
     foreach($newEvents as $newEvent)
     {
+      assertThat($newEvent->getEventId(), anyOf($addedEventIds));
       assertThat($newEvent->getClearingLicense(), anyOf($clearingLicenses));
     }
     /*reuse main license*/

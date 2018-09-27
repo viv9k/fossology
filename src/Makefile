@@ -21,11 +21,11 @@ DIRS = \
 	maintagent \
 	mimetype \
 	monk \
-#	ninka \
+	ninka \
 	nomos \
 	pkgagent \
 	readmeoss \
-#	report \
+	report \
 	reportgen \
 	unifiedreport \
 	reuser \

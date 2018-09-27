@@ -115,7 +115,7 @@ class CopyrightScheduledTest extends \PHPUnit\Framework\TestCase
     $agentDir = dirname(dirname(__DIR__));
     $execDir = "$agentDir/agent";
     system("install -D $agentDir/VERSION-copyright $sysConf/mods-enabled/$agentName/VERSION");
-    system("install -D $agentDir/agent/copyright.conf  $sysConf/mods-enabled/$agentName/agent/copyright.conf");
+    system("install -D $agentDir/agent/copyright.conf  /usr/local/share/fossology/mods-enabled/$agentName/agent/copyright.conf");
     $pCmd = "echo $uploadId | $execDir/$agentName -c $sysConf --scheduler_start";
     $pipeFd = popen($pCmd, "r");
     $this->assertTrue($pipeFd !== false, 'running copyright failed');
@@ -127,8 +127,8 @@ class CopyrightScheduledTest extends \PHPUnit\Framework\TestCase
     $retCode = pclose($pipeFd);
 
     unlink("$sysConf/mods-enabled/$agentName/VERSION");
-    unlink("$sysConf/mods-enabled/$agentName/agent/copyright.conf");
-    rmdir("$sysConf/mods-enabled/$agentName/agent/");
+    unlink("/usr/local/share/fossology/mods-enabled/$agentName/agent/copyright.conf");
+    rmdir("/usr/local/share/fossology/mods-enabled/$agentName/agent/");
     rmdir("$sysConf/mods-enabled/$agentName");
     rmdir("$sysConf/mods-enabled");
     unlink($sysConf."/fossology.conf");
@@ -172,12 +172,12 @@ class CopyrightScheduledTest extends \PHPUnit\Framework\TestCase
     $this->testDb->createConstraints(array('agent_pkey','upload_pkey_idx','pfile_pkey','user_pkey'));
     $this->testDb->alterTables(array('agent','pfile','upload','ars_master','users'));
     $this->testDb->createInheritedTables(array('uploadtree_a'));
+
     $this->testDb->insertData(array('upload','pfile','uploadtree_a','bucketpool','mimetype','users'), false);
   }
 
   /**
    * @brief Run the test
-   * @test
    * -# Setup test tables
    * -# Setup test repo
    * -# Run copyright on upload id 1
