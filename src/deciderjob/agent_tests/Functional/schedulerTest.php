@@ -171,19 +171,34 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
   }
 
 
-  /** @group Functional */
+  /** 
+   * @group Functional 
+   * @test
+   * -# Insert few clearing events
+   * -# Run DeciderJobAgent Mock
+   * -# Check for decisions (should exist)
+   * -# Check if events still exists
+   */
   public function testDeciderMockedScanWithTwoEventAndNoAgentShouldMakeADecision()
   {
     $this->runnerDeciderScanWithTwoEventAndNoAgentShouldMakeADecision($this->runnerMock);
   }
 
-  /** @group Functional */
+  /** 
+   * @group Functional 
+   * @test
+   * -# Insert few clearing events
+   * -# Run DeciderJobAgent Cli
+   * -# Check for decisions (should exist)
+   * -# Check if events still exists
+   */
   public function testDeciderRealScanWithTwoEventAndNoAgentShouldMakeADecision()
   {
     $this->runnerDeciderScanWithTwoEventAndNoAgentShouldMakeADecision($this->runnerCli);
   }
 
   /**
+   * @brief run decider with two events
    * -# Insert few clearing events
    * -# Run DeciderJobAgent
    * -# Check for decisions (should exist)
@@ -231,19 +246,32 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
     $this->rmRepo();
   }
 
-  /** @group Functional */
+  /** 
+   * @group Functional
+   * @test
+   * -# Create findings with nomos
+   * -# Run DeciderJobAgent Mock
+   * -# Check for decisions (should not be empty)
+   */
   public function testDeciderMockScanWithNoEventsAndOnlyNomosShouldNotMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndOnlyNomosShouldNotMakeADecision($this->runnerMock);
   }
 
-  /** @group Functional */
+  /** 
+   * @group Functional
+   * @test
+   * -# Create findings with nomos
+   * -# Run DeciderJobAgent Cli
+   * -# Check for decisions (should not be empty)
+   */
   public function testDeciderRealScanWithNoEventsAndOnlyNomosShouldNotMakeADecision()
   {
     $this->runnerDeciderScanWithNoEventsAndOnlyNomosShouldNotMakeADecision($this->runnerCli);
   }
 
   /**
+   * @brief run decider with no events
    * -# Create findings with nomos
    * -# Run DeciderJobAgent
    * -# Check for decisions (should not be empty)
@@ -358,24 +386,36 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
     $this->rmRepo();
   }
 
-  /** @group Functional */
+  /**
+   * @group Functional
+   * @test
+   * -# Insert two clearing events
+   * -# Run DeciderJobAgent with force rule Mock
+   * -# Check for decisions (should exist)
+   * -# Check if events still exists
+   * -# Check if new event is created
+   */
   public function testDeciderMockedScanWithForceDecision()
   {
     $this->runnerDeciderScanWithForceDecision($this->runnerMock);
   }
 
-  /** @group Functional */
+  /**
+   * @group Functional
+   * @test
+   * -# Insert two clearing events
+   * -# Run DeciderJobAgent with force rule Cli
+   * -# Check for decisions (should exist)
+   * -# Check if events still exists
+   * -# Check if new event is created
+   */
   public function testDeciderRealScanWithForceDecision()
   {
     $this->runnerDeciderScanWithForceDecision($this->runnerCli);
   }
 
   /**
-   * -# Insert two clearing events
-   * -# Run DeciderJobAgent with force rule
-   * -# Check for decisions (should exist)
-   * -# Check if events still exists
-   * -# Check if new event is created
+   * @brief run decider with force decision
    */
   private function runnerDeciderScanWithForceDecision($runner)
   {
