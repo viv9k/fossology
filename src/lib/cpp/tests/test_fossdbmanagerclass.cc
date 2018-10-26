@@ -176,7 +176,7 @@ public:
     // TODO implement fo::DbManager::setLogFile() and check that errors pass through
     std::cout << std::endl << "expecting errors" << std::endl << "-----" << std::endl;
 
-    fo::QueryResult result = manager.queryPrintf("CREATE TABLE tbl( integer");
+    fo::QueryResult result = manager.queryPrintf("CREATE TABLE tbl( integer)");
 
     std::cout << std::endl << "-----" << std::endl;
 

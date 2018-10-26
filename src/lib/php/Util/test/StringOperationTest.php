@@ -18,10 +18,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 namespace Fossology\Lib\Util;
 
-
 class StringOperationTest extends \PHPUnit\Framework\TestCase
 {
-  
+
   protected function setUp()
   {
     $this->assertCountBefore = \Hamcrest\MatcherAssert::getCount();
@@ -41,6 +40,6 @@ class StringOperationTest extends \PHPUnit\Framework\TestCase
     assertThat(StringOperation::getCommonHead('abcdf','abcef'), equalTo('abc'));
     assertThat(StringOperation::getCommonHead('abc',''), equalTo(''));
     assertThat(StringOperation::getCommonHead('','abc'), equalTo(''));
-   }
-  
+  }
+
 }

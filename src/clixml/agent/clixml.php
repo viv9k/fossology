@@ -302,7 +302,7 @@ class CliXml extends Agent
     if(empty($acknowledgements)) {
       return $licenses;
     }
-
+    $allHash = array();
     for($i = 0; $i <= count($acknowledgements); $i++) {
       for($j = 0; $j <= count($licenses); $j++) {
         $allHash = $acknowledgements[$i]['hash'];

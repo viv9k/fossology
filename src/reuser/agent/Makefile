@@ -13,7 +13,7 @@ include $(VARS)
 COPY = reuser.php version.php ReuserAgent.php
 WRAP = reuser
 
-all: version.php
+all: version.php reuser
 
 version.php: version-process_php
 
