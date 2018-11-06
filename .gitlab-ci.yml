@@ -91,7 +91,7 @@ PhpUnit-test:
   stage: test
   script:
     - echo "Running PhpUnit test"
-    - make 
+    - sudo make all test-monk
     - wget https://linux.siemens.de/pub/tools/FOSSologyNG/SPDXTools-v2.1.0.zip
     - unzip SPDXTools-v2.1.0 && mv SPDXTools-v2.1.0/spdx-tools-2.1.0-jar-with-dependencies.jar src/spdx2/agent_tests/Functional/ 
     - rm -rf SPDXTools-v2.1.0*
