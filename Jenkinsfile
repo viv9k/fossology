@@ -87,7 +87,7 @@ pipeline {
               unzip -j "SPDXTools-v2.1.0.zip" "SPDXTools-v2.1.0/spdx-tools-2.1.0-jar-with-dependencies.jar" \
               -d "./src/spdx2/agent_tests/Functional/"
               rm -rf SPDXTools-v2.1.0.zip
-              src/vendor/bin/phpunit -c src/phpunit.xml
+              sudo src/vendor/bin/phpunit -c src/phpunit.xml
             '''
           }
         }
