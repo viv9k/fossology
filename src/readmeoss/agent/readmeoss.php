@@ -215,7 +215,7 @@ class ReadmeOssAgent extends Agent
       if (!$this->uploadDao->isAccessible($addUploadId, $groupId)) {
         continue;
       }
-      $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($uploadId, $groupId);
+      $ungrupedStatements = $this->licenseClearedGetter->getUnCleared($addUploadId, $groupId);
       $moreLicenses = $this->groupStatements($ungrupedStatements, true, "license");
       $licenseStmts = array_merge($licenseStmts, $moreLicenses['statements']);
       $this->heartbeat(count($moreLicenses['statements']));
@@ -226,7 +226,7 @@ class ReadmeOssAgent extends Agent
       $licenseAcknowledgements = array_merge($licenseAcknowledgements, $moreAcknowledgements['statements']);
       $this->heartbeat(count($moreAcknowledgements['statements']));
 
-      $ungrupedStatements = $this->cpClearedGetter->getUnCleared($uploadId, $groupId);
+      $ungrupedStatements = $this->cpClearedGetter->getUnCleared($addUploadId, $groupId);
       $moreCopyrights = $this->groupStatements($ungrupedStatements, true, "copyright");
       $copyrightStmts = array_merge($copyrightStmts, $moreCopyrights['statements']);
       $this->heartbeat(count($moreCopyrights['statements']));
