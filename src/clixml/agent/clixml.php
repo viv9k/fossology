@@ -191,7 +191,7 @@ class CliXml extends Agent
         }
       } else {
         $singleStatement = array(
-	    "licenseId" => $licenseId,
+            "licenseId" => $licenseId,
             "content" => convertToUTF8($content, false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName),
@@ -211,7 +211,7 @@ class CliXml extends Agent
       }
       if(!empty($statement['textfinding']) && $agentCall == "copyright"){
         $findings[] = array(
-	    "licenseId" => $licenseId,
+            "licenseId" => $licenseId,
             "content" => convertToUTF8($statement['textfinding'], false),
             "text" => convertToUTF8($text, false),
             "files" => array($fileName),
@@ -278,7 +278,7 @@ class CliXml extends Agent
     $componentHash = $this->uploadDao->getUploadHashes($uploadId);
     $contents = array("licensesMain" => $licensesMain["statements"],
                       "licenses" => $licensesWithAcknowledgement,
-		      "obligations" => $obligations,
+                      "obligations" => $obligations,
                       "copyrights" => $copyrights["statements"],
                       "countAcknowledgement" => $countAcknowledgement
                      );
@@ -286,7 +286,7 @@ class CliXml extends Agent
     $contents = $this->reArrangeContent($contents);        
     $message = $this->renderString($this->getTemplateFile('file'),array(
         'documentName'=>$this->packageName,
-	'version'=>"1.0",
+        'version'=>"1.0",
         'uri'=>$this->uri,
         'userName'=>$this->container->get('dao.user')->getUserName($this->userId),
         'organisation'=>'',
@@ -345,26 +345,29 @@ class CliXml extends Agent
   
   protected function reArrangeMainLic($contents)
   {
+    $mainlic = array();
     $lenTotalLics = count($contents["licenses"]);
     // both of this variables have same value but used for different operations
-    $lenMainLics = $lenLicsMain = count($contents["licensesMain"]);
-    for($j=0; $j<$lenLicsMain; $j++){
-      for($i=0; $i<$lenTotalLics; $i++){
-        if(!strcmp($contents["licenses"][$i]["content"], $contents["licensesMain"][$j]["content"])){
-          if(!strcmp($contents["licenses"][$i]["text"], $contents["licensesMain"][$j]["text"])){
-            $contents["licensesMain"][$j]["files"] = $contents["licenses"][$i]["files"];
-            $contents["licensesMain"][$j]["hash"] = $contents["licenses"][$i]["hash"];
-            if(array_key_exists('acknowledgement', $contents["licenses"][$i])){
-              $contents["licensesMain"][$j]["acknowledgement"] = $contents["licenses"][$i]["acknowledgement"];
-            }
-          } else {
-            $contents["licensesMain"][$lenMainLics++] = $contents["licenses"][$i];
-          }
-          unset($contents["licenses"][$i]);
+    $lenMainLics = count($contents["licensesMain"]);
+    for($i=0; $i<$lenMainLics; $i++){
+    $count = 0 ;
+      for($j=0; $j<$lenTotalLics; $j++){
+        if(!strcmp($contents["licenses"][$j]["content"], $contents["licensesMain"][$i]["content"])){
+          $count = 1; 
+          $mainlic[] =  $contents["licenses"][$j];
+          unset($contents["licenses"][$j]);
         }
       }
+      if($count == 1){
+        unset($contents["licensesMain"][$i]);
+      }
+      else {
+        $mainlic[] = $contents["licensesMain"][$i];
+        unset($contents["licensesMain"][$i]);
+      }
     }
-
+    $contents["licensesMain"] = $mainlic;
+    
     $lenMainLicenses=count($contents["licensesMain"]);
     for($i=0; $i<$lenMainLicenses; $i++){
       $contents["licensesMain"][$i]["contentMain"] = $contents["licensesMain"][$i]["content"];
