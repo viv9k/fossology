@@ -158,7 +158,7 @@ COMMIT;
  * \param string $copyrightColumn Primary column name
  */
 
-function CleanCopyrightTable($dbManager)
+function CleanCopyrightTable($dbManager, $copyrightColumn)
 {
   if($dbManager == NULL){
     echo "No connection object passed!\n";
