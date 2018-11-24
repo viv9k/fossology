@@ -156,6 +156,7 @@ deploy-test:
     - ssh-add -L
     # copying the artifacts
     - sudo apt-get -qq update && sudo apt-get install -y -qq rsync
+    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "rm -f ${TEST_SERVER_FPATH}/*.deb"
     - rsync -hrtz -v -e "ssh" --include '*.deb' --exclude '*' ./packages/ ${TEST_SERVER_USER}@${TEST_SERVER_NAME}:${TEST_SERVER_FPATH}/
     # logging in and artifacts install
     - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "rm -f ${TEST_SERVER_FPATH}/fossology-ninka*"
