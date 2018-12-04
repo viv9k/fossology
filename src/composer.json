@@ -10,6 +10,7 @@
         "without any warranty."
     ],
     "require" : {
+        "easyrdf/easyrdf" : "0.9.*",
         "ext-gettext": "*",
         "ext-mbstring": "*",
         "ext-json" : "*",
@@ -21,7 +22,6 @@
         "symfony/dependency-injection" : "~2.7.36",
         "twig/twig" : "1.*",
         "twig/extensions" : "1.*",
-        "easyrdf/easyrdf" : "0.9.*",
         "phpoffice/phpword" : "v0.13.*",
         "omines/oauth2-gitlab": "~1.0"
     },

@@ -199,10 +199,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
 
   /**
    * @brief run decider with two events
-   * -# Insert few clearing events
-   * -# Run DeciderJobAgent
-   * -# Check for decisions (should exist)
-   * -# Check if events still exists
    */
   private function runnerDeciderScanWithTwoEventAndNoAgentShouldMakeADecision($runner)
   {
@@ -272,9 +268,6 @@ class SchedulerTest extends \PHPUnit\Framework\TestCase
 
   /**
    * @brief run decider with no events
-   * -# Create findings with nomos
-   * -# Run DeciderJobAgent
-   * -# Check for decisions (should not be empty)
    */
   private function runnerDeciderScanWithNoEventsAndOnlyNomosShouldNotMakeADecision($runner)
   {
