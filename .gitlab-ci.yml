@@ -176,6 +176,9 @@ pages:
     # Get the output directory from conf file
     - export OPDIR=$(gawk 'match($0, /^OUTPUT_DIRECTORY[[:space:]]*=[[:space:]]*[[:punct:]]?([^ '\"\''\\]+)[[:punct:]]?$/, m) { print m[1]; }' fossology_doxygen.conf)
 #' To fix editor highlights
+    - git fetch --tags
+    - export CURR_TAG=$(git describe --abbrev=0 --tags || echo "unknown")
+    - sed -i -e "s/^PROJECT_NUMBER.*=/PROJECT_NUMBER = \"${CURR_TAG}\"/g" fossology_doxygen.conf
     - doxygen fossology_doxygen.conf
     - mv ${OPDIR}/html ./public
   artifacts:
