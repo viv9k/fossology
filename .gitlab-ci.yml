@@ -163,3 +163,22 @@ deploy-test:
     - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo dpkg -i ${TEST_SERVER_FPATH}/*.deb"
     - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo apt-get -f install -y"
 
+pages:
+  tags:
+    - VLAN
+  allow_failure: true
+  stage: deploy
+  when: manual
+  before_script:
+    - echo "Building doxygen pages"
+    - sudo apt-get -qq update && sudo apt-get install -y -qq doxygen
+  script:
+    # Get the output directory from conf file
+    - export OPDIR=$(gawk 'match($0, /^OUTPUT_DIRECTORY[[:space:]]*=[[:space:]]*[[:punct:]]?([^ '\"\''\\]+)[[:punct:]]?$/, m) { print m[1]; }' fossology_doxygen.conf)
+#' To fix editor highlights
+    - doxygen fossology_doxygen.conf
+    - mv ${OPDIR}/html ./public
+  artifacts:
+    paths:
+      - public
+
