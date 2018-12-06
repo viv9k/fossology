@@ -1,5 +1,5 @@
 /*
- Copyright (C) 2014-2015, Siemens AG
+ Copyright (C) 2014-2015,2018 Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -404,7 +404,9 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
         const char* content = NULL;
         const char* text = NULL;
         const char* acknowledgement = NULL;
+        const char* fileName = NULL;
         char* fileNames = NULL;
+        char* licenses = NULL;
 
         json_object_object_foreach(val1, key2, val2) {
           if (((strcmp(key2, "content")) == 0) && json_object_is_type(val2, json_type_string)) {
@@ -416,8 +418,14 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
           else if (((strcmp(key2, "acknowledgement")) == 0) && json_object_is_type(val2, json_type_string)) {
             acknowledgement = json_object_get_string(val2);
           }
+          else if (((strcmp(key2, "fileName")) == 0) && json_object_is_type(val2, json_type_string)) {
+            fileName = json_object_get_string(val2);
+          }
           else if (((strcmp(key2, "files")) == 0) && json_object_is_type(val2, json_type_array)) {
             fileNames = implodeJsonArray(val2, ",\n");
+          }
+          else if (((strcmp(key2, "licenses")) == 0) && json_object_is_type(val2, json_type_array)) {
+            licenses = implodeJsonArray(val2, ",\n");
           }
           else if (((strcmp(key2, "hash")) == 0) && json_object_is_type(val2, json_type_array)) {
             fileNames = implodeJsonArray(val2, ",\n");
@@ -433,6 +441,9 @@ int addRowsFromJson_ContentTextFiles(rg_table* table, json_object* jobj, const c
 	}
 	else if (content && text && fileNames) {
           table_addRow(table, content, text, fileNames);
+        }
+	else if (content && fileName && licenses) {
+          table_addRow(table, content, fileName, licenses);
         }
         //else if (content && comments && fileNames){
         //  table_addRow(table, content, comments, fileNames);
@@ -895,8 +906,8 @@ int main(int argc, char** argv) {
     mxml_node_t* pirrelevant = (mxml_node_t*) createnumsection(body, "0", "2");
     addparaheading(pirrelevant, NULL, "Irrelevant files", "0", "2");
     
-    rg_table* tableIrrelevant = table_new(body, 2, "3000", "2000");
-    table_addRow(tableIrrelevant, "Path", "files");
+    rg_table* tableIrrelevant = table_new(body, 3, "3000", "3000", "3000");
+    table_addRow(tableIrrelevant, "Path", "files", "licenses");
     {
       char* jsonIrrelevant = getIrrelevant(uploadId, groupId);
       json_object * jobj = json_tokener_parse(jsonIrrelevant);
