@@ -181,6 +181,8 @@ pages:
     - sed -i -e "s/^PROJECT_NUMBER.*=/PROJECT_NUMBER = \"${CURR_TAG}\"/g" fossology_doxygen.conf
     - doxygen fossology_doxygen.conf
     - mv ${OPDIR}/html ./public
+# Copy favicon
+    - cp ./src/www/ui/favicon.ico ./public/favicon.ico
   artifacts:
     paths:
       - public
