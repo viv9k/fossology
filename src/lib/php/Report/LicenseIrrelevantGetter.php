@@ -1,6 +1,6 @@
 <?php
 /*
- Copyright (C) 2014-2017, Siemens AG
+ Copyright (C) 2014-2018, Siemens AG
 
  This program is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License
@@ -59,7 +59,7 @@ class LicenseIrrelevantGetter extends ClearedGetterCommon
       $dirName = dirname($statement['fileName']);
       $baseName = basename($statement['fileName']);
       $comment = $statement['comment'];
-      $licenseName = $statement['shortname'];
+      $licenseName = (!empty($statement['shortname']) ? $statement['shortname'] : 'No license found');
       if($this->irreleavntFilesOnly){
         if (array_key_exists($fileName, $statements))
         {

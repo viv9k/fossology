@@ -103,6 +103,8 @@ src/monk/agent_tests/Unit/run_tests
 src/monk/agent_tests/results/
 src/ninka/agent/ninka_cov
 src/ninka/agent_tests/results/
+src/monk/agent_tests/Functional/monk
+src/monk/agent_tests/Functional/monkbulk
 src/monk/agent_tests/Functional/monk-Xunit1.xml
 src/monk/agent_tests/Functional/monk-Xunit2.xml
 src/monk/agent_tests/Functional/monk-Xunit3.xml
@@ -177,7 +179,9 @@ variable.list
 /src/unifiedreport/agent/unifiedreport
 /testReport/
 /src/readmeoss/agent/version.php
+/src/reuser/agent/reuser
 /src/reuser/agent/version.php
+/src/reuser/agent/reuser
 /src/copyright/agent/ecc
 /src/copyright/VERSION-ecc
 /src/copyright/VERSION-keyword

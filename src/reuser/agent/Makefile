@@ -20,7 +20,7 @@ version.php: version-process_php
 # include the preprocessing stuff
 include $(TOP)/Makefile.process
 
-reuser: all
+reuser:
 	@echo "making locally runnable reuser (only for testing)"
 	$(MAKE) -C $(FOCLIDIR) fo_wrapper
 	ln -sf $(FOCLIDIR)/fo_wrapper.php reuser
