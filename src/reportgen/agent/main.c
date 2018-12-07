@@ -811,7 +811,7 @@ int main(int argc, char** argv) {
     addparaheading(createnumsection(body, "0", "2"), NULL, "Other Licenses", "0", "2");
 
     //table 3 for other license data
-    rg_table* tableOthers = table_new(body, 3, "2000", "5638", "2000");
+    rg_table* tableOthers = table_new(body, 3, "2000", "4000", "3638");
     table_addRow(tableOthers, "license", "text", "files");
     {
       char* json = getClearedLicenses(uploadId, groupId);
@@ -821,8 +821,8 @@ int main(int argc, char** argv) {
 
     addparaheading(createnumsection(body, "0", "2"), NULL, "Acknowledgements", "0", "2");
 
-    rg_table* tableacknowledgements = table_new(body, 4, "1500", "3000", "3000", "1500");
-    table_addRow(tableacknowledgements, "licesne", "licenseText","Acknowledgements", "File path");
+    rg_table* tableacknowledgements = table_new(body, 3, "2000", "4000", "3638");
+    table_addRow(tableacknowledgements, "Reference to the license", "Text of acknowledgements", "File path");
     {
       char* jsonAcknowledgementLicense = getClearedAcknowledgement(uploadId, groupId);
       fillTableFromJson(tableacknowledgements, jsonAcknowledgementLicense);
