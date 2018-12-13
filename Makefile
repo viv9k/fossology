@@ -91,5 +91,5 @@ empty-cache:
 
 .PHONY: $(BUILDDIRS) $(DIRS) $(INSTALLDIRS) $(UNINSTALLDIRS)
 .PHONY: $(TESTDIRS) $(CLEANDIRS)
-.PHONY: all install install_offline uninstall clean test utils preparetest
+.PHONY: all install install_offline uninstall clean test utils
 .PHONY: dist dist-testing tar tar-release
