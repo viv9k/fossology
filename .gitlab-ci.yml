@@ -160,8 +160,7 @@ deploy-test:
     - rsync -hrtz -v -e "ssh" --include '*.deb' --exclude '*' ./packages/ ${TEST_SERVER_USER}@${TEST_SERVER_NAME}:${TEST_SERVER_FPATH}/
     # logging in and artifacts install
     - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "rm -f ${TEST_SERVER_FPATH}/fossology-ninka*"
-    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo dpkg -i ${TEST_SERVER_FPATH}/*.deb"
-    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo apt-get -f install -y"
+    - ssh ${TEST_SERVER_USER}@${TEST_SERVER_NAME} "sudo dpkg -i ${TEST_SERVER_FPATH}/*.deb || sudo apt-get -f install -y"
 
 pages:
   tags:
