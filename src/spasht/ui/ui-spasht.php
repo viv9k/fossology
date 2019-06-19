@@ -73,6 +73,25 @@ class ui_spasht extends FO_Plugin
     return($this->State == PLUGIN_STATE_VALID);
   } // Initialize()
 
+  /**
+   * @brief This function returns the scheduler status.
+   * @see FO_Plugin::Output()
+   */
+  public function output()
+  {
+    $uploadId = GetParm("upload",PARM_INTEGER);
+    /** @var UploadDao $uploadDao */
+    $uploadDao = $GLOBALS['container']->get('dao.upload');
+    if ( !$uploadDao->isAccessible($uploadId, Auth::getGroupId()) )
+    {
+      $text = _("Permission Denied");
+      return "<h2>$text</h2>";
+    }
+
+    $upload_name = GetUploadName($uploadId);
+    return($upload_name);
+  }
+
 }
 
 $NewPlugin = new ui_spasht;
