@@ -37,7 +37,7 @@ class ReuserPlugin extends DefaultPlugin
 {
   const NAME = "plugin_reuser";             ///< UI mod name
 
-  const REUSE_FOLDER_SELECTOR_NAME = 'reuseFolder SelectorName'; ///< Reuse upload folder element name
+  const REUSE_FOLDER_SELECTOR_NAME = 'reuseFolderSelectorName'; ///< Reuse upload folder element name
   const UPLOAD_TO_REUSE_SELECTOR_NAME = 'uploadToReuse';  ///< Upload to reuse HTML element name
   const FOLDER_PARAMETER_NAME = 'folder';   ///< Folder parameter HTML element name
 
