@@ -89,7 +89,9 @@ class ui_spasht extends FO_Plugin
     }
 
     $upload_name = GetUploadName($uploadId);
-    return($upload_name);
+    $out = $this->renderString('agent_spasht.html.twig',array('uploadName'=>$upload_name));
+
+    return($out);
   }
 
 }
