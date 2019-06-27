@@ -28,7 +28,7 @@ class ui_spasht extends FO_Plugin
     parent::__construct();
   }
 
-
+  public $uploadAvailable = "no";
   /**
    * \brief Customize submenus.
    */
@@ -93,6 +93,7 @@ class ui_spasht extends FO_Plugin
   public function output()
   {
     $optionSelect = GetParm("par",PARM_STRING);
+    $uploadAvailable = GetParm("uploadAvailable",PARM_STRING);
 
     $vars = array();
     $statusbody = "true";
@@ -118,18 +119,23 @@ class ui_spasht extends FO_Plugin
       $body['body_namespace'] = $str[2];
       $body['body_name'] = $str[3];
       $body['body_revision'] = $str[4];
-     
-      $result = $this->spashtDao->addComponentRevision($body, $uploadId);
+
+      if($uploadAvailable == "yes"){
+        $result = $this->spashtDao->alterComponentRevision($body, $uploadId);
+      }
+      else{
+        $result = $this->spashtDao->addComponentRevision($body, $uploadId);
+      }
 
       if($result >= 0)
       {
-        $vars['storeStatus'] = "true";
+        $patternName = null;
       }
 
-      $vars['pageNo'] = 3;
-
-      $out = $this->renderString('show_definitions.html.twig',$vars);
-      return($out);
+      else
+      {
+        $patternName = $body['body_name'];
+      }
     }
 
     if($patternName != null && !empty($patternName)) //Check if search is not empty
@@ -190,6 +196,7 @@ class ui_spasht extends FO_Plugin
               $vars['pageNo'] = 2;
             }
 
+      $vars['uploadAvailable'] = $uploadAvailable;
       $upload_name = $patternName;
     }
 
@@ -206,8 +213,12 @@ class ui_spasht extends FO_Plugin
       $searchUploadId = $this->spashtDao->getComponent($uploadId);
 
       if(!empty($searchUploadId)){
+        $vars['uploadAvailable'] = "yes";
         $vars['pageNo'] = 4;
         $vars['body'] = $searchUploadId;
+      }
+      else{
+        $uploadAvailable = "no";
       }
     }
 

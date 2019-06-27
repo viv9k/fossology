@@ -68,6 +68,24 @@ class SpashtDao
     return ($this->dbManager->insertPreparedAndReturn($statement, $sql, $params, $returningValue));
   }
 
+  public function alterComponentRevision($revisionBody, $uploadID){
+    
+    $assocParams = array('spasht_namespace' => $revisionBody['body_namespace'], 'spasht_name' => $revisionBody['body_name'],
+    'spasht_type' => $revisionBody['body_type'], 'spasht_provider' => $revisionBody['body_provider'],
+    'spasht_revision' => $revisionBody['body_revision']);
+
+    $tableName = "spasht";
+    $primaryColumn =  'upload_fk';
+
+    $this->dbManager->updateTableRow($tableName, $assocParams, $primaryColumn, $uploadID);
+    return $uploadID;
+  }
+
+  /**
+   * Get available row in spasht.
+   * Where uploadId is found.
+   */
+
   public function getComponent($uploadID){
     $statement = __METHOD__.".CheckUpload";
 

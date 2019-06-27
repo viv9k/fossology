@@ -22,12 +22,14 @@
       {% elseif pageNo == 2 %}
         {% include 'show_definitions.html.twig' %}
       {% elseif pageNo == 3 %}
-        Data Stored Successfully {{ pageNo }} -> {{ storeStatus }}
-      {% else %}
+        Data Stored Successfully {{ pageNo }} -> {{ result }}
+      {% elseif pageNo == 4 %}
         {% include 'show_uploads_table.html.twig' %}
+      {% else %}
+        Empty
       {% endif %}
     </div>
-    <div class="col">
+    <div class="col">{{ result }}
     </div>
   </div>
 {% endblock %}
