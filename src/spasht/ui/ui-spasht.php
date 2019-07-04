@@ -146,14 +146,14 @@ class ui_spasht extends FO_Plugin
         'base_uri' => 'https://api.clearlydefined.io/',
         ]);
 
-        // Point to definitions secton in the api
+        // Point to definitions section in the api
       $res = $client->request('GET','definitions',[
           'query' => ['pattern' => $patternName] //Perform query operation into the api
         ]);
 
       if($res->getStatusCode()==200) //Get the status of http request
       {
-         $body = json_decode($res->getBody()->getContents()); //Fetch's body response from the request and convert it into json_decode
+         $body = json_decode($res->getBody()->getContents()); //Fetch's body response from the request and convert it into json_decoded
 
          if(sizeof($body) == 0) //Check if no element is found
          {
@@ -161,22 +161,48 @@ class ui_spasht extends FO_Plugin
          }
          else
          {
+           $temp = array();
+           $details = array();
           for ($x = 0; $x < sizeof($body) ; $x++)
           {
             $str = explode ("/", $body[$x]);
 
-            $body['index'] = $x;
-            $body_revision[$x] = $str[4];
-            $body_type[$x] = $str[0];
-            $body_name[$x] = $str[3];
-            $body_provider[$x] = $str[1];
-            $body_namespace[$x] = $str[2];
+            $temp2 = array();
+
+            $temp2['revision'] = $str[4];
+            $temp2['type'] = $str[0];
+            $temp2['name'] = $str[3];
+            $temp2['provider'] = $str[1];
+            $temp2['namespace'] = $str[2];
+
+            $temp[] = $temp2;
+            $uri = "definitions/".$body[$x];
+
+            $detail_body = array();
+
+            //details section
+            $res_details = $client->request('GET',$uri,[
+              'query' => [
+                'expand' => "-files"
+              ] //Perform query operation into the api
+            ]);
+
+            $detail_body = json_decode($res_details->getBody()->getContents(),true);
+
+            $details_temp = array();
+
+            $details_temp['declared'] = $detail_body["licensed"]["declared"];
+            $details_temp['source'] = $detail_body["described"]["sourceLocation"]["url"];
+            $details_temp['release'] = $detail_body["described"]["releaseDate"];
+            $details_temp['files'] = $detail_body["licensed"]["facets"]["core"]["files"];
+            $details_temp['attribution'] = $detail_body['licensed']["facets"]["core"]['attribution']['parties'];
+            $details_temp['discovered'] = $detail_body['licensed']["facets"]["core"]['discovered']['expressions'];
+
+            $details[] = $details_temp;
           }
-          $body['body_revision'] = $body_revision;
-          $body['body_type'] = $body_type;
-          $body['body_name'] = $body_name;
-          $body['body_provider'] = $body_provider;
-          $body['body_namespace'] = $body_namespace;
+
+          $vars['details'] = $details;
+          $vars['body'] = $temp;
          }
       }
           /** Check for advance Search enabled
@@ -186,7 +212,6 @@ class ui_spasht extends FO_Plugin
             if($advanceSearch == "advanceSearch"){
               $vars['advanceSearch'] = "checked";
             }
-            $vars['body'] = $body;
             if($vars['storeStatus'] == "true")
             {
               $vars['pageNo'] = 3;

@@ -16,7 +16,7 @@
     </div>
   </div>
   <div class="row" id="spashtStart">
-    <div class="col-md-8">
+    <div class="col">
       {% if advanceSearch == "checked" %}
         {% include 'agent_spasht_advanceSearch_form.html.twig' %}
       {% elseif pageNo == 2 %}
@@ -29,7 +29,8 @@
         Empty
       {% endif %}
     </div>
-    <div class="col">{{ result }}
+    <div class="col">
+    {% include 'show_details_table.html.twig' %}
     </div>
   </div>
 {% endblock %}
