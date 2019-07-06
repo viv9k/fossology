@@ -15,14 +15,12 @@
     </TR>
     {% for result in body %}
     <TR id="definitionsRow">
-        <TD>
+        <TD  style="display: inline-block; width: 150px; word-wrap: break-word;">
           <a id="definitionsRow_namespace{{ loop.index0 }}">{{ result.namespace }}</a>/<a id="definitionsRow_name{{ loop.index0 }}">{{ result.name }}</a>
         </TD>
         <TD></TD>
-        <TD id="definitionsRow_revision{{ loop.index0 }}">
-          <span style="display: inline-block; width: 250px; word-wrap: break-word;">
-                {{ result.revision }}
-            </span>
+        <TD>
+          <span id="definitionsRow_revision{{ loop.index0 }}" style="display: inline-block; width: 230px; word-wrap: break-word;">{{ result.revision }}</span>
         </TD>
         <TD></TD>
         <TD id="definitionsRow_type{{ loop.index0 }}">{{ result.type }}</TD>

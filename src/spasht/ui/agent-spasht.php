@@ -41,6 +41,16 @@ class SpashtAgentPlugin extends AgentPlugin
   {
       menu_insert("Agents::" . $this->Title, 0, $this->Name);
   }
+
+
+   /**
+   * @copydoc Fossology::Lib::Plugin::AgentPlugin::AgentHasResults()
+   * @see Fossology::Lib::Plugin::AgentPlugin::AgentHasResults()
+   */
+  function AgentHasResults($uploadId=0)
+  {
+    return CheckARS($uploadId, $this->AgentName, "spasht scanner", "spasht_ars");
+  }
 }
 
 register_plugin(new SpashtAgentPlugin());
