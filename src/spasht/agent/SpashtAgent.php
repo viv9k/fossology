@@ -21,6 +21,7 @@ namespace Fossology\Spasht;
 
 use Fossology\Lib\Agent\Agent;
 use Fossology\Lib\Dao\UploadDao;
+use Fossology\Lib\Dao\SpashtDao;
 
 include_once(__DIR__ . "/version.php");
 
@@ -38,11 +39,40 @@ class SpashtAgent extends Agent
      */
     private $uploadDao;
 
+    /** @var SpashtDao $uploadDao
+     * UploadDao object
+     */
+    private $spashtDao;
+
 
     function __construct()
     {
         parent::__construct(SPASHT_AGENT_NAME, AGENT_VERSION, AGENT_REV);
         $this->uploadDao = $this->container->get('dao.upload');
+        $this->spashtDao = $this->container->get('dao.spasht');
+    }
+
+    /*
+     * @brief Run Spasht Agent for a package
+     * @param $uploadId Integer
+     * @see Fossology::Lib::Agent::Agent::processUploadId()
+     */
+    function processUploadId($uploadId)
+    {
+
+      $itemTreeBounds = $this->uploadDao->getParentItemBounds($uploadId);
+      $pfileFileDetails = $this->uploadDao->getPFileDataPerFileName($itemTreeBounds);
+
+      foreach($pfileFileDetails as $pfileDetail)
+      {
+        $file = fopen('abc.json','w');
+        fwrite($file,json_encode($pfileDetail['pfile_sha256']));
+        fclose($file);
+
+        //$this->spashtDao->addToTest($pfileDetail['pfile_sha256'], $uploadId);
+      }
+        
+      return true;
     }
 
 }

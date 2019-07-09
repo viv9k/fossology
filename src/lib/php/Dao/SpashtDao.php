@@ -97,18 +97,19 @@ class SpashtDao
     "WHERE upload_fk = $1";
 
     $row = $this->dbManager->getSingleRow($sql, $params, $statement);
-
-    /**
-     * $row["spasht_revision"] = "spasht_revision";
-     * $row["spasht_namespace"] = "spasht_namespace";
-     * $row["spasht_name"] = "spasht_name";
-     * $row["spasht_type"] = "spasht_type";
-     * $row["spasht_provider"] = "spasht_provider";
-     * $row["upload_fk"] = "upload_fk";
-     */
-
     return ($row);
   }
 
-  
+  /**
+   * Add to test in this table
+   */
+  function addToTest($data, $uploadID){
+    $assocParams = array('spasht_Test' => $data);
+
+    $tableName = "spasht";
+    $primaryColumn =  'upload_fk';
+
+    $this->dbManager->updateTableRow($tableName, $assocParams, $primaryColumn, $uploadID);
+  }
+
 }

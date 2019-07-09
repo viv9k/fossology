@@ -1407,6 +1407,10 @@
   $Schema["TABLE"]["spasht"]["spasht_provider"]["ADD"] = "ALTER TABLE \"spasht\" ADD COLUMN \"spasht_provider\" text";
   $Schema["TABLE"]["spasht"]["spasht_provider"]["ALTER"] = "ALTER TABLE \"spasht\" ALTER COLUMN \"spasht_provider\" DROP NOT NULL";
 
+  $Schema["TABLE"]["spasht"]["spasht_Test"]["DESC"] = "";
+  $Schema["TABLE"]["spasht"]["spasht_Test"]["ADD"] = "ALTER TABLE \"spasht\" ADD COLUMN \"spasht_Test\" text";
+  $Schema["TABLE"]["spasht"]["spasht_Test"]["ALTER"] = "ALTER TABLE \"spasht\" ALTER COLUMN \"spasht_Test\" DROP NOT NULL";
+
 
   $Schema["TABLE"]["sysconfig"]["sysconfig_pk"]["DESC"] = "";
   $Schema["TABLE"]["sysconfig"]["sysconfig_pk"]["ADD"] = "ALTER TABLE \"sysconfig\" ADD COLUMN \"sysconfig_pk\" int4 DEFAULT nextval('sysconfig_sysconfig_pk_seq'::regclass)";

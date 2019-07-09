@@ -59,7 +59,7 @@ class UploadDao
    * @param string $uploadTreeTableName
    * @return array
    */
-  public function getUploadEntry($uploadTreeId, $uploadTreeTableName = "uploadtree")
+    public function getUploadEntry($uploadTreeId, $uploadTreeTableName = "uploadtree")
   {
     $stmt = __METHOD__ . ".$uploadTreeTableName";
     $uploadEntry = $this->dbManager->getSingleRow("SELECT * FROM $uploadTreeTableName WHERE uploadtree_pk = $1",
