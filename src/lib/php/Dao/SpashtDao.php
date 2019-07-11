@@ -100,16 +100,4 @@ class SpashtDao
     return ($row);
   }
 
-  /**
-   * Add to test in this table
-   */
-  function addToTest($data, $uploadID){
-    $assocParams = array('spasht_Test' => $data);
-
-    $tableName = "spasht";
-    $primaryColumn =  'upload_fk';
-
-    $this->dbManager->updateTableRow($tableName, $assocParams, $primaryColumn, $uploadID);
-  }
-
 }

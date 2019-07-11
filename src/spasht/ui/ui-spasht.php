@@ -90,9 +90,9 @@ class ui_spasht extends FO_Plugin
    * @brief This function returns the scheduler status.
    * @see FO_Plugin::Output()
    */
-  public function output()
+  public function Output()
   {
-    $optionSelect = GetParm("par",PARM_STRING);
+    $optionSelect = GetParm("optionSelectedToOpen",PARM_RAW);
     $uploadAvailable = GetParm("uploadAvailable",PARM_STRING);
 
     $vars = array();
@@ -122,7 +122,7 @@ class ui_spasht extends FO_Plugin
 
       if($uploadAvailable == "yes"){
         $result = $this->spashtDao->alterComponentRevision($body, $uploadId);
-      }
+        }
       else{
         $result = $this->spashtDao->addComponentRevision($body, $uploadId);
       }

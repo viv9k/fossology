@@ -63,14 +63,15 @@ class SpashtAgent extends Agent
       $itemTreeBounds = $this->uploadDao->getParentItemBounds($uploadId);
       $pfileFileDetails = $this->uploadDao->getPFileDataPerFileName($itemTreeBounds);
 
-      foreach($pfileFileDetails as $pfileDetail)
+      $file = fopen('/home/fossy/abc.json','w');
+      foreach($pfileFileDetails as $key => $pfileDetail)
       {
-        $file = fopen('abc.json','w');
-        fwrite($file,json_encode($pfileDetail['pfile_sha256']));
-        fclose($file);
-
+        fwrite($file,json_encode($pfileDetail['sha1']));
+        fwrite($file,json_encode($key));
+        
         //$this->spashtDao->addToTest($pfileDetail['pfile_sha256'], $uploadId);
       }
+      fclose($file);
         
       return true;
     }
