@@ -205,21 +205,21 @@ class ui_spasht extends FO_Plugin
           $vars['body'] = $temp;
          }
       }
-          /** Check for advance Search enabled
-            * If enabled the revisions are retrieved from the body to display them in the form.
-            * As options to users.
-            */
-            if($advanceSearch == "advanceSearch"){
-              $vars['advanceSearch'] = "checked";
-            }
-            if($vars['storeStatus'] == "true")
-            {
-              $vars['pageNo'] = 3;
-            }
-            else
-            {
-              $vars['pageNo'] = 2;
-            }
+      /** Check for advance Search enabled
+        * If enabled the revisions are retrieved from the body to display them in the form.
+        * As options to users.
+        */
+        if($advanceSearch == "advanceSearch"){
+          $vars['advanceSearch'] = "checked";
+        }
+        if($vars['storeStatus'] == "true")
+        {
+          $vars['pageNo'] = 3;
+        }
+        else
+        {
+          $vars['pageNo'] = 2;
+        }
 
       $vars['uploadAvailable'] = $uploadAvailable;
       $upload_name = $patternName;
