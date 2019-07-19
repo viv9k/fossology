@@ -128,6 +128,8 @@ class SpashtAgent extends Agent
       }
       else
       {
+
+        fwrite($file, $agentId);
         foreach($getNewResult as $key)
         {
           fwrite($file, $key['pfileId']."->");
@@ -362,7 +364,7 @@ class SpashtAgent extends Agent
           {
             if(!empty($l->getId()))
             {
-              $this->dbManeger->insertTableRow('license_file',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'rf_fk'=> $l->getId(),'rf_match_pct'=> 60]);
+              $this->dbManeger->insertTableRow('license_file',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'rf_fk'=> $l->getId()]);
             }
           }
         }
