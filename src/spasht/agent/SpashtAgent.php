@@ -112,7 +112,9 @@ class SpashtAgent extends Agent
 
       $getNewResult = $this->getInformation($scancodeVersion, $uploadAvailable, $pfileSha1DetailsFromUpload, $pfileIdDetailsFromUpload);
 
-      $resultUploadIntoLicenseTable = $this->insertSpashtAgentRecord($getNewResult, $agentId);
+      $resultUploadIntoLicenseTable = $this->insertLicensesSpashtAgentRecord($getNewResult, $agentId);
+
+      $resultUploadIntoCopyrightTable = $this->insertCopyrightSpashtAgentRecord($getNewResult, $agentId);
 
       if($resultUploadIntoLicenseTable == true)
       {
@@ -286,7 +288,6 @@ class SpashtAgent extends Agent
 
             if(!empty($key->license))
             {
-
               $temp['license'] = $this->sperateLicenses($key->license);
             }
             else
@@ -297,6 +298,10 @@ class SpashtAgent extends Agent
             if(!empty($key->attributions))
             {
               $temp['attributions'] = $key->attributions;
+            }
+            else
+            {
+              $temp['attributions'] = ["No_Copyright_Found"];
             }
             $newResultBody[] = $temp;
           }
@@ -341,14 +346,14 @@ class SpashtAgent extends Agent
       return $strLicense;
      }
 
-      /*
+    /*
      * @brief Insert the License Details in Spasht Agent table
-     * @param $pfileId  Integer
+     * @param $agentId  Integer
      * @param $license  Array
      *
      * @return boolean True if finished
      */
-    protected function insertSpashtAgentRecord($body, $agentId)
+    protected function insertLicensesSpashtAgentRecord($body, $agentId)
     {
       $file = fopen('/home/fossy/abc.json','w');
       foreach($body as $key)
@@ -367,6 +372,28 @@ class SpashtAgent extends Agent
               $this->dbManeger->insertTableRow('license_file',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'rf_fk'=> $l->getId()]);
             }
           }
+        }
+      }
+      fclose($file);
+      return true;
+    }
+
+    /*
+     * @brief Insert the Copyright Details in Spasht Agent table
+     * @param $agentId  Integer
+     * @param $license  Array
+     *
+     * @return boolean True if finished
+     */
+    protected function insertCopyrightSpashtAgentRecord($body, $agentId)
+    {
+      $file = fopen('/home/fossy/abc.json','w');
+      fwrite($file, $agentId."->agentID\n");
+      foreach($body as $key)
+      {
+        foreach($key['attributions'] as $copyright)
+        {
+          fwrite($file, $copyright."->good\n"); 
         }
       }
       fclose($file);

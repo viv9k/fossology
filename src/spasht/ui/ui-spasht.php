@@ -2,6 +2,7 @@
 
 use Fossology\Lib\Auth\Auth;
 use Fossology\Lib\Dao\UploadDao;
+use Fossology\Lib\Dao\AgentDao;
 use Fossology\Lib\UI\Component\MicroMenu;
 use GuzzleHttp\Client;
 use Fossology\Lib\Dao\SpashtDao;
@@ -16,6 +17,12 @@ class ui_spasht extends FO_Plugin
   /** @var SpashtDao  $spashtDao*/
   private $spashtDao;
 
+  /**
+   * @var AgentDao $agentDao
+   * AgentDao object
+   */
+  protected $agentDao;
+
   function __construct()
   {
     $this->Name       = "spashtbrowser";
@@ -25,6 +32,7 @@ class ui_spasht extends FO_Plugin
     $this->LoginFlag  = 0;
     $this->uploadDao = $GLOBALS['container']->get('dao.upload');
     $this->spashtDao = $GLOBALS['container']->get('dao.spasht');
+    $this->agentDao = $GLOBALS['container']->get('dao.agent');
     parent::__construct();
   }
 
@@ -233,6 +241,13 @@ class ui_spasht extends FO_Plugin
         }
 
       $upload_name = GetUploadName($uploadId);
+      $uri = preg_replace("/&item=([0-9]*)/", "", Traceback());
+      $uploadtree_pk = GetParm("item",PARM_INTEGER);
+      $uploadtree_tablename = GetUploadtreeTableName($uploadId);
+      $agentId = $this->agentDao->getCurrentAgentId("spasht");
+
+
+      
       $vars['pageNo'] = 1;
 
       $searchUploadId = $this->spashtDao->getComponent($uploadId);
@@ -241,6 +256,7 @@ class ui_spasht extends FO_Plugin
         $vars['uploadAvailable'] = "yes";
         $vars['pageNo'] = 4;
         $vars['body'] = $searchUploadId;
+        //$vars['fileList'] = this.getFileListing($uploadtree_pk, );
       }
       else{
         $uploadAvailable = "no";
