@@ -33,7 +33,19 @@ function showDetails(key){
     }      
 }
 
+
 $( function() {
-    $( "#spashtTabs" ).tabs();
-  } );
+
+    var spashtTabCookie = 'stickySpashtTab';
+
+      $('#spashtTabs').tabs({
+        active: ($.cookie(spashtTabCookie) || 0),
+        activate: function(e, ui){
+          // Get active tab index and update cookie
+          var idString = $(e.currentTarget).attr('id');
+          idString = parseInt(idString.slice(-1)) - 1;
+          $.cookie(spashtTabCookie, idString);
+        }
+      });
+    });
 </script>

@@ -389,9 +389,9 @@
   $Schema["TABLE"]["copyright_spasht"]["copyright_spasht_pk"]["ADD"] = "ALTER TABLE \"copyright_spasht\" ADD COLUMN \"copyright_spasht_pk\" int8 DEFAULT nextval('copyright_spasht_pk_seq'::regclass)";
   $Schema["TABLE"]["copyright_spasht"]["copyright_spasht_pk"]["ALTER"] = "ALTER TABLE \"copyright_spasht\" ALTER COLUMN \"copyright_spasht_pk\" SET NOT NULL, ALTER COLUMN \"copyright_spasht_pk\" SET DEFAULT nextval('copyright_spasht_pk_seq'::regclass)";
 
-  $Schema["TABLE"]["copyright_spasht"]["user_fk"]["DESC"] = "";
-  $Schema["TABLE"]["copyright_spasht"]["user_fk"]["ADD"] = "ALTER TABLE \"copyright_spasht\" ADD COLUMN \"user_fk\" int8";
-  $Schema["TABLE"]["copyright_spasht"]["user_fk"]["ALTER"] = "ALTER TABLE \"copyright_spasht\" ALTER COLUMN \"user_fk\" SET NOT NULL";
+  $Schema["TABLE"]["copyright_spasht"]["agent_fk"]["DESC"] = "";
+  $Schema["TABLE"]["copyright_spasht"]["agent_fk"]["ADD"] = "ALTER TABLE \"copyright_spasht\" ADD COLUMN \"agent_fk\" int8";
+  $Schema["TABLE"]["copyright_spasht"]["agent_fk"]["ALTER"] = "ALTER TABLE \"copyright_spasht\" ALTER COLUMN \"agent_fk\" SET NOT NULL";
 
   $Schema["TABLE"]["copyright_spasht"]["pfile_fk"]["DESC"] = "";
   $Schema["TABLE"]["copyright_spasht"]["pfile_fk"]["ADD"] = "ALTER TABLE \"copyright_spasht\" ADD COLUMN \"pfile_fk\" int8";
@@ -2023,7 +2023,7 @@
   $Schema["CONSTRAINT"]["copyright_decision_pfile_hash_ukey"] = "ALTER TABLE \"copyright_decision\" ADD CONSTRAINT \"copyright_decision_pfile_hash_ukey\" UNIQUE (\"pfile_fk\", \"hash\");";
   $Schema["CONSTRAINT"]["copyright_spasht_pkey"] = "ALTER TABLE \"copyright_spasht\" ADD CONSTRAINT \"copyright_spasht_pkey\" PRIMARY KEY (\"copyright_spasht_pk\");";
   $Schema["CONSTRAINT"]["copyright_spasht_pfile_fk_fkey"] = "ALTER TABLE \"copyright_spasht\" ADD CONSTRAINT \"copyright_spasht_pfile_fk_fkey\" FOREIGN KEY (\"pfile_fk\") REFERENCES \"pfile\" (\"pfile_pk\") ON UPDATE NO ACTION ON DELETE CASCADE;";
-  $Schema["CONSTRAINT"]["copyright_spasht_pfile_hash_ukey"] = "ALTER TABLE \"copyright_spasht\" ADD CONSTRAINT \"copyright_spasht_pfile_hash_ukey\" UNIQUE (\"pfile_fk\", \"hash\");";
+  $Schema["CONSTRAINT"]["copyright_spasht_agent_fk_fkey"] = "ALTER TABLE \"copyright_spasht\" ADD CONSTRAINT \"copyright_spasht_agent_fk_fkey\" FOREIGN KEY (\"agent_fk\") REFERENCES \"agent\" (\"agent_pk\") ON UPDATE NO ACTION ON DELETE CASCADE;";
   $Schema["CONSTRAINT"]["ecc_pkey"] = "ALTER TABLE \"ecc\" ADD CONSTRAINT \"ecc_pkey\" PRIMARY KEY (\"ecc_pk\");";
   $Schema["CONSTRAINT"]["ecc_agent_fk_fkey"] = "ALTER TABLE \"ecc\" ADD CONSTRAINT \"ecc_agent_fk_fkey\" FOREIGN KEY (\"agent_fk\") REFERENCES \"agent\" (\"agent_pk\") ON UPDATE NO ACTION ON DELETE CASCADE;";
   $Schema["CONSTRAINT"]["ecc_pfile_fk_fkey"] = "ALTER TABLE \"ecc\" ADD CONSTRAINT \"ecc_pfile_fk_fkey\" FOREIGN KEY (\"pfile_fk\") REFERENCES \"pfile\" (\"pfile_pk\") ON UPDATE NO ACTION ON DELETE CASCADE;";
@@ -2145,9 +2145,8 @@
   $Schema["INDEX"]["copyright_decision"]["copyright_decision_user_fk_index"] = "CREATE INDEX copyright_decision_user_fk_index ON copyright_decision USING btree (user_fk);";
   $Schema["INDEX"]["copyright_decision"]["copyright_decision_pfile_hash_index"] = "CREATE INDEX copyright_decision_pfile_hash_index ON copyright_decision USING btree (hash, pfile_fk);";
 
-  $Schema["INDEX"]["copyright_spasht"]["copyright_spasht_clearing_decision_type_fk_index"] = "CREATE INDEX copyright_spasht_clearing_decision_type_fk_index ON copyright_spasht USING btree (clearing_decision_type_fk);";
+  $Schema["INDEX"]["copyright_spasht"]["copyright_spasht_agent_fk_idx"] = "CREATE INDEX copyright_spasht_agent_fk_idx ON copyright_spasht USING btree (agent_fk);";
   $Schema["INDEX"]["copyright_spasht"]["copyright_spasht_pfile_fk_index"] = "CREATE INDEX copyright_spasht_pfile_fk_index ON copyright_spasht USING btree (pfile_fk);";
-  $Schema["INDEX"]["copyright_spasht"]["copyright_spasht_user_fk_index"] = "CREATE INDEX copyright_spasht_user_fk_index ON copyright_spasht USING btree (user_fk);";
   $Schema["INDEX"]["copyright_spasht"]["copyright_spasht_pfile_hash_index"] = "CREATE INDEX copyright_spasht_pfile_hash_index ON copyright_spasht USING btree (hash, pfile_fk);";
 
   $Schema["INDEX"]["author"]["author_agent_fk_idx"] = "CREATE INDEX author_agent_fk_idx ON author USING btree (agent_fk);";

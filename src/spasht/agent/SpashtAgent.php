@@ -54,10 +54,10 @@ class SpashtAgent extends Agent
     private $licenseDao;
 
     /**
-     * @var DbManeger $dbManager
-     * DbManeger object
+     * @var DbManager $dbManager
+     * DbManager object
      */
-    private $dbManeger;
+    private $dbManager;
 
     /**
      * @var AgentDao $agentDao
@@ -71,7 +71,7 @@ class SpashtAgent extends Agent
         $this->uploadDao = $this->container->get('dao.upload');
         $this->spashtDao = $this->container->get('dao.spasht');
         $this->licenseDao = $this->container->get('dao.license');
-        $this->dbManeger = $this->container->get('db.manager');
+        $this->dbManager = $this->container->get('db.manager');
         $this->agentDao = $this->container->get('dao.agent');
     }
 
@@ -114,43 +114,43 @@ class SpashtAgent extends Agent
 
       $resultUploadIntoLicenseTable = $this->insertLicensesSpashtAgentRecord($getNewResult, $agentId);
 
-      $resultUploadIntoCopyrightTable = $this->insertCopyrightSpashtAgentRecord($getNewResult, $agentId);
+     // $resultUploadIntoCopyrightTable = $this->insertCopyrightSpashtAgentRecord($getNewResult, $agentId);
 
-      if($resultUploadIntoLicenseTable == true)
-      {
-      $file = fopen('/home/fossy/abc.json','w');
+    //   if($resultUploadIntoLicenseTable == true)
+    //   {
+    //   $file = fopen('/home/fossy/abc.json','w');
 
-      if($getNewResult == "BodyNotFound")
-      {
-        fwrite($file, "No data available.");
-      }
-      elseif($getNewResult == "UploadNotFound")
-      {
-        fwrite($file, "Upload doesnot match with the selected file.");
-      }
-      else
-      {
+    //   if($getNewResult == "BodyNotFound")
+    //   {
+    //     fwrite($file, "No data available.");
+    //   }
+    //   elseif($getNewResult == "UploadNotFound")
+    //   {
+    //     fwrite($file, "Upload doesnot match with the selected file.");
+    //   }
+    //   else
+    //   {
 
-        fwrite($file, $agentId);
-        foreach($getNewResult as $key)
-        {
-          fwrite($file, $key['pfileId']."->");
-          foreach($key['license'] as $license)
-          {
-            if(!empty($license))
-            {
-              fwrite($file, $license);
-            }
-            else
-            {
-              fwrite($file, "No_License_Found!");
-            }
-            fwrite($file,"\n");
-          }
-        }
-      }
-      fclose($file);
-    }
+    //     fwrite($file, $agentId);
+    //     foreach($getNewResult as $key)
+    //     {
+    //       fwrite($file, $key['pfileId']."->");
+    //       foreach($key['license'] as $license)
+    //       {
+    //         if(!empty($license))
+    //         {
+    //           fwrite($file, $license);
+    //         }
+    //         else
+    //         {
+    //           fwrite($file, "No_License_Found!");
+    //         }
+    //         fwrite($file,"\n");
+    //       }
+    //     }
+    //   }
+    //   fclose($file);
+    // }
       return true;
     }
 
@@ -286,6 +286,8 @@ class SpashtAgent extends Agent
 
             $temp['pfileId'] = $pfileIdDetailsFromUpload[$searchInUpload];
 
+            $temp['sha1'] = $key->hashes->sha1;
+
             if(!empty($key->license))
             {
               $temp['license'] = $this->sperateLicenses($key->license);
@@ -385,19 +387,30 @@ class SpashtAgent extends Agent
      *
      * @return boolean True if finished
      */
-    protected function insertCopyrightSpashtAgentRecord($body, $agentId)
-    {
-      $file = fopen('/home/fossy/abc.json','w');
-      fwrite($file, $agentId."->agentID\n");
-      foreach($body as $key)
-      {
-        foreach($key['attributions'] as $copyright)
-        {
-          fwrite($file, $copyright."->good\n"); 
-        }
-      }
-      fclose($file);
-      return true;
-    }
+    // protected function insertCopyrightSpashtAgentRecord($body, $agentId)
+    // {
+    //   $file = fopen('/home/fossy/abc.json','w');
+    //   fwrite($file, $agentId."->agentID\n");
+    //   foreach($body as $key)
+    //   {
+    //     foreach($key['attributions'] as $keyCopyright)
+    //     { 
+    //       // $copyrightList = explode (",", $keyCopyright);
+    //       // foreach($copyrightList as $copyright)
+    //       //  {
+    //       //    fwrite($file, $copyright."\n");
+    //       //   }
+
+    //       fwrite($file, $keyCopyright);
+
+    //       $hashForCopyright = hash ("sha256" , $keyCopyright);
+          
+    //       fwrite($file, $hashForCopyright);
+    //       //$this->dbManager->insertTableRow('copyright_spasht',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'textfinding' => $keyCopyright,'hash' => $hashForCopyright,'clearing_decision_type_fk' => 0]);  
+    //     }
+    //   }
+    //   fclose($file);
+    //   return true;
+    // }
 
 }

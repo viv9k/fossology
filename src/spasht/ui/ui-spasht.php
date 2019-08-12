@@ -245,8 +245,6 @@ class ui_spasht extends FO_Plugin
       $uploadtree_pk = GetParm("item",PARM_INTEGER);
       $uploadtree_tablename = GetUploadtreeTableName($uploadId);
       $agentId = $this->agentDao->getCurrentAgentId("spasht");
-
-
       
       $vars['pageNo'] = 1;
 
@@ -256,7 +254,7 @@ class ui_spasht extends FO_Plugin
         $vars['uploadAvailable'] = "yes";
         $vars['pageNo'] = 4;
         $vars['body'] = $searchUploadId;
-        //$vars['fileList'] = this.getFileListing($uploadtree_pk, );
+        list($vars['countOfFile'], $vars['fileList']) = $this->getFileListing($uploadtree_pk, $uri, $uploadtree_tablename, $agentId, $uploadId);
       }
       else{
         $uploadAvailable = "no";
@@ -269,6 +267,103 @@ class ui_spasht extends FO_Plugin
     $out = $this->renderString('agent_spasht.html.twig',$vars);
     
     return($out);
+  }
+
+  /**
+   * @param int    $Uploadtree_pk        Uploadtree id
+   * @param string $Uri                  URI
+   * @param string $uploadtree_tablename Uploadtree table name
+   * @param int    $Agent_pk             Agent id
+   * @param int    $upload_pk            Upload id
+   * @return array
+   */
+  protected function getFileListing($Uploadtree_pk, $Uri, $uploadtree_tablename, $Agent_pk, $upload_pk)
+  {
+    $VF=""; // return values for file listing
+    /*******    File Listing     ************/
+    /* Get ALL the items under this Uploadtree_pk */
+    $Children = GetNonArtifactChildren($Uploadtree_pk, $uploadtree_tablename);
+    $ChildCount = 0;
+    $ChildLicCount = 0;
+    $ChildDirCount = 0; /* total number of directory or containers */
+    foreach ($Children as $c)
+    {
+      if (Iscontainer($c['ufile_mode']))
+      {
+        $ChildDirCount++;
+      }
+    }
+
+    $VF .= "<table border=0>";
+    foreach ($Children as $child)
+    {
+      if (empty($child))
+      {
+        continue;
+      }
+      $ChildCount++;
+
+      global $Plugins;
+      $ModLicView = &$Plugins[plugin_find_id($this->viewName)];
+      /* Determine the hyperlink for non-containers to view-license  */
+      if (!empty($child['pfile_fk']) && !empty($ModLicView))
+      {
+        $LinkUri = Traceback_uri();
+        $LinkUri .= "?mod=".$this->viewName."&agent=$Agent_pk&upload=$upload_pk&item=$child[uploadtree_pk]";
+      } else
+      {
+        $LinkUri = NULL;
+      }
+
+      /* Determine link for containers */
+      if (Iscontainer($child['ufile_mode']))
+      {
+        $uploadtree_pk = DirGetNonArtifact($child['uploadtree_pk'], $uploadtree_tablename);
+        $LicUri = "$Uri&item=" . $uploadtree_pk;
+      } else
+      {
+        $LicUri = NULL;
+      }
+
+      /* Populate the output ($VF) - file list */
+      /* id of each element is its uploadtree_pk */
+      $LicCount = 0;
+
+      $cellContent = Isdir($child['ufile_mode']) ? $child['ufile_name'].'/' : $child['ufile_name'];
+      if (Iscontainer($child['ufile_mode']))
+      {
+        $cellContent = "<a href='$LicUri'><b>$cellContent</b></a>";
+      }
+      else if (!empty($LinkUri)) //  && ($LicCount > 0))
+      {
+        $cellContent = "<a href='$LinkUri'>$cellContent</a>";
+      }
+      $VF .= "<tr><td id='$child[uploadtree_pk]' align='left'>$cellContent</td><td>";
+
+      if ($LicCount)
+      {
+        $VF .= "[" . number_format($LicCount, 0, "", ",") . "&nbsp;";
+        $VF .= "license" . ($LicCount == 1 ? "" : "s");
+        $VF .= "</a>";
+        $VF .= "]";
+        $ChildLicCount += $LicCount;
+      }
+      $VF .= "</td></tr>\n";
+    }
+    $VF .= "</table>\n";
+    return array($ChildCount, $VF);
+  }
+
+  /**
+   * @brief Check if passed element is a directory
+   * @param int $Uploadtree_pk Uploadtree id of the element
+   * @return boolean True if it is a directory, false otherwise
+   */
+  protected function isADirectory($Uploadtree_pk)
+  {
+    $row =  $this->uploadDao->getUploadEntry($Uploadtree_pk, $this->uploadtree_tablename);
+    $isADirectory = IsDir($row['ufile_mode']);
+    return $isADirectory;
   }
 
 }
