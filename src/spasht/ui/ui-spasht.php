@@ -17,6 +17,11 @@ class ui_spasht extends FO_Plugin
   /** @var SpashtDao  $spashtDao*/
   private $spashtDao;
 
+  protected $viewName;
+  /** @var string
+   * Name of uploadtree table to use
+   */
+
   /**
    * @var AgentDao $agentDao
    * AgentDao object
@@ -30,9 +35,10 @@ class ui_spasht extends FO_Plugin
     $this->Dependency = array("browse","view");
     $this->DBaccess   = PLUGIN_DB_WRITE;
     $this->LoginFlag  = 0;
-    $this->uploadDao = $GLOBALS['container']->get('dao.upload');
-    $this->spashtDao = $GLOBALS['container']->get('dao.spasht');
-    $this->agentDao = $GLOBALS['container']->get('dao.agent');
+    $this->uploadDao  = $GLOBALS['container']->get('dao.upload');
+    $this->spashtDao  = $GLOBALS['container']->get('dao.spasht');
+    $this->agentDao   = $GLOBALS['container']->get('dao.agent');
+    $this->viewName   = "copyright_spasht_list";
     parent::__construct();
   }
 
@@ -352,18 +358,6 @@ class ui_spasht extends FO_Plugin
     }
     $VF .= "</table>\n";
     return array($ChildCount, $VF);
-  }
-
-  /**
-   * @brief Check if passed element is a directory
-   * @param int $Uploadtree_pk Uploadtree id of the element
-   * @return boolean True if it is a directory, false otherwise
-   */
-  protected function isADirectory($Uploadtree_pk)
-  {
-    $row =  $this->uploadDao->getUploadEntry($Uploadtree_pk, $this->uploadtree_tablename);
-    $isADirectory = IsDir($row['ufile_mode']);
-    return $isADirectory;
   }
 
 }

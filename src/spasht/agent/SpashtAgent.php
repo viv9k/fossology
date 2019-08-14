@@ -1,21 +1,5 @@
 <?php
-/*
- Copyright (C) 2014-2018, Siemens AG
- Author: Daniele Fognini, Andreas Würl
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
 
 namespace Fossology\Spasht;
 
@@ -43,8 +27,8 @@ class SpashtAgent extends Agent
      */
     private $uploadDao;
 
-    /** @var SpashtDao $uploadDao
-     * UploadDao object
+    /** @var SpashtDao $spashtDao
+     * SpashtDao object
      */
     private $spashtDao;
 
@@ -53,17 +37,17 @@ class SpashtAgent extends Agent
      */
     private $licenseDao;
 
-    /**
-     * @var DbManager $dbManager
-     * DbManager object
-     */
-    private $dbManager;
+    // /**
+    //  * @var DbManager $dbManager
+    //  * DbManager object
+    //  */
+    // private $dbManager;
 
-    /**
-     * @var AgentDao $agentDao
-     * AgentDao object
-     */
-    protected $agentDao;
+    // /**
+    //  * @var AgentDao $agentDao
+    //  * AgentDao object
+    //  */
+    // protected $agentDao;
 
     function __construct()
     {
@@ -71,8 +55,8 @@ class SpashtAgent extends Agent
         $this->uploadDao = $this->container->get('dao.upload');
         $this->spashtDao = $this->container->get('dao.spasht');
         $this->licenseDao = $this->container->get('dao.license');
-        $this->dbManager = $this->container->get('db.manager');
-        $this->agentDao = $this->container->get('dao.agent');
+        // $this->dbManager = $this->container->get('db.manager');
+        // $this->agentDao = $this->container->get('dao.agent');
     }
 
     /*
@@ -88,13 +72,17 @@ class SpashtAgent extends Agent
 
       $agentId = $this->agentDao->getCurrentAgentId("spasht");
 
-      $pfileSha1DetailsFromUpload = array();
-      $pfileIdDetailsFromUpload = array();
+      // $pfileSha1DetailsFromUpload = array();
+      // $pfileIdDetailsFromUpload = array();
+
+      $pfileSha1AndpfileId = array();
 
       foreach($pfileFileDetails as $pfileDetail)
       {
-        $pfileSha1DetailsFromUpload[] = strtolower($pfileDetail['sha1']);
-        $pfileIdDetailsFromUpload[] = $pfileDetail['pfile_pk'];
+        $pfileSha1AndpfileId[$pfileDetail['pfile_pk']] = strtolower($pfileDetail['sha1']);
+
+        // $pfileSha1DetailsFromUpload[] = strtolower($pfileDetail['sha1']);
+        // $pfileIdDetailsFromUpload[] = $pfileDetail['pfile_pk'];
       }
 
       $uploadAvailable = $this->searchUploadIdInSpasht($uploadId);
@@ -110,11 +98,11 @@ class SpashtAgent extends Agent
 
       $scancodeVersion = $this->getScanCodeVersion($uploadAvailable);
 
-      $getNewResult = $this->getInformation($scancodeVersion, $uploadAvailable, $pfileSha1DetailsFromUpload, $pfileIdDetailsFromUpload);
+      $getNewResult = $this->getInformation($scancodeVersion, $uploadAvailable, $pfileSha1AndpfileId);
 
       $resultUploadIntoLicenseTable = $this->insertLicensesSpashtAgentRecord($getNewResult, $agentId);
 
-     // $resultUploadIntoCopyrightTable = $this->insertCopyrightSpashtAgentRecord($getNewResult, $agentId);
+      $resultUploadIntoCopyrightTable = $this->insertCopyrightSpashtAgentRecord($getNewResult, $agentId);
 
     //   if($resultUploadIntoLicenseTable == true)
     //   {
@@ -243,7 +231,7 @@ class SpashtAgent extends Agent
      * tool used is scancode
      */
 
-     protected function getInformation($scancodeVersion, $details, $pfileSha1DetailsFromUpload, $pfileIdDetailsFromUpload)
+     protected function getInformation($scancodeVersion, $details, $pfileSha1AndpfileId)
      {
        $namespace = $details['spasht_namespace'];
        $name = $details['spasht_name'];
@@ -269,7 +257,7 @@ class SpashtAgent extends Agent
       {
         $body = json_decode($res->getBody()->getContents());
 
-        if(sizeof($body) == 0)
+        if(empty($body))
         {
           return "BodyNotFound";
         }
@@ -278,13 +266,13 @@ class SpashtAgent extends Agent
 
         foreach($body->$tool->$scancodeVersion->$dir as $key)
         {
-          $searchInUpload = array_search($key->hashes->sha1, $pfileSha1DetailsFromUpload);
+          $searchInUpload = array_search($key->hashes->sha1, $pfileSha1AndpfileId);
 
           if(!empty($searchInUpload))
           {
             $temp = array();
 
-            $temp['pfileId'] = $pfileIdDetailsFromUpload[$searchInUpload];
+            $temp['pfileId'] = $searchInUpload;
 
             $temp['sha1'] = $key->hashes->sha1;
 
@@ -328,7 +316,7 @@ class SpashtAgent extends Agent
       {
         if($license === "AND" || $license === "OR")
         {
-          var_dump($license);
+          continue;
         }
         else
         {
@@ -371,7 +359,7 @@ class SpashtAgent extends Agent
           {
             if(!empty($l->getId()))
             {
-              $this->dbManeger->insertTableRow('license_file',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'rf_fk'=> $l->getId()]);
+              $this->dbManager->insertTableRow('license_file',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'rf_fk'=> $l->getId()]);
             }
           }
         }
@@ -387,30 +375,31 @@ class SpashtAgent extends Agent
      *
      * @return boolean True if finished
      */
-    // protected function insertCopyrightSpashtAgentRecord($body, $agentId)
-    // {
-    //   $file = fopen('/home/fossy/abc.json','w');
-    //   fwrite($file, $agentId."->agentID\n");
-    //   foreach($body as $key)
-    //   {
-    //     foreach($key['attributions'] as $keyCopyright)
-    //     { 
-    //       // $copyrightList = explode (",", $keyCopyright);
-    //       // foreach($copyrightList as $copyright)
-    //       //  {
-    //       //    fwrite($file, $copyright."\n");
-    //       //   }
+    protected function insertCopyrightSpashtAgentRecord($body, $agentId)
+    {
+      $file = fopen('/home/fossy/abc.json','w');
+      fwrite($file, $agentId."->agentID\n");
+      foreach($body as $key)
+      {
+        foreach($key['attributions'] as $keyCopyright)
+        { 
+          // $copyrightList = explode (",", $keyCopyright);
+          // foreach($copyrightList as $copyright)
+          //  {
+          //    fwrite($file, $copyright."\n");
+          //   }
 
-    //       fwrite($file, $keyCopyright);
+          fwrite($file, $keyCopyright." -> ");
+          fwrite($file, $key['pfileId']."\n");
 
-    //       $hashForCopyright = hash ("sha256" , $keyCopyright);
+          $hashForCopyright = hash ("sha256" , $keyCopyright);
           
-    //       fwrite($file, $hashForCopyright);
-    //       //$this->dbManager->insertTableRow('copyright_spasht',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'textfinding' => $keyCopyright,'hash' => $hashForCopyright,'clearing_decision_type_fk' => 0]);  
-    //     }
-    //   }
-    //   fclose($file);
-    //   return true;
-    // }
+          fwrite($file, $hashForCopyright);
+          $this->dbManager->insertTableRow('copyright_spasht',['agent_fk' => $agentId,'pfile_fk' => $key['pfileId'],'textfinding' => $keyCopyright,'hash' => $hashForCopyright,'clearing_decision_type_fk' => 0]);  
+        }
+      }
+      fclose($file);
+      return true;
+    }
 
 }
