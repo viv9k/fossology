@@ -73,7 +73,7 @@ class CopyrightHistogram extends HistogramBase {
     list ($vCopyright, $vTextFindings, $tableVars) = $this->getTableContent(
       $upload_pk, $Uploadtree_pk, $filter, $agentId);
 
-    $out = $this->renderString('copyrighthist_tables.html.twig',
+    $out = $this->renderString('.twig',
       array(
         'contCopyright' => $vCopyright,
         'contTextFindings' => $vTextFindings,
